@@ -1,0 +1,2 @@
+pyramid-storage==0.0.8
+kinto==1.8.0

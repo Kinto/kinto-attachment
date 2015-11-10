@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
+
+
+with open('README.rst') as readme_file:
+    readme = readme_file.read()
+
+with open('CHANGELOG.rst') as history_file:
+    history = history_file.read()
+
+requirements = [
+    'kinto',
+    'pyramid_storage',
+]
+
+test_requirements = [
+    # TODO: put package test requirements here
+]
+
+setup(
+    name='kinto-attachment',
+    version='0.1.0.dev0',
+    description="Attach files to Kinto records",
+    long_description=readme + '\n\n' + history,
+    author="Mozilla",
+    author_email='kinto@mozilla.org',
+    url='https://github.com/mozilla-services/kinto-attachment',
+    packages=[
+        'kinto_attachment',
+    ],
+    package_dir={'kinto_attachment':
+                 'kinto_attachment'},
+    include_package_data=True,
+    install_requires=requirements,
+    license="Apache License (2.0)",
+    zip_safe=False,
+    keywords='kinto',
+    classifiers=[
+        'Development Status :: 2 - Pre-Alpha',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: Apache Software License',
+        'Natural Language :: English',
+        "Programming Language :: Python :: 2",
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+    ],
+    tests_require=test_requirements
+)
