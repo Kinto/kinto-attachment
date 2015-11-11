@@ -8,9 +8,8 @@ Kinto Attachment
 .. image:: https://img.shields.io/pypi/v/kinto-attachment.svg
         :target: https://pypi.python.org/pypi/kinto-attachment
 
-.. image:: https://coveralls.io/repos/Kinto/kinto-attachment/badge.png?branch=master
+.. image:: https://coveralls.io/repos/Kinto/kinto-attachment/badge.svg?branch=master
         :target: https://coveralls.io/r/Kinto/kinto-attachment
-
 
 **proof-of-concept**: Attach files to `Kinto records <http://kinto.readthedocs.org>`_.
 
@@ -106,7 +105,7 @@ TODO
 ----
 
 * Use ``moto_server`` instead of mocking
-* Setup tests with real Kinto on TravisCI
+* Simple fonctionnal test with real Kinto on TravisCI
 * Handle default bucket
 * Validate API
 * Check record permissions
