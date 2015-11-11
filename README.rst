@@ -2,8 +2,8 @@
 Kinto Attachment
 ================
 
-.. image:: https://img.shields.io/travis/mozilla-services/kinto-attachment.svg
-        :target: https://travis-ci.org/mozilla-services/kinto-attachment
+.. image:: https://img.shields.io/travis/Kinto/kinto-attachment.svg
+        :target: https://travis-ci.org/Kinto/kinto-attachment
 
 .. image:: https://img.shields.io/pypi/v/kinto-attachment.svg
         :target: https://pypi.python.org/pypi/kinto-attachment
