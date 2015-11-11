@@ -1,7 +1,6 @@
 import base64
 import json
 import hashlib
-import os
 
 from cliquet import Service
 from pyramid import httpexceptions
@@ -22,10 +21,9 @@ attachment = Service(name='attachment',
                      path=_record_path + '/attachment')
 
 
-def sha256(filepath):
-    with open(filepath) as f:
-        m = hashlib.sha256()
-        m.update(f.read())
+def sha256(content):
+    m = hashlib.sha256()
+    m.update(content)
     hash = m.digest()
     return base64.b64encode(hash)
 
@@ -35,7 +33,9 @@ def record_uri(request):
 
 
 def save_record(record, request):
+    # XXX: add util clone_request()
     backup_pattern = request.matched_route.pattern
+    backup_body = request.body
     backup_validated = request.validated
 
     # Instantiate record resource with current request.
@@ -45,7 +45,8 @@ def save_record(record, request):
     request.matched_route.pattern = record_pattern
 
     # Simulate update of fields.
-    request.validated = {'data': record}
+    request.validated = record
+    request.body = json.dumps(record)
     resource = Record(request, context)
     try:
         saved = resource.patch()
@@ -53,6 +54,7 @@ def save_record(record, request):
         saved = resource.put()
 
     request.matched_route.pattern = backup_pattern
+    request.body = backup_body
     request.validated = backup_validated
     return saved
 
@@ -63,11 +65,13 @@ def attachment_post(request):
     content = request.POST[FILE_FIELD]
     filename = request.attachment.save(content)
 
+    content.file.seek(0)
+    filecontent = content.file.read()
+
     # File metadata.
-    path = request.attachment.path(filename)
     location = request.attachment.url(filename)
-    filesize = os.path.getsize(path)
-    filehash = sha256(path)
+    filesize = len(filecontent)
+    filehash = sha256(filecontent)
     metadata = {
         'filename': filename,
         'location': location,
@@ -77,10 +81,11 @@ def attachment_post(request):
     }
 
     # Update related record.
-    attributes = request.POST.get('data', '{}')
-    attributes = json.loads(attributes)
-    attributes[FILE_FIELD] = metadata
-    save_record(attributes, request)
+    record = {k: v for k, v in request.POST.items() if k != FILE_FIELD}
+    for k, v in record.items():
+        record[k] = json.loads(v)
+    record.setdefault('data', {})[FILE_FIELD] = metadata
+    save_record(record, request)
 
     # Gently redirected to related record.
     raise httpexceptions.HTTPSeeOther(record_uri(request))

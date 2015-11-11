@@ -8,6 +8,10 @@ Kinto Attachment
 .. image:: https://img.shields.io/pypi/v/kinto-attachment.svg
         :target: https://pypi.python.org/pypi/kinto-attachment
 
+.. image:: https://coveralls.io/repos/Kinto/kinto-attachment/badge.png?branch=master
+        :target: https://coveralls.io/r/Kinto/kinto-attachment
+
+
 **proof-of-concept**: Attach files to `Kinto records <http://kinto.readthedocs.org>`_.
 
 
@@ -41,7 +45,7 @@ Store on Amazon S3:
 
     kinto.attachment.aws.access_key = <AWS access key>
     kinto.attachment.aws.secret_key = <AWS secret key>
-    kinto.attachment.aws.bucket_name = <bucket name>
+    kinto.attachment.aws.bucket = <bucket name>
     kinto.attachment.aws.acl = <AWS ACL permissions|public-read>
 
 
@@ -101,6 +105,7 @@ The related record was given an `attachment` field:
 TODO
 ----
 
+* Use ``moto_server`` instead of mocking
 * Setup tests with real Kinto on TravisCI
 * Handle default bucket
 * Validate API

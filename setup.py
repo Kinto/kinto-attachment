@@ -13,12 +13,15 @@ with open('CHANGELOG.rst') as history_file:
     history = history_file.read()
 
 requirements = [
+    'boto',
     'kinto',
     'pyramid_storage',
 ]
 
 test_requirements = [
-    # TODO: put package test requirements here
+    'mock',
+    'unittest2',
+    'webtest'
 ]
 
 setup(
