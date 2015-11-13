@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <meta charset="utf-8"/>
+  <head>
+  </head>
+  <body>
+    <form id="upload" action="" method="POST" enctype="multipart/form-data" onsubmit="return submitFile()">
+        <select name="category">
+            <option value="font">Font</option>
+            <option value="locale">Locale</option>
+            <option value="hyphenation">Hyphenation</option>
+        </select>
+        <select name="type">
+            <option value="addon">Addon</option>
+            <option value="asset">Asset</option>
+        </select>
+        <input type="file" name="attachment" required/>
+        <input type="submit" name="submit" disabled/>
+    </form>
+    <textarea id="result" cols="80" rows="30"></textarea>
+
+    <script type="text/javascript">
+      var form = document.forms.upload;
+
+      // Read file content using HTML5 File API.
+      var attachment = {file: null, binary: null};
+      var reader = new FileReader();
+      reader.addEventListener("load", function () {
+        attachment.binary = reader.result;
+        form.elements.submit.removeAttribute('disabled');
+      });
+      form.elements.attachment.addEventListener("change", function () {
+        if(reader.readyState === FileReader.LOADING) {
+          reader.abort();
+        }
+        var field = form.elements.attachment;
+        attachment.file = field.files[0];
+        reader.readAsBinaryString(attachment.file);
+      });
+
+
+      function submitFile() {
+        // Local Kinto
+        var server = "http://localhost:8888/v1";
+        // Basic Authentication
+        var headers = {Authorization: "Basic " + btoa("user:pass")};
+        // Bucket id
+        var bucket = "fennec-ota";
+        // Collection id
+        var collection = form.elements.category.value;
+        // Record id
+        var record = uuid4();
+
+        // Build form data
+        var formData = new FormData();
+        // Multipart attachment
+        formData.append('attachment', attachment.file, attachment.file.name)
+        // Record attributes as JSON encoded
+        var attributes = {
+          type: form.elements.type.value
+        };
+        formData.append('data', JSON.stringify(attributes));
+
+        // Post form using GlobalFetch API
+        var url = `${server}/buckets/${bucket}/collections/${collection}/records/${record}/attachment`;
+        fetch(url, {method: "POST", body: formData, headers: headers})
+         .then(function (response) {
+           return response.json();
+         })
+         .then(function (result) {
+           return JSON.stringify(result);
+         })
+         .catch(function (error) {
+           return error.toString();
+         })
+         .then(function (string) {
+           document.getElementById("result").value = string;
+         });
+
+        return false;
+      }
+
+
+      // Generate random uuid4
+      // Source: http://stackoverflow.com/a/2117523
+      function uuid4() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          var r = crypto.getRandomValues(new Uint8Array(1))[0]%16|0, v = c == 'x' ? r : (r&0x3|0x8);
+          return v.toString(16);
+        });
+      }
+    </script>
+  </body>
+</html>
+
