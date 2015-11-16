@@ -18,7 +18,9 @@ _record_path = ('/buckets/{bucket_id}/collections/{collection_id}'
 
 attachment = Service(name='attachment',
                      description='Attach file to record',
-                     path=_record_path + '/attachment')
+                     path=_record_path + '/attachment',
+                     cors_enabled=True,
+                     cors_origins='*')
 
 
 def sha256(content):
