@@ -40,7 +40,7 @@ def save_record(record, request):
 
     # Instantiate record resource with current request.
     context = RouteFactory(request)
-    context.get_permission_object_id = lambda r, i: record_uri
+    context.get_permission_object_id = lambda r, i: record_uri(r)
     record_pattern = request.matched_route.pattern.replace('/attachment', '')
     request.matched_route.pattern = record_pattern
 
