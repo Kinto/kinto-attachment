@@ -20,6 +20,7 @@ class BaseWebTestLocal(object):
         self.storage = self.app.app.registry.storage
         self.headers = {
             'Content-Type': 'application/json',
+            'Origin': 'http://localhost:9999'
         }
         self.headers.update(get_user_headers('mat'))
 

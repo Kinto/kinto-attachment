@@ -21,10 +21,13 @@ class UploadTest(object):
         headers['Content-Type'] = encode_header(content_type)
         return self.app.post(self.attachment_uri, body, headers=headers)
 
-    def test_only_post_is_accepted(self):
+    def test_only_post_and_options_is_accepted(self):
         self.app.get(self.attachment_uri, headers=self.headers, status=405)
         self.app.put(self.attachment_uri, headers=self.headers, status=405)
         self.app.patch(self.attachment_uri, headers=self.headers, status=405)
+        headers = self.headers.copy()
+        headers['Access-Control-Request-Method'] = 'POST'
+        self.app.options(self.attachment_uri, headers=headers, status=200)
 
     def test_returns_303_to_record_once_uploaded(self):
         response = self.upload()
