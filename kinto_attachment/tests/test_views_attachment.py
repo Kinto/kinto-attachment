@@ -1,25 +1,37 @@
-import uuid
-
-import mock
 from cliquet.tests.support import unittest
-from cliquet.utils import encode_header
 
-from . import BaseWebTestLocal, BaseWebTestS3
+from . import BaseWebTestLocal, BaseWebTestS3, get_user_headers
 
 
 class UploadTest(object):
-    def setUp(self):
-        super(UploadTest, self).setUp()
-        self.create_collection('fennec', 'fonts')
-        self.record_uri = self.record_uri('fennec', 'fonts', uuid.uuid4())
-        self.attachment_uri = self.record_uri + '/attachment'
+    def test_returns_200_to_record_once_uploaded(self):
+        self.upload(status=201)
 
-    def upload(self, files=None, params=[]):
-        files = files or [('attachment', 'image.jpg', '--fake--')]
-        headers = self.headers.copy()
-        content_type, body = self.app.encode_multipart(params, files)
-        headers['Content-Type'] = encode_header(content_type)
-        return self.app.post(self.attachment_uri, body, headers=headers)
+    def test_record_is_created_with_metadata(self):
+        self.upload()
+        resp = self.app.get(self.record_uri, headers=self.headers)
+        self.assertIn('attachment', resp.json['data'])
+
+    def test_returns_200_if_record_already_exists(self):
+        self.app.put_json(self.record_uri, {}, headers=self.headers)
+        self.upload(status=200)
+
+    def test_adds_cors_and_location_to_response(self):
+        response = self.upload()
+        self.assertEqual(response.headers['Location'],
+                         'http://localhost/v1' + self.record_uri)
+        self.assertIn('Access-Control-Allow-Origin', response.headers)
+
+
+class LocalUploadTest(UploadTest, BaseWebTestLocal, unittest.TestCase):
+    pass
+
+
+class S3UploadTest(UploadTest, BaseWebTestS3, unittest.TestCase):
+    pass
+
+
+class AttachmentViewTest(BaseWebTestLocal, unittest.TestCase):
 
     def test_only_post_and_options_is_accepted(self):
         self.app.get(self.attachment_uri, headers=self.headers, status=405)
@@ -28,17 +40,6 @@ class UploadTest(object):
         headers = self.headers.copy()
         headers['Access-Control-Request-Method'] = 'POST'
         self.app.options(self.attachment_uri, headers=headers, status=200)
-
-    def test_returns_303_to_record_once_uploaded(self):
-        response = self.upload()
-        self.assertEqual(response.status_code, 303)
-        self.assertEqual(response.headers['Location'],
-                         'http://localhost/v1' + self.record_uri)
-
-    def test_record_is_created_with_metadata(self):
-        self.upload()
-        resp = self.app.get(self.record_uri, headers=self.headers)
-        self.assertIn('attachment', resp.json['data'])
 
     def test_record_is_updated_with_metadata(self):
         existing = {'data': {'theme': 'orange'}}
@@ -67,20 +68,8 @@ class UploadTest(object):
     #     resp = self.app.get(self.record_uri, headers=self.headers)
     #     self.assertIn("system.Everyone", resp.json['permissions']['read'])
 
-    def test_collection_schema_is_validated(self):
-        pass
+    # def test_collection_schema_is_validated(self):
+    #     pass
 
-    def test_record_fields_are_validated(self):
-        pass
-
-
-class LocalUploadTest(UploadTest, BaseWebTestLocal, unittest.TestCase):
-    pass
-
-
-class S3UploadTest(UploadTest, BaseWebTestS3, unittest.TestCase):
-    def upload(self, *args, **kwargs):
-        patch = mock.patch('pyramid_storage.s3.S3FileStorage.save_file',
-                           return_value='upload.jpg')
-        with patch.start():
-            return super(S3UploadTest, self).upload(*args, **kwargs)
+    # def test_record_fields_are_validated(self):
+    #     pass

@@ -74,7 +74,7 @@ def attachment_post(request):
     location = request.attachment.url(filename)
     filesize = len(filecontent)
     filehash = sha256(filecontent)
-    metadata = {
+    attachment = {
         'filename': filename,
         'location': location,
         'hash': filehash,
@@ -86,8 +86,9 @@ def attachment_post(request):
     record = {k: v for k, v in request.POST.items() if k != FILE_FIELD}
     for k, v in record.items():
         record[k] = json.loads(v)
-    record.setdefault('data', {})[FILE_FIELD] = metadata
+    record.setdefault('data', {})[FILE_FIELD] = attachment
     save_record(record, request)
 
-    # Gently redirected to related record.
-    raise httpexceptions.HTTPSeeOther(record_uri(request))
+    # Return attachment data (with location header)
+    request.response.headers['Location'] = record_uri(request)
+    return attachment
