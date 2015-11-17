@@ -1,6 +1,6 @@
 from cliquet.tests.support import unittest
 
-from . import BaseWebTestLocal, BaseWebTestS3, get_user_headers
+from . import BaseWebTestLocal, BaseWebTestS3
 
 
 class UploadTest(object):
