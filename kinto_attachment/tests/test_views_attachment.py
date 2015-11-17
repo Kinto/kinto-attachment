@@ -1,3 +1,6 @@
+import os
+
+from pyramid_storage.interfaces import IFileStorage
 from cliquet.tests.support import unittest
 
 from . import BaseWebTestLocal, BaseWebTestS3
@@ -24,11 +27,66 @@ class UploadTest(object):
 
 
 class LocalUploadTest(UploadTest, BaseWebTestLocal, unittest.TestCase):
-    pass
+    def test_file_is_created_on_local_filesystem(self):
+        attachment = self.upload().json
+        filename = attachment['filename']
+        self.assertTrue(os.path.exists(os.path.join('/tmp', filename)))
 
 
 class S3UploadTest(UploadTest, BaseWebTestS3, unittest.TestCase):
     pass
+
+
+class DeleteTest(object):
+    def setUp(self):
+        super(DeleteTest, self).setUp()
+        self.attachment = self.upload().json
+        self.backend = self.app.app.registry.getUtility(IFileStorage)
+
+    def exists(self, filename):
+        return self.backend.exists(filename)
+
+    def test_attachment_is_removed_when_record_is_deleted(self):
+        filename = self.attachment['filename']
+        self.assertTrue(self.exists(filename))
+        self.app.delete(self.record_uri, headers=self.headers)
+        self.assertFalse(self.exists(filename))
+
+    def test_attachments_are_removed_when_bucket_is_deleted(self):
+        filename = self.attachment['filename']
+        self.assertTrue(self.exists(filename))
+        self.app.delete('/buckets/fennec', headers=self.headers)
+        self.assertFalse(self.exists(filename))
+
+    def test_attachments_are_removed_when_collection_is_deleted(self):
+        filename = self.attachment['filename']
+        self.assertTrue(self.exists(filename))
+        self.app.delete('/buckets/fennec/collections/fonts',
+                        headers=self.headers)
+        self.assertFalse(self.exists(filename))
+
+    def test_attachments_links_are_removed_forever(self):
+        storage = self.app.app.registry.storage
+        links, _ = storage.get_all("", '__attachments__')
+        self.assertEqual(len(links), 1)
+        self.app.delete(self.record_uri, headers=self.headers)
+        links, _ = storage.get_all("", '__attachments__')
+        self.assertEqual(len(links), 0)
+
+    def test_no_error_when_other_resource_is_deleted(self):
+        group_url = '/buckets/default/groups/admins'
+        self.app.put_json(group_url, {"data": {"members": ["them"]}},
+                          headers=self.headers)
+        self.app.delete(group_url, headers=self.headers)
+
+
+class LocalDeleteTest(DeleteTest, BaseWebTestLocal, unittest.TestCase):
+    pass
+
+
+# XXX: Use moto server
+# class S3DeleteTest(DeleteTest, BaseWebTestS3, unittest.TestCase):
+#     pass
 
 
 class AttachmentViewTest(BaseWebTestLocal, unittest.TestCase):
@@ -42,34 +100,63 @@ class AttachmentViewTest(BaseWebTestLocal, unittest.TestCase):
         self.app.options(self.attachment_uri, headers=headers, status=200)
 
     def test_record_is_updated_with_metadata(self):
-        existing = {'data': {'theme': 'orange'}}
+        existing = {'data': {'author': 'frutiger'}}
         self.app.put_json(self.record_uri, existing, headers=self.headers)
         self.upload()
         resp = self.app.get(self.record_uri, headers=self.headers)
         self.assertIn('attachment', resp.json['data'])
-        self.assertIn('theme', resp.json['data'])
+        self.assertIn('author', resp.json['data'])
 
     def test_record_is_created_with_fields(self):
-        self.upload(params=[('data', '{"category": "wallpaper"}')])
+        self.upload(params=[('data', '{"family": "sans"}')])
         resp = self.app.get(self.record_uri, headers=self.headers)
-        self.assertEqual(resp.json['data']['category'], "wallpaper")
+        self.assertEqual(resp.json['data']['family'], "sans")
 
     def test_record_is_updated_with_fields(self):
-        existing = {'data': {'theme': 'orange'}}
+        existing = {'data': {'author': 'frutiger'}}
         self.app.put_json(self.record_uri, existing, headers=self.headers)
-        self.upload(params=[('data', '{"category": "wallpaper"}')])
+        self.upload(params=[('data', '{"family": "sans"}')])
         resp = self.app.get(self.record_uri, headers=self.headers)
-        self.assertEqual(resp.json['data']['category'], 'wallpaper')
-        self.assertEqual(resp.json['data']['theme'], 'orange')
+        self.assertEqual(resp.json['data']['family'], 'sans')
+        self.assertEqual(resp.json['data']['author'], 'frutiger')
 
-    # def test_record_permissions_can_also_be_specified(self):
-    #     self.upload([('attachment', 'image.jpg', '--fake--')],
-    #                 [('permissions', '{"read": ["system.Everyone"]}')])
-    #     resp = self.app.get(self.record_uri, headers=self.headers)
-    #     self.assertIn("system.Everyone", resp.json['permissions']['read'])
+    def test_record_is_created_with_appropriate_permissions(self):
+        self.upload()
+        current_principal = ("basicauth:c6c27f0c7297ba7d4abd2a70c8a2cb88a06a3"
+                             "bb793817ef2c85fe8a709b08022")
+        resp = self.app.get(self.record_uri, headers=self.headers)
+        self.assertEqual(resp.json['permissions'],
+                         {"write": [current_principal]})
 
-    # def test_collection_schema_is_validated(self):
-    #     pass
+    def test_record_permissions_can_also_be_specified(self):
+        self.upload(files=[('attachment', 'image.jpg', '--fake--')],
+                    params=[('permissions', '{"read": ["system.Everyone"]}')])
+        resp = self.app.get(self.record_uri, headers=self.headers)
+        self.assertIn('system.Everyone', resp.json['permissions']['read'])
 
-    # def test_record_fields_are_validated(self):
-    #     pass
+    # Content Validation.
+
+    def test_record_fields_are_validated_against_schema(self):
+        resp = self.upload(params=[('data', '{"author": 12}')], status=400)
+        self.assertIn("12 is not of type 'string'", resp.json['message'])
+
+    def test_upload_refused_if_extension_not_allowed(self):
+        resp = self.upload(files=[('attachment', 'virus.exe', '--fake--')],
+                           status=400)
+        self.assertEqual(resp.json['message'],
+                         'body: File extension is not allowed.')
+
+#
+# XXX: see bug https://github.com/Kinto/kinto/issues/277
+#
+# class DefaultBucketTest(BaseWebTestLocal, unittest.TestCase):
+#     def setUp(self):
+#         super(DefaultBucketTest, self).setUp()
+#         self.record_uri = self.get_record_uri('default', 'pix', uuid.uuid4())
+#         self.attachment_uri = self.record_uri + '/attachment'
+
+#     def test_implicit_collection_creation_on_upload(self):
+#         resp = self.upload()
+#         record_uri = resp.headers['Location']
+#         self.assertIn('/buckets/c0343679-10aa-a101-bf0f-e96f917f3e27',
+#                       record_uri)

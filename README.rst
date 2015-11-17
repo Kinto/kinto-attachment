@@ -119,13 +119,12 @@ The related record was given an `attachment` field:
 TODO
 ----
 
+* Support chunk upload
 * Use ``moto_server`` instead of mocking
 * Simple fonctionnal test with real Kinto on TravisCI
 * Handle default bucket
 * Validate API
 * Check record permissions
-* Make sure record is created with appropriate permissions
-* Delete attachment on record delete
 
 
 Notes

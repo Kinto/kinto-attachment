@@ -10,6 +10,7 @@ def includeme(config):
 
     # Force some pyramid_storage settings.
     storage_settings['storage.name'] = 'attachment'
+    storage_settings.setdefault('storage.extensions', 'any')
 
     config.add_settings(storage_settings)
 
