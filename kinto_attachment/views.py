@@ -72,14 +72,14 @@ def attachment_post(request):
 
     # File metadata.
     location = request.attachment.url(filename)
-    filesize = len(filecontent)
+    size = len(filecontent)
     filehash = sha256(filecontent)
     attachment = {
         'filename': filename,
         'location': location,
         'hash': filehash,
         'mimetype': content.type,
-        'filesize': filesize
+        'size': size
     }
 
     # Update related record.
