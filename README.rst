@@ -58,47 +58,62 @@ Using HTTPie:
 
 ::
 
-    http --auth alice: -form POST http://localhost:8888/v1/buckets/website/collections/assets/records/c2ce1975-0e52-4b2f-a5db-80166aeca689/attachment data='{"type": "wallpaper", "theme": "orange"}' "attachment@~/Pictures/background.jpg"
+    http --auth alice: --form POST http://localhost:8888/v1/buckets/website/collections/assets/records/c2ce1975-0e52-4b2f-a5db-80166aeca689/attachment data='{"type": "wallpaper", "theme": "orange"}' "attachment@~/Pictures/background.jpg"
 
-    HTTP/1.1 303 See Other
-    Content-Length: 313
-    Content-Type: text/html; charset=UTF-8
-    Date: Tue, 10 Nov 2015 17:15:58 GMT
-    Location: http://localhost:8888/v1/buckets/b3cd54a6-9e43-10eb-2833-f3ba194e0786/collections/tasks/records/c2ce1975-0e52-4b2f-a5db-80166aeca689
+    HTTP/1.1 201 Created
+    Access-Control-Expose-Headers: Retry-After, Content-Length, Alert, Backoff
+    Content-Length: 209
+    Content-Type: application/json; charset=UTF-8
+    Date: Wed, 18 Nov 2015 08:22:18 GMT
+    Etag: "1447834938251"
+    Last-Modified: Wed, 18 Nov 2015 08:22:18 GMT
+    Location: http://localhost:8888/v1/buckets/website/collections/font/assets/c2ce1975-0e52-4b2f-a5db-80166aeca689
     Server: waitress
+
+    {
+        "filename": "IMG_20150219_174559-17.jpg",
+        "hash": "hPME6i9avCf/LFaznYr+sHtwQEX7mXYHSu+vgtygpM8=",
+        "location": "http://cdn.service.org/files/background.jpg",
+        "mimetype": "text/plain",
+        "size": 1481798
+    }
+
 
 The related record was given an `attachment` field:
 
 ::
 
-    http --auth alice: GET http://localhost:8888/v1/buckets/b3cd54a6-9e43-10eb-2833-f3ba194e0786/collections/tasks/records/c2ce1975-0e52-4b2f-a5db-80166aeca689
+    http --auth alice: GET http://localhost:8888/v1/buckets/website/collections/font/records/c2ce1975-0e52-4b2f-a5db-80166aeca689
 
     HTTP/1.1 200 OK
     Access-Control-Expose-Headers: Content-Length, Expires, Alert, Retry-After, Last-Modified, ETag, Pragma, Cache-Control, Backoff
     Cache-Control: no-cache
-    Content-Length: 295
+    Content-Length: 360
     Content-Type: application/json; charset=UTF-8
-    Date: Tue, 10 Nov 2015 17:17:00 GMT
-    Etag: "1447175758684"
-    Last-Modified: Tue, 10 Nov 2015 17:15:58 GMT
+    Date: Wed, 18 Nov 2015 08:24:15 GMT
+    Etag: "1447834938251"
+    Last-Modified: Wed, 18 Nov 2015 08:22:18 GMT
     Server: waitress
 
     {
         "data": {
             "attachment": {
-                "filename": "IMG_20150219_174559-22.jpg",
-                "filesize": 1481798,
+                "filename": "IMG_20150219_174559-17.jpg",
                 "hash": "hPME6i9avCf/LFaznYr+sHtwQEX7mXYHSu+vgtygpM8=",
-                "location": "IMG_20150219_174559-22.jpg",
-                "mimetype": "text/plain"
+                "location": "http://cdn.service.org/files/IMG_20150219_174559-17.jpg",
+                "mimetype": "text/plain",
+                "size": 1481798
             },
-            "id": "c2ce1975-0e52-4b2f-a5db-80166aeca689",
-            "last_modified": 1447175758684,
-            "type": "wallpaper",
-            "theme": "orange"
+            "id": "c2ce1975-0e52-4b2f-a5db-80166aeca688",
+            "last_modified": 1447834938251,
+            "theme": "orange",
+            "type": "wallpaper"
         },
-        "permissions": {}
+        "permissions": {
+            "write": ["basicauth:6de355038fd943a2dc91405063b91018bb5dd97a08d1beb95713d23c2909748f"]
+        }
     }
+
 
 
 TODO
