@@ -1,4 +1,3 @@
-import base64
 import json
 import hashlib
 
@@ -32,8 +31,7 @@ attachment = Service(name='attachment',
 def sha256(content):
     m = hashlib.sha256()
     m.update(content)
-    hash = m.digest()
-    return base64.b64encode(hash)
+    return m.hexdigest()
 
 
 def _object_uri(request, resource_name, matchdict, prefix):

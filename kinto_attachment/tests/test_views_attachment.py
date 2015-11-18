@@ -107,6 +107,11 @@ class AttachmentViewTest(BaseWebTestLocal, unittest.TestCase):
         self.assertIn('attachment', resp.json['data'])
         self.assertIn('author', resp.json['data'])
 
+    def test_record_metadata_has_hash_hexdigest(self):
+        r = self.upload()
+        h = 'db511d372e98725a61278e90259c7d4c5484fc7a781d7dcc0c93d53b8929e2ba'
+        self.assertEqual(r.json['hash'], h)
+
     def test_record_is_created_with_fields(self):
         self.upload(params=[('data', '{"family": "sans"}')])
         resp = self.app.get(self.record_uri, headers=self.headers)
@@ -129,8 +134,7 @@ class AttachmentViewTest(BaseWebTestLocal, unittest.TestCase):
                          {"write": [current_principal]})
 
     def test_record_permissions_can_also_be_specified(self):
-        self.upload(files=[('attachment', 'image.jpg', '--fake--')],
-                    params=[('permissions', '{"read": ["system.Everyone"]}')])
+        self.upload(params=[('permissions', '{"read": ["system.Everyone"]}')])
         resp = self.app.get(self.record_uri, headers=self.headers)
         self.assertIn('system.Everyone', resp.json['permissions']['read'])
 
