@@ -11,6 +11,20 @@ to get a local instance running.
 * Follow the instructions of this plugin to install and set the appropriate settings
   in ``config.ini``
 
+We will serve the files locally, using these settings in config:
+
+::
+
+    kinto.attachment.base_path = /tmp
+    kinto.attachment.base_url = http://localhost:7777
+
+In a separate terminal, run a simple server to serve the uploaded files:
+
+::
+
+    cd /tmp/
+    python -m SimpleHTTPServer 7777
+
 Now start Kinto
 
 ::
@@ -48,3 +62,4 @@ Run the demo
     python -m SimpleHTTPServer 9999
 
 * Navigate to http://localhost:9999 and post files!
+* The links on uploaded files are served on http://localhost:7777
