@@ -18,6 +18,30 @@ from pyramid_storage.exceptions import FileNotAllowed
 FILE_FIELD = 'attachment'
 FILE_LINKS = '__attachments__'
 
+
+class AttachmentRouteFactory(RouteFactory):
+    def __init__(self, request):
+        """Attachment is not a Cliquet resource.
+
+        The required permission is:
+        * ``write`` if the related record exists;
+        * ``record:create`` on the related collection otherwise.
+        """
+        super(AttachmentRouteFactory, self).__init__(request)
+        self.resource_name = 'record'
+        try:
+            resource = Record(request, self)
+            existing = resource.get()
+        except httpexceptions.HTTPNotFound:
+            existing = None
+        if existing:
+            self.permission_object_id = record_uri(request)
+            self.required_permission = 'write'
+        else:
+            self.permission_object_id = collection_uri(request)
+            self.required_permission = 'create'
+
+
 _record_path = ('/buckets/{bucket_id}/collections/{collection_id}'
                 '/records/{id}')
 
@@ -26,7 +50,7 @@ attachment = Service(name='attachment',
                      path=_record_path + '/attachment',
                      cors_enabled=True,
                      cors_origins='*',
-                     factory=RouteFactory)
+                     factory=AttachmentRouteFactory)
 
 
 def sha256(content):

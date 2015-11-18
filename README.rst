@@ -124,7 +124,6 @@ TODO
 * Simple fonctionnal test with real Kinto on TravisCI
 * Handle default bucket
 * Validate API
-* Check record permissions
 
 
 Notes
