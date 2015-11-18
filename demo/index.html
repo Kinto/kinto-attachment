@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <meta charset="utf-8"/>
+  <head>
+    <script type="text/javascript" src="script.js"></script>
+  </head>
+  <body>
+    <div id="error"></div>
+    <form id="upload" action="#">
+        <select name="category">
+            <option value="font">Font</option>
+            <option value="locale">Locale</option>
+            <option value="hyphenation">Hyphenation</option>
+        </select>
+        <select name="type">
+            <option value="addon">Addon</option>
+            <option value="asset">Asset</option>
+        </select>
+        <input type="file" name="attachment" required/>
+        <input type="submit" name="submit" disabled/>
+    </form>
+    <table id="records">
+      <thead>
+        <th>Type</th>
+        <th>Filename</th>
+        <th>Type</th>
+        <th>Size</th>
+        <th>Hash</th>
+      </thead>
+      <tbody>
+      </tbody>
+      <template id="record-tpl">
+        <tr>
+          <td class="type"></td>
+          <td class="location"><a href="#"></a></td>
+          <td class="mimetype"></td>
+          <td class="size"></td>
+          <td class="hash"></td>
+        </tr>
+      </template>
+    </table>
+  </body>
+</html>
+

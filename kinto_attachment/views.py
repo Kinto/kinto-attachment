@@ -18,7 +18,9 @@ _record_path = ('/buckets/{bucket_id}/collections/{collection_id}'
 
 attachment = Service(name='attachment',
                      description='Attach file to record',
-                     path=_record_path + '/attachment')
+                     path=_record_path + '/attachment',
+                     cors_enabled=True,
+                     cors_origins='*')
 
 
 def sha256(content):
@@ -40,7 +42,7 @@ def save_record(record, request):
 
     # Instantiate record resource with current request.
     context = RouteFactory(request)
-    context.get_permission_object_id = lambda r, i: record_uri
+    context.get_permission_object_id = lambda r, i: record_uri(r)
     record_pattern = request.matched_route.pattern.replace('/attachment', '')
     request.matched_route.pattern = record_pattern
 
@@ -70,22 +72,23 @@ def attachment_post(request):
 
     # File metadata.
     location = request.attachment.url(filename)
-    filesize = len(filecontent)
+    size = len(filecontent)
     filehash = sha256(filecontent)
-    metadata = {
+    attachment = {
         'filename': filename,
         'location': location,
         'hash': filehash,
         'mimetype': content.type,
-        'filesize': filesize
+        'size': size
     }
 
     # Update related record.
     record = {k: v for k, v in request.POST.items() if k != FILE_FIELD}
     for k, v in record.items():
         record[k] = json.loads(v)
-    record.setdefault('data', {})[FILE_FIELD] = metadata
+    record.setdefault('data', {})[FILE_FIELD] = attachment
     save_record(record, request)
 
-    # Gently redirected to related record.
-    raise httpexceptions.HTTPSeeOther(record_uri(request))
+    # Return attachment data (with location header)
+    request.response.headers['Location'] = record_uri(request)
+    return attachment
