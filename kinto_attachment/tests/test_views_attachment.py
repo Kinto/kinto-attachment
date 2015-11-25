@@ -3,7 +3,7 @@ import os
 from pyramid_storage.interfaces import IFileStorage
 from cliquet.tests.support import unittest
 
-from . import BaseWebTestLocal, BaseWebTestS3
+from . import BaseWebTestLocal, BaseWebTestS3, get_user_headers
 
 
 class UploadTest(object):
