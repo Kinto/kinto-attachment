@@ -184,3 +184,25 @@ def attachment_post(request):
     # Return attachment data (with location header)
     request.response.headers['Location'] = record_uri(request, prefix=True)
     return attachment
+
+
+@attachment.delete(permission=DYNAMIC_PERMISSION)
+def attachment_delete(request):
+    storage = request.registry.storage
+    uri = record_uri(request)
+    filters = [Filter("record_uri", uri, cliquet_utils.COMPARISON.EQ)]
+
+    # Remove file.
+    file_links, _ = storage.get_all("", FILE_LINKS, filters=filters)
+    for link in file_links:
+        request.attachment.delete(link['filename'])
+
+    # Remove link.
+    storage.delete_all("", FILE_LINKS, filters=filters, with_deleted=False)
+
+    # Remove metadata.
+    record = {"data": {}}
+    record["data"][FILE_FIELD] = None
+    save_record(record, request)
+
+    raise httpexceptions.HTTPNoContent()
