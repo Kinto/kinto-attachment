@@ -4,9 +4,9 @@ env:
     - TOX_ENV=py27
     - TOX_ENV=flake8
 install:
-    - pip install tox moto
+    - make install
 before_script:
-    - moto_server s3bucket_path -H 0.0.0.0 -p 5000 &
+    - make moto &
 script:
     - tox -e $TOX_ENV
 after_success:
