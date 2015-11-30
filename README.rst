@@ -51,49 +51,42 @@ Store on Amazon S3:
 See `Pyramid Storage <https://pythonhosted.org/pyramid_storage/>`_.
 
 
-Usage
------
+API
+---
 
-Using HTTPie:
+**POST /{record-url}/attachment**
+
+It will create the underlying record if it does not exist.
+
+Required
+
+- ``attachment``: a single multipart-encoded file
+
+Optional
+
+- ``data``: attributes to set on record (serialized JSON)
+- ``permissions``: permissions to set on record (serialized JSON)
+
+
+**DELETE /{record-url}/attachment**
+
+Deletes the attachement from the record.
+
+
+Attributes
+''''''''''
+
+When a file is attached, the related record is given an ``attachment`` attribute
+with the following fields:
+
+- ``filename``: the original filename
+- ``hash``: a SHA-256 digest
+- ``location``: the URL of the attachment
+- ``mimetype``: the `media type <https://en.wikipedia.org/wiki/Media_type>`_ of
+  the file
+- ``size``: size in bytes
 
 ::
-
-    http --auth alice: --form POST http://localhost:8888/v1/buckets/website/collections/assets/records/c2ce1975-0e52-4b2f-a5db-80166aeca689/attachment data='{"type": "wallpaper", "theme": "orange"}' "attachment@~/Pictures/background.jpg"
-
-    HTTP/1.1 201 Created
-    Access-Control-Expose-Headers: Retry-After, Content-Length, Alert, Backoff
-    Content-Length: 209
-    Content-Type: application/json; charset=UTF-8
-    Date: Wed, 18 Nov 2015 08:22:18 GMT
-    Etag: "1447834938251"
-    Last-Modified: Wed, 18 Nov 2015 08:22:18 GMT
-    Location: http://localhost:8888/v1/buckets/website/collections/font/assets/c2ce1975-0e52-4b2f-a5db-80166aeca689
-    Server: waitress
-
-    {
-        "filename": "IMG_20150219_174559-17.jpg",
-        "hash": "hPME6i9avCf/LFaznYr+sHtwQEX7mXYHSu+vgtygpM8=",
-        "location": "http://cdn.service.org/files/background.jpg",
-        "mimetype": "text/plain",
-        "size": 1481798
-    }
-
-
-The related record was given an `attachment` field:
-
-::
-
-    http --auth alice: GET http://localhost:8888/v1/buckets/website/collections/font/records/c2ce1975-0e52-4b2f-a5db-80166aeca689
-
-    HTTP/1.1 200 OK
-    Access-Control-Expose-Headers: Content-Length, Expires, Alert, Retry-After, Last-Modified, ETag, Pragma, Cache-Control, Backoff
-    Cache-Control: no-cache
-    Content-Length: 360
-    Content-Type: application/json; charset=UTF-8
-    Date: Wed, 18 Nov 2015 08:24:15 GMT
-    Etag: "1447834938251"
-    Last-Modified: Wed, 18 Nov 2015 08:22:18 GMT
-    Server: waitress
 
     {
         "data": {
@@ -115,15 +108,85 @@ The related record was given an `attachment` field:
     }
 
 
+Usage
+-----
 
-TODO
-----
+Using HTTPie
+''''''''''''
 
-* Support chunk upload
-* Use ``moto_server`` instead of mocking
-* Simple fonctionnal test with real Kinto on TravisCI
-* Handle default bucket
-* Validate API
+::
+
+    http --auth alice:passwd --form POST http://localhost:8888/v1/buckets/website/collections/assets/records/c2ce1975-0e52-4b2f-a5db-80166aeca689/attachment data='{"type": "wallpaper", "theme": "orange"}' "attachment=@~/Pictures/background.jpg"
+
+    HTTP/1.1 201 Created
+    Access-Control-Expose-Headers: Retry-After, Content-Length, Alert, Backoff
+    Content-Length: 209
+    Content-Type: application/json; charset=UTF-8
+    Date: Wed, 18 Nov 2015 08:22:18 GMT
+    Etag: "1447834938251"
+    Last-Modified: Wed, 18 Nov 2015 08:22:18 GMT
+    Location: http://localhost:8888/v1/buckets/website/collections/font/assets/c2ce1975-0e52-4b2f-a5db-80166aeca689
+    Server: waitress
+
+    {
+        "filename": "IMG_20150219_174559-17.jpg",
+        "hash": "hPME6i9avCf/LFaznYr+sHtwQEX7mXYHSu+vgtygpM8=",
+        "location": "http://cdn.service.org/files/background.jpg",
+        "mimetype": "text/plain",
+        "size": 1481798
+    }
+
+
+Using Python requests
+'''''''''''''''''''''
+
+::
+
+    auth = ("alice", "passwd")
+    attributes = {"type": "wallpaper", "theme": "orange"}
+    perms = {"read": ["system.Everyone"]}
+
+    files = [("attachment", ("background.jpg", open("Pictures/background.jpg", "rb"), "image/jpeg"))]
+
+    payload = {"data": json.dumps(attributes), "permissions": json.dumps(perms)}
+    response = requests.post(SERVER_URL + endpoint, data=payload, files=files, auth=auth)
+
+    response.raise_for_status()
+
+
+Using JavaScript
+''''''''''''''''
+
+::
+
+    var headers = {Authorization: "Basic " + btoa("alice:passwd")};
+    var attributes = {"type": "wallpaper", "theme": "orange"};
+    var perms = {"read": ["system.Everyone"]};
+
+    // File object from input field
+    var file = form.elements.attachment.files[0];
+
+    // Build form data
+    var payload = new FormData();
+    // Multipart attachment
+    payload.append('attachment', file, "background.jpg");
+    // Record attributes and permissions JSON encoded
+    payload.append('data', JSON.stringify(attributes));
+    payload.append('permissions', JSON.stringify(perms));
+
+    // Post form using GlobalFetch API
+    var url = `${server}/buckets/${bucket}/collections/${collection}/records/${record}/attachment`;
+    fetch(url, {method: "POST", body: payload, headers: headers})
+      .then(function (result) {
+        console.log(result);
+      });
+
+
+Known limitations
+-----------------
+
+* No support for chunk upload
+* Fails when uploading files to ``default`` bucket (see Kinto/kinto#277)
 
 
 Run tests
