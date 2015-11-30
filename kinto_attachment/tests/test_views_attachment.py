@@ -3,7 +3,7 @@ import os
 from pyramid_storage.interfaces import IFileStorage
 from cliquet.tests.support import unittest
 
-from . import BaseWebTestLocal, BaseWebTestS3
+from . import BaseWebTestLocal, BaseWebTestS3, get_user_headers
 
 
 class UploadTest(object):
@@ -149,6 +149,52 @@ class AttachmentViewTest(BaseWebTestLocal, unittest.TestCase):
                            status=400)
         self.assertEqual(resp.json['message'],
                          'body: File extension is not allowed.')
+
+    # Permissions.
+
+    def test_upload_refused_if_not_authenticated(self):
+        self.headers.pop('Authorization')
+        self.upload(status=401)
+
+    def test_upload_refused_if_not_allowed(self):
+        self.headers.update(get_user_headers('jean-louis'))
+        self.upload(status=403)
+
+    def test_upload_replace_refused_if_only_create_allowed(self):
+        # Allow any authenticated to write in this bucket.
+        perm = {'permissions': {'record:create': ['system.Authenticated']}}
+        self.app.patch_json('/buckets/fennec/collections/fonts',
+                            perm, headers=self.headers)
+        self.upload(status=201)
+
+        self.headers.update(get_user_headers('jean-louis'))
+        self.upload(status=403)
+
+    def test_upload_create_accepted_if_create_allowed(self):
+        # Allow any authenticated to write in this bucket.
+        perm = {'permissions': {'record:create': ['system.Authenticated']}}
+        self.app.patch_json('/buckets/fennec/collections/fonts',
+                            perm, headers=self.headers)
+
+        self.headers.update(get_user_headers('jean-louis'))
+        self.upload(status=201)
+
+    def test_upload_create_accepted_if_write_allowed(self):
+        # Allow any authenticated to write in this bucket.
+        perm = {'permissions': {'write': ['system.Authenticated']}}
+        self.app.patch_json('/buckets/fennec', perm, headers=self.headers)
+
+        self.headers.update(get_user_headers('jean-louis'))
+        self.upload(status=201)
+
+    def test_upload_replace_accepted_if_write_allowed(self):
+        # Allow any authenticated to write in this bucket.
+        perm = {'permissions': {'write': ['system.Authenticated']}}
+        self.app.patch_json('/buckets/fennec', perm, headers=self.headers)
+        self.upload(status=201)
+
+        self.headers.update(get_user_headers('jean-louis'))
+        self.upload(status=200)
 
 #
 # XXX: see bug https://github.com/Kinto/kinto/issues/277
