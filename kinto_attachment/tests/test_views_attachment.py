@@ -46,6 +46,25 @@ class DeleteTest(object):
     def exists(self, filename):
         return self.backend.exists(filename)
 
+    def test_attachment_is_removed_on_delete(self):
+        filename = self.attachment['filename']
+        self.assertTrue(self.exists(filename))
+        self.app.delete(self.attachment_uri, headers=self.headers, status=204)
+        self.assertFalse(self.exists(filename))
+
+    def test_metadata_are_removed_on_delete(self):
+        self.app.delete(self.attachment_uri, headers=self.headers, status=204)
+        resp = self.app.get(self.record_uri, headers=self.headers)
+        self.assertIsNone(resp.json['data'].get('attachment'))
+
+    def test_link_is_removed_on_delete(self):
+        storage = self.app.app.registry.storage
+        links, _ = storage.get_all("", '__attachments__')
+        self.assertEqual(len(links), 1)
+        self.app.delete(self.attachment_uri, headers=self.headers, status=204)
+        links, _ = storage.get_all("", '__attachments__')
+        self.assertEqual(len(links), 0)
+
     def test_attachment_is_removed_when_record_is_deleted(self):
         filename = self.attachment['filename']
         self.assertTrue(self.exists(filename))
