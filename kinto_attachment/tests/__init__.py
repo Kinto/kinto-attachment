@@ -100,20 +100,20 @@ class BaseWebTestS3(BaseWebTest):
     config = 'config/s3.ini'
 
     def __init__(self, *args, **kwargs):
-        self._bucket_created = False
+        self._s3_bucket_created = False
         super(BaseWebTestS3, self).__init__(*args, **kwargs)
 
     def make_app(self):
         app = super(BaseWebTestS3, self).make_app()
 
-        # Create bucket if necessary
-        if not self._bucket_created:
+        # Create the S3 bucket if necessary
+        if not self._s3_bucket_created:
             prefix = 'kinto.attachment.'
             settings = app.app.registry.settings
             fs = S3FileStorage.from_settings(settings, prefix=prefix)
 
             bucket_name = settings[prefix + 'aws.bucket_name']
             fs.get_connection().create_bucket(bucket_name)
-            self._bucket_created = True
+            self._s3_bucket_created = True
 
         return app
