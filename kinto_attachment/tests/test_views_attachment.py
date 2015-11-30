@@ -84,9 +84,8 @@ class LocalDeleteTest(DeleteTest, BaseWebTestLocal, unittest.TestCase):
     pass
 
 
-# XXX: Use moto server
-# class S3DeleteTest(DeleteTest, BaseWebTestS3, unittest.TestCase):
-#     pass
+class S3DeleteTest(DeleteTest, BaseWebTestS3, unittest.TestCase):
+    pass
 
 
 class AttachmentViewTest(BaseWebTestLocal, unittest.TestCase):

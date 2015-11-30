@@ -126,6 +126,22 @@ TODO
 * Validate API
 
 
+Run tests
+---------
+
+Install `Tox <https://tox.readthedocs.org/>`_ and `Moto <https://github.com/spulec/moto>`_, a fake Amazon S3 server: ::
+
+    pip install tox moto
+
+Run a standalone S3 server in a separate terminal: ::
+
+    moto_server s3bucket_path -H 0.0.0.0 -p 5000
+
+Run the tests suite: ::
+
+    tox
+
+
 Notes
 -----
 

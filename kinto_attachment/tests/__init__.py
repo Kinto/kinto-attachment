@@ -1,10 +1,10 @@
 import uuid
 import os
 
-import mock
 import webtest
 from cliquet import utils as cliquet_utils
 from cliquet.tests import support as cliquet_support
+from pyramid_storage.s3 import S3FileStorage
 
 
 SAMPLE_SCHEMA = {
@@ -99,9 +99,21 @@ class BaseWebTestLocal(BaseWebTest):
 class BaseWebTestS3(BaseWebTest):
     config = 'config/s3.ini'
 
-    def upload(self, *args, **kwargs):
-        # XXX: use moto_server instead.
-        patch = mock.patch('pyramid_storage.s3.S3FileStorage.save_file',
-                           return_value='upload.jpg')
-        with patch.start():
-            return super(BaseWebTestS3, self).upload(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        self._s3_bucket_created = False
+        super(BaseWebTestS3, self).__init__(*args, **kwargs)
+
+    def make_app(self):
+        app = super(BaseWebTestS3, self).make_app()
+
+        # Create the S3 bucket if necessary
+        if not self._s3_bucket_created:
+            prefix = 'kinto.attachment.'
+            settings = app.app.registry.settings
+            fs = S3FileStorage.from_settings(settings, prefix=prefix)
+
+            bucket_name = settings[prefix + 'aws.bucket_name']
+            fs.get_connection().create_bucket(bucket_name)
+            self._s3_bucket_created = True
+
+        return app
