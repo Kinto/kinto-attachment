@@ -31,6 +31,7 @@ class BaseWebTest(object):
     def __init__(self, *args, **kwargs):
         super(BaseWebTest, self).__init__(*args, **kwargs)
         self.app = self.make_app()
+        self.base_url = self.app.app.registry.settings['attachment.base_url']
         self._created = []
 
     def setUp(self):
@@ -60,7 +61,8 @@ class BaseWebTest(object):
         resp = self.app.post(self.attachment_uri, body, headers=headers,
                              status=status)
         if 200 <= resp.status_code < 300:
-            self._created.append(resp.json['filename'])
+            relativeurl = resp.json['location'].replace(self.base_url, '')
+            self._created.append(relativeurl)
 
         return resp
 

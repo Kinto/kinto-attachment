@@ -30,8 +30,7 @@ class LocalUploadTest(UploadTest, BaseWebTestLocal, unittest.TestCase):
     def test_file_is_created_on_local_filesystem(self):
         attachment = self.upload().json
         fullurl = attachment['location']
-        baseurl = self.app.app.registry.settings['attachment.base_url']
-        relativeurl = fullurl.replace(baseurl, '')
+        relativeurl = fullurl.replace(self.base_url, '')
         self.assertTrue(os.path.exists(os.path.join('/tmp', relativeurl)))
 
 
