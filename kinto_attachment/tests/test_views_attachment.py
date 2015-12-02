@@ -1,6 +1,5 @@
 import os
 
-from pyramid_storage.interfaces import IFileStorage
 from cliquet.tests.support import unittest
 
 from . import BaseWebTestLocal, BaseWebTestS3, get_user_headers
@@ -42,11 +41,9 @@ class DeleteTest(object):
     def setUp(self):
         super(DeleteTest, self).setUp()
         self.attachment = self.upload().json
-        self.backend = self.app.app.registry.getUtility(IFileStorage)
 
     def exists(self, fullurl):
-        baseurl = self.backend.url('')
-        location = fullurl.replace(baseurl, '')
+        location = fullurl.replace(self.base_url, '')
         return self.backend.exists(location)
 
     def test_attachment_is_removed_on_delete(self):

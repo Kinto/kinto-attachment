@@ -5,6 +5,7 @@ import webtest
 from cliquet import utils as cliquet_utils
 from cliquet.tests import support as cliquet_support
 from pyramid_storage.s3 import S3FileStorage
+from pyramid_storage.interfaces import IFileStorage
 
 
 SAMPLE_SCHEMA = {
@@ -31,7 +32,8 @@ class BaseWebTest(object):
     def __init__(self, *args, **kwargs):
         super(BaseWebTest, self).__init__(*args, **kwargs)
         self.app = self.make_app()
-        self.base_url = self.app.app.registry.settings['attachment.base_url']
+        self.backend = self.app.app.registry.getUtility(IFileStorage)
+        self.base_url = self.backend.url('')
         self._created = []
 
     def setUp(self):
