@@ -131,7 +131,7 @@ Using HTTPie
     {
         "filename": "IMG_20150219_174559.jpg",
         "hash": "hPME6i9avCf/LFaznYr+sHtwQEX7mXYHSu+vgtygpM8=",
-        "location": "http://cdn.service.org/files/ffa9c7b9-7561-406b-b7f9-e00ac94644ff.jpg.jpg",
+        "location": "http://cdn.service.org/files/ffa9c7b9-7561-406b-b7f9-e00ac94644ff.jpg",
         "mimetype": "text/plain",
         "size": 1481798
     }
