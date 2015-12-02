@@ -185,7 +185,7 @@ Using JavaScript
 Known limitations
 -----------------
 
-* Because `boto <>`_ is used for Amazon S3, this plugin is only compatible with
+* Because `boto <https://github.com/boto/boto>`_ is used for Amazon S3, this plugin is only compatible with
   Python 2
 * Currently only Python 2.7 is tested/supported (#27)
 * No support for chunk upload (#10)

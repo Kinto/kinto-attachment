@@ -31,7 +31,7 @@ setup(
     long_description=readme + '\n\n' + history,
     author="Mozilla",
     author_email='kinto@mozilla.org',
-    url='https://github.com/mozilla-services/kinto-attachment',
+    url='https://github.com/Kinto/kinto-attachment',
     packages=[
         'kinto_attachment',
     ],
