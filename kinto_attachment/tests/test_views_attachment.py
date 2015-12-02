@@ -29,8 +29,10 @@ class UploadTest(object):
 class LocalUploadTest(UploadTest, BaseWebTestLocal, unittest.TestCase):
     def test_file_is_created_on_local_filesystem(self):
         attachment = self.upload().json
-        filename = attachment['filename']
-        self.assertTrue(os.path.exists(os.path.join('/tmp', filename)))
+        fullurl = attachment['location']
+        baseurl = self.app.app.registry.settings['attachment.base_url']
+        relativeurl = fullurl.replace(baseurl, '')
+        self.assertTrue(os.path.exists(os.path.join('/tmp', relativeurl)))
 
 
 class S3UploadTest(UploadTest, BaseWebTestS3, unittest.TestCase):
@@ -43,14 +45,16 @@ class DeleteTest(object):
         self.attachment = self.upload().json
         self.backend = self.app.app.registry.getUtility(IFileStorage)
 
-    def exists(self, filename):
-        return self.backend.exists(filename)
+    def exists(self, fullurl):
+        baseurl = self.backend.url('')
+        location = fullurl.replace(baseurl, '')
+        return self.backend.exists(location)
 
     def test_attachment_is_removed_on_delete(self):
-        filename = self.attachment['filename']
-        self.assertTrue(self.exists(filename))
+        fullurl = self.attachment['location']
+        self.assertTrue(self.exists(fullurl))
         self.app.delete(self.attachment_uri, headers=self.headers, status=204)
-        self.assertFalse(self.exists(filename))
+        self.assertFalse(self.exists(fullurl))
 
     def test_metadata_are_removed_on_delete(self):
         self.app.delete(self.attachment_uri, headers=self.headers, status=204)
@@ -66,23 +70,23 @@ class DeleteTest(object):
         self.assertEqual(len(links), 0)
 
     def test_attachment_is_removed_when_record_is_deleted(self):
-        filename = self.attachment['filename']
-        self.assertTrue(self.exists(filename))
+        fullurl = self.attachment['location']
+        self.assertTrue(self.exists(fullurl))
         self.app.delete(self.record_uri, headers=self.headers)
-        self.assertFalse(self.exists(filename))
+        self.assertFalse(self.exists(fullurl))
 
     def test_attachments_are_removed_when_bucket_is_deleted(self):
-        filename = self.attachment['filename']
-        self.assertTrue(self.exists(filename))
+        fullurl = self.attachment['location']
+        self.assertTrue(self.exists(fullurl))
         self.app.delete('/buckets/fennec', headers=self.headers)
-        self.assertFalse(self.exists(filename))
+        self.assertFalse(self.exists(fullurl))
 
     def test_attachments_are_removed_when_collection_is_deleted(self):
-        filename = self.attachment['filename']
-        self.assertTrue(self.exists(filename))
+        fullurl = self.attachment['location']
+        self.assertTrue(self.exists(fullurl))
         self.app.delete('/buckets/fennec/collections/fonts',
                         headers=self.headers)
-        self.assertFalse(self.exists(filename))
+        self.assertFalse(self.exists(fullurl))
 
     def test_attachments_links_are_removed_forever(self):
         storage = self.app.app.registry.storage
@@ -129,6 +133,14 @@ class AttachmentViewTest(BaseWebTestLocal, unittest.TestCase):
         r = self.upload()
         h = 'db511d372e98725a61278e90259c7d4c5484fc7a781d7dcc0c93d53b8929e2ba'
         self.assertEqual(r.json['hash'], h)
+
+    def test_record_metadata_has_randomized_location(self):
+        r = self.upload(files=[('attachment', 'my-report.pdf', '--binary--')])
+        self.assertNotIn('report', r.json['location'])
+
+    def test_record_metadata_provides_original_filename(self):
+        r = self.upload(files=[('attachment', 'my-report.pdf', '--binary--')])
+        self.assertEqual('my-report.pdf', r.json['filename'])
 
     def test_record_is_created_with_fields(self):
         self.upload(params=[('data', '{"family": "sans"}')])

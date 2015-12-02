@@ -132,7 +132,7 @@ def delete_attachment(event):
     # Delete attachment files.
     # XXX: add bulk delete for s3 ?
     for link in file_links:
-        event.request.attachment.delete(link['filename'])
+        event.request.attachment.delete(link['location'])
 
     # Delete links between records and attachements.
     storage.delete_all("", FILE_LINKS, filters=filters, with_deleted=False)
@@ -143,7 +143,7 @@ def attachment_post(request):
     # Store file locally.
     content = request.POST[FILE_FIELD]
     try:
-        filename = request.attachment.save(content)
+        location = request.attachment.save(content, randomize=True)
     except FileNotAllowed:
         error_msg = 'File extension is not allowed.'
         raise_invalid(request, location='body', description=error_msg)
@@ -153,12 +153,12 @@ def attachment_post(request):
     filecontent = content.file.read()
 
     # File metadata.
-    location = request.attachment.url(filename)
+    fullurl = request.attachment.url(location)
     size = len(filecontent)
     filehash = sha256(filecontent)
     attachment = {
-        'filename': filename,
-        'location': location,
+        'filename': content.filename,
+        'location': fullurl,
         'hash': filehash,
         'mimetype': content.type,
         'size': size
@@ -166,7 +166,7 @@ def attachment_post(request):
 
     # Store link between record and attachment (for later deletion).
     request.registry.storage.create("", FILE_LINKS, {
-        'filename': filename,
+        'location': location,  # store relative location.
         'bucket_uri': bucket_uri(request),
         'collection_uri': collection_uri(request),
         'record_uri': record_uri(request)
@@ -193,7 +193,7 @@ def attachment_delete(request):
     # Remove file.
     file_links, _ = storage.get_all("", FILE_LINKS, filters=filters)
     for link in file_links:
-        request.attachment.delete(link['filename'])
+        request.attachment.delete(link['location'])
 
     # Remove link.
     storage.delete_all("", FILE_LINKS, filters=filters, with_deleted=False)

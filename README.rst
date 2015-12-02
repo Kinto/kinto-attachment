@@ -91,9 +91,9 @@ with the following fields:
     {
         "data": {
             "attachment": {
-                "filename": "IMG_20150219_174559-17.jpg",
+                "filename": "IMG_20150219_174559.jpg",
                 "hash": "hPME6i9avCf/LFaznYr+sHtwQEX7mXYHSu+vgtygpM8=",
-                "location": "http://cdn.service.org/files/IMG_20150219_174559-17.jpg",
+                "location": "http://cdn.service.org/files/ffa9c7b9-7561-406b-b7f9-e00ac94644ff.jpg",
                 "mimetype": "text/plain",
                 "size": 1481798
             },
@@ -129,9 +129,9 @@ Using HTTPie
     Server: waitress
 
     {
-        "filename": "IMG_20150219_174559-17.jpg",
+        "filename": "IMG_20150219_174559.jpg",
         "hash": "hPME6i9avCf/LFaznYr+sHtwQEX7mXYHSu+vgtygpM8=",
-        "location": "http://cdn.service.org/files/background.jpg",
+        "location": "http://cdn.service.org/files/ffa9c7b9-7561-406b-b7f9-e00ac94644ff.jpg.jpg",
         "mimetype": "text/plain",
         "size": 1481798
     }
