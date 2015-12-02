@@ -15,7 +15,7 @@ Kinto Attachment
 
 
 Install
--------
+=======
 
 ::
 
@@ -23,7 +23,7 @@ Install
 
 
 Setup
------
+=====
 
 In the Kinto project settings
 
@@ -52,7 +52,7 @@ See `Pyramid Storage <https://pythonhosted.org/pyramid_storage/>`_.
 
 
 API
----
+===
 
 **POST /{record-url}/attachment**
 
@@ -74,7 +74,7 @@ Deletes the attachement from the record.
 
 
 Attributes
-''''''''''
+----------
 
 When a file is attached, the related record is given an ``attachment`` attribute
 with the following fields:
@@ -109,10 +109,10 @@ with the following fields:
 
 
 Usage
------
+=====
 
 Using HTTPie
-''''''''''''
+------------
 
 ::
 
@@ -138,7 +138,7 @@ Using HTTPie
 
 
 Using Python requests
-'''''''''''''''''''''
+---------------------
 
 ::
 
@@ -155,7 +155,7 @@ Using Python requests
 
 
 Using JavaScript
-''''''''''''''''
+----------------
 
 ::
 
@@ -183,7 +183,7 @@ Using JavaScript
 
 
 Known limitations
------------------
+=================
 
 * Because `boto <https://github.com/boto/boto>`_ is used for Amazon S3, this plugin is only compatible with
   Python 2
@@ -194,7 +194,7 @@ Known limitations
 * Absolute URL is stored in record metadata (#24)
 
 Run tests
----------
+=========
 
 Run a fake Amazon S3 server in a separate terminal: ::
 
@@ -206,6 +206,6 @@ Run the tests suite: ::
 
 
 Notes
------
+=====
 
 * `API design discussion <https://github.com/Kinto/kinto/issues/256>`_ about mixing up ``attachment`` and record fields.
