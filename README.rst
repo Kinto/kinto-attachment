@@ -116,7 +116,7 @@ Using HTTPie
 
 ::
 
-    http --auth alice:passwd --form POST http://localhost:8888/v1/buckets/website/collections/assets/records/c2ce1975-0e52-4b2f-a5db-80166aeca689/attachment data='{"type": "wallpaper", "theme": "orange"}' "attachment=@~/Pictures/background.jpg"
+    http --auth alice:passwd --form POST http://localhost:8888/v1/buckets/website/collections/assets/records/c2ce1975-0e52-4b2f-a5db-80166aeca689/attachment data='{"type": "wallpaper", "theme": "orange"}' "attachment@~/Pictures/background.jpg"
 
     HTTP/1.1 201 Created
     Access-Control-Expose-Headers: Retry-After, Content-Length, Alert, Backoff
