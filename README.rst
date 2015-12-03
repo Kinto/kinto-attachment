@@ -50,6 +50,29 @@ Store on Amazon S3:
 
 See `Pyramid Storage <https://pythonhosted.org/pyramid_storage/>`_.
 
+Production
+----------
+
+* Make sure the ``base_url`` can be reached (and points to ``base_path`` if
+  files are stored locally)
+* Adjust the max size for uploaded files (e.g. ``client_max_body_size 10m;`` for NGinx)
+
+For example, with NGinx
+
+::
+
+    server {
+        listen 80;
+
+        location /v1 {
+            ...
+        }
+
+        location /files {
+            root /var/www/kinto;
+        }
+    }
+
 
 API
 ===
