@@ -1,6 +1,8 @@
 function main() {
   // Local Kinto
   var server = "https://kinto.dev.mozaws.net/v1";
+  // var server = "http://localhost:8888/v1";
+
   // Basic Authentication
   var headers = {Authorization: "Basic " + btoa("user:pass")};
   // Bucket id
@@ -12,7 +14,6 @@ function main() {
 
   // When collection is chosen in combobox, refresh list of records.
   form.elements.category.addEventListener("change", refreshRecords);
-  refreshRecords();
 
   // When file is chosen in form, read its content
   // using HTML5 File API.
@@ -30,6 +31,10 @@ function main() {
     attachment.file = field.files[0];
     reader.readAsBinaryString(attachment.file);
   });
+
+  // On startup, create bucket/collections objects if necessary, and load list.
+  createObjects()
+    .then(refreshRecords);
 
 
   function submitFile(event) {
@@ -97,6 +102,20 @@ function main() {
     row.querySelector(".size").textContent = record.attachment.size;
     row.querySelector(".hash").textContent = record.attachment.hash;
     return row;
+  }
+
+  // Prepare demo objects.
+  // This demo posts records in the ``fennec-ota`` bucket. The target *collection*
+  // can be chosen in the form from ``font``, ``locale`` and ``hyphenation`` values.
+  function createObjects() {
+    var creationOptions = {method: 'PUT', headers: Object.assign({}, headers, {'If-None-Match': '*'})};
+    return fetch(`${server}/buckets/${bucket}`, creationOptions)
+      .then(function (response) {
+        var allCollections = ['font', 'locale', 'hyphenation'].map(function (collectionId) {
+           return fetch(`${server}/buckets/${bucket}/collections/${collectionId}`, creationOptions);
+        });
+        return Promise.all(allCollections);
+      });
   }
 }
 

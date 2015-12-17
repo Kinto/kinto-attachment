@@ -2,8 +2,17 @@
 Run Demo
 ========
 
-Run Kinto locally
------------------
+Online demo
+-----------
+
+The demo server at Mozilla runs with *kinto-attachment* enabled.
+
+An hosted version of this folder is hosted on [Github pages](http://kinto.github.io/kinto-attachment)
+and can be used to play with the file feature.
+
+
+Run the demo locally
+--------------------
 
 * Follow `the instructions in Kinto documentation <http://kinto.readthedocs.org>`_
 to get a local instance running.
@@ -33,28 +42,9 @@ Now start Kinto
 
 It should run on http://localhost:8888
 
+Edit `demo/index.js` to set the `server` variable to `http://localhost:8888/v1`.
 
-Prepare demo objects
---------------------
-
-This demo posts records in the ``fennec-ota`` bucket. The target *collection*
-can be chosen in the form from ``font``, ``locale`` and ``hyphenation`` values.
-The form will use ``user:pass`` as a basic authentication string.
-
-Create those expected objects in your local *Kinto*:
-
-::
-
-    http PUT http://localhost:8888/v1/buckets/fennec-ota --auth="user:pass" --verbose
-    http PUT http://localhost:8888/v1/buckets/fennec-ota/collections/font --auth="user:pass" --verbose
-    http PUT http://localhost:8888/v1/buckets/fennec-ota/collections/locale --auth="user:pass" --verbose
-    http PUT http://localhost:8888/v1/buckets/fennec-ota/collections/hyphenation --auth="user:pass" --verbose
-
-
-Run the demo
-------------
-
-* Run locally:
+In a separate terminal, run a simple server to server the JavaScript demo app:
 
 ::
 
