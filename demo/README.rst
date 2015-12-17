@@ -34,23 +34,6 @@ Now start Kinto
 It should run on http://localhost:8888
 
 
-Prepare demo objects
---------------------
-
-This demo posts records in the ``fennec-ota`` bucket. The target *collection*
-can be chosen in the form from ``font``, ``locale`` and ``hyphenation`` values.
-The form will use ``user:pass`` as a basic authentication string.
-
-Create those expected objects in your local *Kinto*:
-
-::
-
-    http PUT http://localhost:8888/v1/buckets/fennec-ota --auth="user:pass" --verbose
-    http PUT http://localhost:8888/v1/buckets/fennec-ota/collections/font --auth="user:pass" --verbose
-    http PUT http://localhost:8888/v1/buckets/fennec-ota/collections/locale --auth="user:pass" --verbose
-    http PUT http://localhost:8888/v1/buckets/fennec-ota/collections/hyphenation --auth="user:pass" --verbose
-
-
 Run the demo
 ------------
 
