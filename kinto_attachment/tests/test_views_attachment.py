@@ -30,6 +30,17 @@ class UploadTest(object):
         url = urlparse(response.json['location'])
         self.assertNotIn('/', url.path[1:])
 
+    def exists(self, fullurl):
+        location = fullurl.replace(self.base_url, '')
+        return self.backend.exists(location)
+
+    def test_previous_attachment_is_removed_on_replacement(self):
+        first = self.upload().json
+        self.assertTrue(self.exists(first['location']))
+        second = self.upload().json
+        self.assertFalse(self.exists(first['location']))
+        self.assertTrue(self.exists(second['location']))
+
 
 class LocalUploadTest(UploadTest, BaseWebTestLocal, unittest.TestCase):
     def test_file_is_created_on_local_filesystem(self):
