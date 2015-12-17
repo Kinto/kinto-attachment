@@ -1,6 +1,8 @@
 function main() {
   // Local Kinto
   var server = "https://kinto.dev.mozaws.net/v1";
+  // var server = "http://localhost:8888/v1";
+
   // Basic Authentication
   var headers = {Authorization: "Basic " + btoa("user:pass")};
   // Bucket id
