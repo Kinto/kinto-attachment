@@ -45,7 +45,8 @@ class BaseWebTest(object):
         self.headers.update(get_user_headers('mat'))
 
         self.create_collection('fennec', 'fonts')
-        self.record_uri = self.get_record_uri('fennec', 'fonts', uuid.uuid4())
+        self.record_id = _id = str(uuid.uuid4())
+        self.record_uri = self.get_record_uri('fennec', 'fonts', _id)
         self.attachment_uri = self.record_uri + '/attachment'
 
     def make_app(self):
