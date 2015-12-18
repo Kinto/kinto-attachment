@@ -141,9 +141,13 @@ def delete_attachment(event):
 @attachment.post(permission=DYNAMIC_PERMISSION)
 def attachment_post(request):
     # Store file locally.
+    folder_pattern = request.registry.settings.get('attachment.folder', '')
+    folder = folder_pattern.format(**request.matchdict) or None
     content = request.POST[FILE_FIELD]
     try:
-        location = request.attachment.save(content, randomize=True)
+        location = request.attachment.save(content,
+                                           randomize=True,
+                                           folder=folder)
     except FileNotAllowed:
         error_msg = 'File extension is not allowed.'
         raise_invalid(request, location='body', description=error_msg)

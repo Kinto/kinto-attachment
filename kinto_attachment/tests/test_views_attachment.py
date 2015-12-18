@@ -1,5 +1,5 @@
 import os
-
+from six.moves.urllib.parse import urlparse
 from cliquet.tests.support import unittest
 
 from . import BaseWebTestLocal, BaseWebTestS3, get_user_headers
@@ -23,6 +23,12 @@ class UploadTest(object):
         self.assertEqual(response.headers['Location'],
                          'http://localhost/v1' + self.record_uri)
         self.assertIn('Access-Control-Allow-Origin', response.headers)
+
+    def test_has_no_subfolder_if_setting_is_undefined(self):
+        self.app.app.registry.settings.pop('attachment.folder')
+        response = self.upload()
+        url = urlparse(response.json['location'])
+        self.assertNotIn('/', url.path[1:])
 
 
 class LocalUploadTest(UploadTest, BaseWebTestLocal, unittest.TestCase):
@@ -133,6 +139,12 @@ class AttachmentViewTest(BaseWebTestLocal, unittest.TestCase):
     def test_record_metadata_has_randomized_location(self):
         r = self.upload(files=[('attachment', 'my-report.pdf', '--binary--')])
         self.assertNotIn('report', r.json['location'])
+
+    def test_record_location_contains_subfolder(self):
+        self.upload()
+        resp = self.app.get(self.record_uri, headers=self.headers)
+        location = resp.json['data']['attachment']['location']
+        self.assertIn('fennec/fonts/', location)
 
     def test_record_metadata_provides_original_filename(self):
         r = self.upload(files=[('attachment', 'my-report.pdf', '--binary--')])

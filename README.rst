@@ -31,6 +31,7 @@ In the Kinto project settings
 
     kinto.includes = kinto_attachment
     kinto.attachment.base_url = http://cdn.service.org/files/
+    kinto.attachment.folder = {bucket_id}/{collection_id}
 
 Store files locally:
 
