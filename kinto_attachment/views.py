@@ -109,8 +109,23 @@ def save_record(record, request):
     return saved
 
 
+def delete_attachment(request):
+    """Delete existing file and link."""
+    storage = request.registry.storage
+    uri = record_uri(request)
+    filters = [Filter("record_uri", uri, cliquet_utils.COMPARISON.EQ)]
+
+    # Remove file.
+    file_links, _ = storage.get_all("", FILE_LINKS, filters=filters)
+    for link in file_links:
+        request.attachment.delete(link['location'])
+
+    # Remove link.
+    storage.delete_all("", FILE_LINKS, filters=filters, with_deleted=False)
+
+
 @subscriber(ResourceChanged)
-def delete_attachment(event):
+def on_delete_record(event):
     """When a resource record is deleted, delete all related attachments.
     When a bucket or collection is deleted, it removes the attachments of
     every underlying records.
@@ -140,6 +155,9 @@ def delete_attachment(event):
 
 @attachment.post(permission=DYNAMIC_PERMISSION)
 def attachment_post(request):
+    # Remove potential existing attachment.
+    delete_attachment(request)
+
     # Store file locally.
     folder_pattern = request.registry.settings.get('attachment.folder', '')
     folder = folder_pattern.format(**request.matchdict) or None
@@ -190,17 +208,7 @@ def attachment_post(request):
 
 @attachment.delete(permission=DYNAMIC_PERMISSION)
 def attachment_delete(request):
-    storage = request.registry.storage
-    uri = record_uri(request)
-    filters = [Filter("record_uri", uri, cliquet_utils.COMPARISON.EQ)]
-
-    # Remove file.
-    file_links, _ = storage.get_all("", FILE_LINKS, filters=filters)
-    for link in file_links:
-        request.attachment.delete(link['location'])
-
-    # Remove link.
-    storage.delete_all("", FILE_LINKS, filters=filters, with_deleted=False)
+    delete_attachment(request)
 
     # Remove metadata.
     record = {"data": {}}
