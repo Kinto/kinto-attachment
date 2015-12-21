@@ -26,7 +26,7 @@ test_requirements = [
 
 setup(
     name='kinto-attachment',
-    version='0.1.1.dev0',
+    version='0.2.0',
     description="Attach files to Kinto records",
     long_description=readme + '\n\n' + history,
     author="Mozilla",
@@ -54,5 +54,6 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
     ],
+    test_suite='tests',
     tests_require=test_requirements
 )
