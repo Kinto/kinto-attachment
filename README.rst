@@ -206,6 +206,25 @@ Using JavaScript
       });
 
 
+Scripts
+=======
+
+
+Upload files
+------------
+
+::
+
+    $ COLLECTION_URL=https://kinto.dev.mozaws.net/v1/buckets/fennec-ota/collections/locale/records
+    $ python3 scripts/upload.py --url $COLLECTION_URL --auth "user:pass" --gzip README.rst
+
+
+Download files
+--------------
+
+*Coming soon*
+
+
 Known limitations
 =================
 
