@@ -12,6 +12,12 @@ Changelog
 
 - Remove existing file when attachment is replaced (fixes #28)
 
+**Documentation**
+
+- The demo is now fully online, since the Mozilla demo server has this plugin
+  installed.
+- Add some minimal information for production
+
 
 0.1.0 (2015-12-02)
 ------------------
