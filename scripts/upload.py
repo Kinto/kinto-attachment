@@ -26,15 +26,19 @@ def fetch_records(session, url):
 
 
 def files_to_upload(records, files):
-    by_filename = {r['attachment']['filename']: r for r in records if 'attachment' in r}
+    records_by_id = {r['id']: r for r in records if 'attachment' in r}
     to_upload = []
     for filepath in files:
         filename = os.path.basename(filepath)
-        record = by_filename.pop(filename, None)
+
+        identifier = hashlib.md5(filename.encode('utf-8')).hexdigest()
+        record_id = str(uuid.UUID(identifier))
+
+        record = records_by_id.pop(record_id, None)
         if record:
             local_hash = sha256(open(filepath, 'rb').read())
 
-            # If file was upload gzipped, compare with hash of uncompressed file.
+            # If file was uploaded gzipped, compare with hash of uncompressed file.
             remote_hash = record.get('original', {}).get('hash')
             if not remote_hash:
                 remote_hash = record['attachment']['hash']
@@ -46,12 +50,12 @@ def files_to_upload(records, files):
             else:
                 print("File '%s' is up-to-date." % filename)
         else:
-            record = {'id': str(uuid.uuid4())}
+            record = {'id': record_id}
             to_upload.append((filepath, record))
 
     # XXX: add option to delete records when files are missing locally
-    for filename in by_filename.keys():
-        print("Ignore remote file '%s'." % filename)
+    for id, record in records_by_id.items():
+        print("Ignore remote file '%s'." % record['attachment']['filename'])
 
     return to_upload
 
