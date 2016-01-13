@@ -72,6 +72,7 @@ def upload_files(session, url, files, compress):
         else:
             attributes = {
                 'original': {
+                    'filename': filename,
                     'hash': sha256(filecontent),
                     'mimetype': mimetype,
                     'size': len(filecontent)
@@ -112,8 +113,6 @@ def main():
         url += '/records'
 
     existing = fetch_records(session, url=url)
-    pprint.pprint(existing)
-
     to_upload = files_to_upload(existing, args.files)
     upload_files(session, url, to_upload, compress=args.gzip)
 
