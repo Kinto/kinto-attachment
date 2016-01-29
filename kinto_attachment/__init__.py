@@ -13,6 +13,11 @@ def includeme(config):
     storage_settings.setdefault('storage.extensions', 'any')
     config.add_settings(storage_settings)
 
+    # # Expose capability.
+    config.add_api_capability("attachments",
+                              description="Add file attachments to records",
+                              url="https://github.com/Kinto/kinto-attachment/")
+
     # Advertise public setting.
     config.registry.public_settings.add('attachment.base_url')
 
