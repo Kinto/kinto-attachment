@@ -30,6 +30,7 @@ class AttachmentRouteFactory(RouteFactory):
         self.resource_name = 'record'
         try:
             resource = Record(request, self)
+            request.current_resource_name = 'record'
             existing = resource.get()
         except httpexceptions.HTTPNotFound:
             existing = None
@@ -98,6 +99,7 @@ def save_record(record, request):
     request.validated = record
     request.body = json.dumps(record)
     resource = Record(request, context)
+    request.current_resource_name = 'record'
     try:
         saved = resource.patch()
     except httpexceptions.HTTPNotFound:

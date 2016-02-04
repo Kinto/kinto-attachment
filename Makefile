@@ -11,7 +11,8 @@ OBJECTS = .venv .coverage
 all: install
 install: $(INSTALL_STAMP)
 $(INSTALL_STAMP): $(PYTHON) setup.py
-	$(VENV)/bin/pip install -U pip tox moto
+	$(VENV)/bin/pip install -U pip
+	$(VENV)/bin/pip install -Ur dev-requirements.txt
 	$(VENV)/bin/pip install -Ue .
 	touch $(INSTALL_STAMP)
 

@@ -1,2 +1,0 @@
-pyramid-storage>=0.1.0
-kinto<2
