@@ -4,7 +4,9 @@ Changelog
 0.3.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**New feature**
+
+- Expose the API capability ``attachments`` in the root URL.
 
 
 0.2.0 (2015-12-21)

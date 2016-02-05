@@ -14,7 +14,7 @@ with open('CHANGELOG.rst') as history_file:
 
 requirements = [
     'boto',
-    'kinto',
+    'kinto>=1.11.0',
     'pyramid_storage>=0.1.0',
 ]
 
