@@ -6,7 +6,11 @@ Changelog
 
 **New feature**
 
-- Expose the API capability ``attachments`` in the root URL.
+- Expose the API capability ``attachments`` in the root URL (#35)
+
+**Internal changes**
+
+- Upgrade tests for Kinto 1.11.0 (#36)
 
 
 0.2.0 (2015-12-21)
