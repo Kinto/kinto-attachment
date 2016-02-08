@@ -11,7 +11,7 @@ Kinto Attachment
 .. image:: https://coveralls.io/repos/Kinto/kinto-attachment/badge.svg?branch=master
         :target: https://coveralls.io/r/Kinto/kinto-attachment
 
-**proof-of-concept**: Attach files to `Kinto records <http://kinto.readthedocs.org>`_.
+Attach files to `Kinto records <http://kinto.readthedocs.org>`_.
 
 
 Install
