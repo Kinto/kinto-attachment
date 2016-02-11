@@ -1,12 +1,9 @@
-import argparse
 import gzip
 import hashlib
 import os
 
-try:
-    import requests
-except ImportError:
-    raise RuntimeError("requests is required")
+import requests
+from kinto_client import cli_utils
 
 
 def sha256(content):
@@ -15,15 +12,7 @@ def sha256(content):
     return m.hexdigest()
 
 
-def fetch_records(session, url, since=None):
-    if since:
-        url = url + "?_since=%s" % since
-    response = session.get(url)
-    response.raise_for_status()
-    return response.json()['data']
-
-
-def download_files(session, url, records, folder, chunk_size=1024):
+def download_files(client, records, folder, chunk_size=1024):
     for record in records:
         if 'attachment' not in record:
             continue
@@ -49,7 +38,7 @@ def download_files(session, url, records, folder, chunk_size=1024):
                 continue
 
         # Download remote attachment by chunk.
-        resp = session.get(attachment['location'], stream=True)
+        resp = requests.get(attachment['location'], stream=True)
         resp.raise_for_status()
         tmp_file = destination + '.tmp'
         with open(tmp_file, 'wb') as f:
@@ -69,41 +58,33 @@ def download_files(session, url, records, folder, chunk_size=1024):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Download files from Kinto')
-    parser.add_argument('--url', dest='url', action='store',
-                        help='Collection URL', required=True)
-    parser.add_argument('--auth', dest='auth', action='store',
-                        help='Credentials')
-    parser.add_argument('--folder', dest='folder', action='store',
-                        default='.', help='Destination folder')
+    parser = cli_utils.set_parser_server_options(
+        description='Download files from Kinto')
+    parser.add_argument('-f', '--folder', help='Folder to download files in.',
+                        type=str, default=".")
     args = parser.parse_args()
 
-    session = requests.Session()
-    if args.auth:
-        session.auth = tuple(args.auth.split(':'))
-
-    url = args.url
-    if url.endswith('/'):
-        url = url[:-1]
-    if not url.endswith('records'):
-        url += '/records'
+    client = cli_utils.client_from_args(args)
 
     # See if timestamp was saved from last run.
     last_sync = None
-    timestamp = os.path.join(args.folder, '.last_sync')
+    timestamp_file = os.path.join(args.folder, '.last_sync')
     if os.path.exists(args.folder):
-        if os.path.exists(timestamp):
-            last_sync = open(timestamp, 'r').read()
+        if os.path.exists(timestamp_file):
+            last_sync = open(timestamp_file, 'r').read()
     else:
         os.makedirs(args.folder)
 
     # Retrieve the collection of records.
-    existing = fetch_records(session, url=url, since=last_sync)
+    existing = client.get_records(_since=last_sync)
+
     if existing:
-        download_files(session, url, existing, args.folder)
+        download_files(client, existing, args.folder)
+
+        timestamp = max([r['last_modified'] for r in existing])
         # Save the highest timestamp for next runs.
-        with open(timestamp, 'w') as f:
-            f.write("%s" % existing[0]['last_modified'])
+        with open(timestamp_file, 'w') as f:
+            f.write("%s" % timestamp)
 
 
 if __name__ == '__main__':

@@ -1,4 +1,3 @@
-import argparse
 import gzip
 import json
 import hashlib
@@ -7,22 +6,15 @@ import os
 import pprint
 import uuid
 
-try:
-    import requests
-except ImportError:
-    raise RuntimeError("requests is required")
+from kinto_client import cli_utils
+
+DEFAULT_SERVER = "http://localhost:8888/v1"
 
 
 def sha256(content):
     m = hashlib.sha256()
     m.update(content)
     return m.hexdigest()
-
-
-def fetch_records(session, url):
-    response = session.get(url)
-    response.raise_for_status()
-    return response.json()['data']
 
 
 def files_to_upload(records, files):
@@ -38,7 +30,8 @@ def files_to_upload(records, files):
         if record:
             local_hash = sha256(open(filepath, 'rb').read())
 
-            # If file was uploaded gzipped, compare with hash of uncompressed file.
+            # If file was uploaded gzipped, compare with hash of
+            # uncompressed file.
             remote_hash = record.get('original', {}).get('hash')
             if not remote_hash:
                 remote_hash = record['attachment']['hash']
@@ -60,8 +53,8 @@ def files_to_upload(records, files):
     return to_upload
 
 
-def upload_files(session, url, files, compress):
-    permissions = {}  # XXX not set yet
+def upload_files(client, files, compress):
+    permissions = {}  # XXX: Permissions are inherited from collection.
 
     for filepath, record in files:
         mimetype, _ = mimetypes.guess_type(filepath)
@@ -82,39 +75,35 @@ def upload_files(session, url, files, compress):
             filecontent = gzip.compress(filecontent)
             mimetype = 'application/x-gzip'
 
-        attachment_uri = '%s/%s/attachment' % (url, record['id'])
+        record_uri = client._get_endpoint('record', id=record['id'])
+        attachment_uri = '%s/attachment' % record_uri
         multipart = [("attachment", (filename, filecontent, mimetype))]
-        payload = {'data': json.dumps(attributes), 'permissions': json.dumps(permissions)}
-        response = session.post(attachment_uri, data=payload, files=multipart)
-        response.raise_for_status()
-        pprint.pprint(response.json())
+        body, _ = client.session.request(method='post',
+                                         endpoint=attachment_uri,
+                                         data=json.dumps(attributes),
+                                         permissions=json.dumps(permissions),
+                                         files=multipart)
+        pprint.pprint(body)
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Upload files to Kinto')
-    parser.add_argument('--url', dest='url', action='store',
-                        help='Collection URL', required=True)
-    parser.add_argument('--auth', dest='auth', action='store',
-                        help='Credentials')
+    parser = cli_utils.set_parser_server_options(
+        description='Upload files to Kinto',
+        default_server=DEFAULT_SERVER)
+
     parser.add_argument('--gzip', dest='gzip', action='store_true',
                         help='Gzip files before upload')
     parser.add_argument('files', metavar='FILE', action='store',
                         nargs='+')
     args = parser.parse_args()
 
-    session = requests.Session()
-    if args.auth:
-        session.auth = tuple(args.auth.split(':'))
+    client = cli_utils.client_from_args(args)
 
-    url = args.url
-    if url.endswith('/'):
-        url = url[:-1]
-    if not url.endswith('records'):
-        url += '/records'
-
-    existing = fetch_records(session, url=url)
+    client.create_bucket(if_not_exists=True)
+    client.create_collection(if_not_exists=True)
+    existing = client.get_records()
     to_upload = files_to_upload(existing, args.files)
-    upload_files(session, url, to_upload, compress=args.gzip)
+    upload_files(client, to_upload, compress=args.gzip)
 
 
 if __name__ == '__main__':
