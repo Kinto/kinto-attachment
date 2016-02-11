@@ -64,7 +64,7 @@ def main():
                         type=str, default=".")
     args = parser.parse_args()
 
-    client = cli_utils.client_from_args(args)
+    client = cli_utils.create_client_from_args(args)
 
     # See if timestamp was saved from last run.
     last_sync = None

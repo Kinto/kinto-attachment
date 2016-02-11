@@ -97,7 +97,7 @@ def main():
                         nargs='+')
     args = parser.parse_args()
 
-    client = cli_utils.client_from_args(args)
+    client = cli_utils.create_client_from_args(args)
 
     client.create_bucket(if_not_exists=True)
     client.create_collection(if_not_exists=True)
