@@ -7,6 +7,7 @@ import pprint
 import uuid
 
 from kinto_client import cli_utils
+from kinto_client.exceptions import KintoException
 
 DEFAULT_SERVER = "http://localhost:8888/v1"
 
@@ -99,8 +100,13 @@ def main():
 
     client = cli_utils.create_client_from_args(args)
 
-    client.create_bucket(if_not_exists=True)
-    client.create_collection(if_not_exists=True)
+    try:
+        client.create_bucket(if_not_exists=True)
+        client.create_collection(if_not_exists=True)
+    except KintoException:
+        # Fail silently in case of 403
+        pass
+
     existing = client.get_records()
     to_upload = files_to_upload(existing, args.files)
     upload_files(client, to_upload, compress=args.gzip)
