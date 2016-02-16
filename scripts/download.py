@@ -76,7 +76,7 @@ def main():
         os.makedirs(args.folder)
 
     # Retrieve the collection of records.
-    existing = client.get_records(_since=last_sync)
+    existing = client.get_records(_since=last_sync, _sort="-last_modified")
 
     if existing:
         download_files(client, existing, args.folder)
