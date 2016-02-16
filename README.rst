@@ -51,6 +51,19 @@ Store on Amazon S3:
 
 See `Pyramid Storage <https://pythonhosted.org/pyramid_storage/>`_.
 
+Default bucket
+--------------
+
+In order to upload files on the ``default`` bucket, the built-in default bucket
+plugin should be enabled before the ``kinto_attachment`` plugin.
+
+In the configuration, this means adding it explicitly to includes:
+
+::
+
+    kinto.includes = kinto.plugins.default_bucket
+                     kinto_attachment
+
 Production
 ----------
 
@@ -237,8 +250,7 @@ Known limitations
   Python 2
 * Currently only Python 2.7 is tested/supported (#27)
 * No support for chunk upload (#10)
-* Fails when uploading files to ``default`` bucket (see Kinto/kinto#277)
-* Files are not removed when server is purged with ``POST /v1/__purge__``
+* Files are not removed when server is purged with ``POST /v1/__flush__``
 * Absolute URL is stored in record metadata (#24)
 
 Run tests
