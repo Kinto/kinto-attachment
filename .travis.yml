@@ -3,6 +3,7 @@ python: 2.7
 env:
     - TOX_ENV=py27
     - TOX_ENV=kinto-master
+    - TOX_ENV=upload-download-scripts
     - TOX_ENV=flake8
 install:
     - make install
