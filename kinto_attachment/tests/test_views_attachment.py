@@ -1,4 +1,6 @@
 import os
+import uuid
+
 from six.moves.urllib.parse import urlparse
 from cliquet.tests.support import unittest
 
@@ -245,17 +247,15 @@ class AttachmentViewTest(BaseWebTestLocal, unittest.TestCase):
         self.headers.update(get_user_headers('jean-louis'))
         self.upload(status=200)
 
-#
-# XXX: see bug https://github.com/Kinto/kinto/issues/277
-#
-# class DefaultBucketTest(BaseWebTestLocal, unittest.TestCase):
-#     def setUp(self):
-#         super(DefaultBucketTest, self).setUp()
-#         self.record_uri = self.get_record_uri('default', 'pix', uuid.uuid4())
-#         self.attachment_uri = self.record_uri + '/attachment'
 
-#     def test_implicit_collection_creation_on_upload(self):
-#         resp = self.upload()
-#         record_uri = resp.headers['Location']
-#         self.assertIn('/buckets/c0343679-10aa-a101-bf0f-e96f917f3e27',
-#                       record_uri)
+class DefaultBucketTest(BaseWebTestLocal, unittest.TestCase):
+    def setUp(self):
+        super(DefaultBucketTest, self).setUp()
+        self.record_uri = self.get_record_uri('default', 'pix', uuid.uuid4())
+        self.attachment_uri = self.record_uri + '/attachment'
+
+    def test_implicit_collection_creation_on_upload(self):
+        resp = self.upload()
+        record_uri = resp.headers['Location']
+        self.assertIn('/buckets/c0343679-10aa-a101-bf0f-e96f917f3e27',
+                      record_uri)
