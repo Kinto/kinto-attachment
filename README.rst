@@ -27,7 +27,7 @@ Setup
 
 In the Kinto project settings
 
-::
+.. code-block:: ini
 
     kinto.includes = kinto_attachment
     kinto.attachment.base_url = http://cdn.service.org/files/
@@ -35,13 +35,13 @@ In the Kinto project settings
 
 Store files locally:
 
-::
+.. code-block:: ini
 
     kinto.attachment.base_path = /tmp
 
 Store on Amazon S3:
 
-::
+.. code-block:: ini
 
     kinto.attachment.aws.access_key = <AWS access key>
     kinto.attachment.aws.secret_key = <AWS secret key>
@@ -59,7 +59,7 @@ plugin should be enabled before the ``kinto_attachment`` plugin.
 
 In the configuration, this means adding it explicitly to includes:
 
-::
+.. code-block:: ini
 
     kinto.includes = kinto.plugins.default_bucket
                      kinto_attachment
@@ -123,7 +123,7 @@ with the following fields:
   the file
 - ``size``: size in bytes
 
-::
+.. code-block:: json
 
     {
         "data": {
@@ -151,9 +151,11 @@ Usage
 Using HTTPie
 ------------
 
-::
+.. code-block:: bash
 
     http --auth alice:passwd --form POST http://localhost:8888/v1/buckets/website/collections/assets/records/c2ce1975-0e52-4b2f-a5db-80166aeca689/attachment data='{"type": "wallpaper", "theme": "orange"}' "attachment@~/Pictures/background.jpg"
+
+.. code-block:: http
 
     HTTP/1.1 201 Created
     Access-Control-Expose-Headers: Retry-After, Content-Length, Alert, Backoff
@@ -177,7 +179,7 @@ Using HTTPie
 Using Python requests
 ---------------------
 
-::
+.. code-block:: python
 
     auth = ("alice", "passwd")
     attributes = {"type": "wallpaper", "theme": "orange"}
@@ -194,7 +196,7 @@ Using Python requests
 Using JavaScript
 ----------------
 
-::
+.. code-block:: javascript
 
     var headers = {Authorization: "Basic " + btoa("alice:passwd")};
     var attributes = {"type": "wallpaper", "theme": "orange"};
