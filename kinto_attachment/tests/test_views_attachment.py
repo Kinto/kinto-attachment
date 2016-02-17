@@ -150,7 +150,9 @@ class AttachmentViewTest(BaseWebTestLocal, unittest.TestCase):
         self.assertEqual(r.json['hash'], h)
 
     def test_record_metadata_has_randomized_location(self):
-        r = self.upload(files=[('attachment', 'my-report.pdf', '--binary--')])
+        r = self.upload(files=[
+            (b'attachment', b'my-report.pdf', b'--binary--')
+        ])
         self.assertNotIn('report', r.json['location'])
 
     def test_record_location_contains_subfolder(self):
@@ -160,7 +162,9 @@ class AttachmentViewTest(BaseWebTestLocal, unittest.TestCase):
         self.assertIn('fennec/fonts/', location)
 
     def test_record_metadata_provides_original_filename(self):
-        r = self.upload(files=[('attachment', 'my-report.pdf', '--binary--')])
+        r = self.upload(files=[
+            (b'attachment', b'my-report.pdf', b'--binary--')
+        ])
         self.assertEqual('my-report.pdf', r.json['filename'])
 
     def test_record_is_created_with_fields(self):
@@ -196,7 +200,7 @@ class AttachmentViewTest(BaseWebTestLocal, unittest.TestCase):
         self.assertIn("12 is not of type 'string'", resp.json['message'])
 
     def test_upload_refused_if_extension_not_allowed(self):
-        resp = self.upload(files=[('attachment', 'virus.exe', '--fake--')],
+        resp = self.upload(files=[(b'attachment', b'virus.exe', b'--fake--')],
                            status=400)
         self.assertEqual(resp.json['message'],
                          'body: File extension is not allowed.')
