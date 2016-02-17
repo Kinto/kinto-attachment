@@ -246,9 +246,6 @@ See ``python scripts/download.py --help`` for more details about options.
 Known limitations
 =================
 
-* Because `boto <https://github.com/boto/boto>`_ is used for Amazon S3, this plugin is only compatible with
-  Python 2
-* Currently only Python 2.7 is tested/supported (#27)
 * No support for chunk upload (#10)
 * Files are not removed when server is purged with ``POST /v1/__flush__``
 * Absolute URL is stored in record metadata (#24)
