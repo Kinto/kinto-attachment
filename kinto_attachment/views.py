@@ -97,7 +97,7 @@ def save_record(record, request):
 
     # Simulate update of fields.
     request.validated = record
-    request.body = json.dumps(record)
+    request.body = json.dumps(record).encode('utf-8')
     resource = Record(request, context)
     request.current_resource_name = 'record'
     try:

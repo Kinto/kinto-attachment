@@ -56,7 +56,7 @@ class BaseWebTest(object):
         return app
 
     def upload(self, files=None, params=[], headers={}, status=None):
-        files = files or [('attachment', 'image.jpg', '--fake--')]
+        files = files or [(b'attachment', b'image.jpg', b'--fake--')]
         headers = headers or self.headers.copy()
         content_type, body = self.app.encode_multipart(params, files)
         headers['Content-Type'] = cliquet_utils.encode_header(content_type)
