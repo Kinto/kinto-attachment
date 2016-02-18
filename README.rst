@@ -224,25 +224,51 @@ Using JavaScript
 Scripts
 =======
 
-Upload files
-------------
+Two scripts are provided in this repository.
+
+They rely on the ``kinto-client`` Python package, which can be installed in a
+virtualenv:
 
 ::
 
-    $ COLLECTION_URL=https://kinto.dev.mozaws.net/v1/buckets/fennec-ota/collections/locale/records
-    $ python3 scripts/upload.py --url $COLLECTION_URL --auth "user:pass" --gzip README.rst pictures/*
+    $ virtualenv env
+    $ source env/bin/activate
+    $ pip install kinto-client
 
-See ``python scripts/upload.py --help`` for more details about options.
+Or globally on your system (**not recommended**):
+
+::
+
+    $ sudo pip install kinto-client
+
+
+Upload files
+------------
+
+``upload.py`` takes a list of files and posts them on the specified server,
+bucket and collection::
+
+    $ python3 scripts/upload.py --server=$SERVER --bucket=$BUCKET --collection=$COLLECTION --auth "token:mysecret" README.rst pictures/*
+
+If the ``--gzip`` option is passed, the files are gzipped before upload.
+Since the ``attachment`` attribute contains metadata of the compressed file
+the original file metadata are stored in a ``original`` attribute.
+
+See ``python3 scripts/upload.py --help`` for more details about options.
 
 Download files
 --------------
 
-::
+``download.py`` downloads the attachments from the specified server, bucket and
+collection and store them on disk::
 
-    $ COLLECTION_URL=https://kinto.dev.mozaws.net/v1/buckets/fennec-ota/collections/locale/records
-    $ python3 scripts/download.py --url $COLLECTION_URL --auth "user:pass" --folder=/tmp/fonts
+    $ python3 scripts/download.py --server=$SERVER --bucket=$BUCKET --collection=$COLLECTION --auth "token:mysecret"
 
-See ``python scripts/download.py --help`` for more details about options.
+If the record has an ``original`` attribute, the script decompresses the attachment
+after downloading it.
+
+Files are stored in the current folder by default.
+See ``python3 scripts/download.py --help`` for more details about options.
 
 
 Known limitations
@@ -255,11 +281,11 @@ Known limitations
 Run tests
 =========
 
-Run a fake Amazon S3 server in a separate terminal: ::
+Run a fake Amazon S3 server in a separate terminal::
 
     make moto
 
-Run the tests suite: ::
+Run the tests suite::
 
     make tests
 
