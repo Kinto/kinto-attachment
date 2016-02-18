@@ -105,7 +105,7 @@ def attachments_ping(request):
     return status
 
 
-def save_record(record, request):
+def patch_record(record, request):
     # XXX: add util clone_request()
     backup_pattern = request.matched_route.pattern
     backup_body = request.body
@@ -133,13 +133,16 @@ def save_record(record, request):
     return saved
 
 
-def delete_attachment(request):
+def delete_attachment(request, link_field=None, uri=None):
     """Delete existing file and link."""
-    storage = request.registry.storage
-    uri = record_uri(request)
-    filters = [Filter("record_uri", uri, cliquet_utils.COMPARISON.EQ)]
+    if link_field is None:
+        link_field = "record_uri"
+    if uri is None:
+        uri = record_uri(request)
 
     # Remove file.
+    filters = [Filter(link_field, uri, cliquet_utils.COMPARISON.EQ)]
+    storage = request.registry.storage
     file_links, _ = storage.get_all("", FILE_LINKS, filters=filters)
     for link in file_links:
         request.attachment.delete(link['location'])
@@ -148,33 +151,20 @@ def delete_attachment(request):
     storage.delete_all("", FILE_LINKS, filters=filters, with_deleted=False)
 
 
-@subscriber(ResourceChanged)
+# XXX: Use AfterResourceChanged when implemented.
+@subscriber(ResourceChanged,
+            for_resources=('record', 'collection', 'bucket'),
+            for_actions=('delete',))
 def on_delete_record(event):
     """When a resource record is deleted, delete all related attachments.
     When a bucket or collection is deleted, it removes the attachments of
     every underlying records.
     """
-    if event.payload['action'] != 'delete':
-        return
-
-    resource_name = event.payload['resource_name']
-    if resource_name not in ('record', 'collection', 'bucket'):
-        return
-
     # Retrieve attachments for these records using links.
-    storage = event.request.registry.storage
-    uri = event.payload['uri']
+    resource_name = event.payload['resource_name']
     filter_field = '%s_uri' % resource_name
-    filters = [Filter(filter_field, uri, cliquet_utils.COMPARISON.EQ)]
-    file_links, _ = storage.get_all("", FILE_LINKS, filters=filters)
-
-    # Delete attachment files.
-    # XXX: add bulk delete for s3 ?
-    for link in file_links:
-        event.request.attachment.delete(link['location'])
-
-    # Delete links between records and attachements.
-    storage.delete_all("", FILE_LINKS, filters=filters, with_deleted=False)
+    uri = event.payload['uri']
+    delete_attachment(event.request, link_field=filter_field, uri=uri)
 
 
 @attachment.post(permission=DYNAMIC_PERMISSION)
@@ -223,7 +213,7 @@ def attachment_post(request):
     for k, v in record.items():
         record[k] = json.loads(v)
     record.setdefault('data', {})[FILE_FIELD] = attachment
-    save_record(record, request)
+    patch_record(record, request)
 
     # Return attachment data (with location header)
     request.response.headers['Location'] = record_uri(request, prefix=True)
@@ -237,6 +227,6 @@ def attachment_delete(request):
     # Remove metadata.
     record = {"data": {}}
     record["data"][FILE_FIELD] = None
-    save_record(record, request)
+    patch_record(record, request)
 
     raise httpexceptions.HTTPNoContent()
