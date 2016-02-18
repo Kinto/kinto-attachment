@@ -231,7 +231,7 @@ virtualenv:
 
 ::
 
-    $ virtualenv env
+    $ virtualenv env --python=python3
     $ source env/bin/activate
     $ pip install kinto-client
 
