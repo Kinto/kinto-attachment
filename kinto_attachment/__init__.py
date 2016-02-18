@@ -1,3 +1,6 @@
+from kinto_attachment.views import attachments_ping
+
+
 def includeme(config):
     # Process settings to remove storage wording.
     settings = config.get_settings()
@@ -20,6 +23,9 @@ def includeme(config):
 
     # Advertise public setting.
     config.registry.public_settings.add('attachment.base_url')
+
+    # Register heartbeat to check attachments storage.
+    config.registry.heartbeats['attachments'] = attachments_ping
 
     # Enable attachment backend.
     if 'storage.base_path' in storage_settings:

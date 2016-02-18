@@ -1,3 +1,4 @@
+import mock
 import os
 import uuid
 
@@ -263,3 +264,15 @@ class DefaultBucketTest(BaseWebTestLocal, unittest.TestCase):
         record_uri = resp.headers['Location']
         self.assertIn('/buckets/c0343679-10aa-a101-bf0f-e96f917f3e27',
                       record_uri)
+
+
+class HeartbeartTest(BaseWebTestS3, unittest.TestCase):
+    def test_attachments_is_added_to_heartbeat_view(self):
+        resp = self.app.get('/__heartbeat__')
+        self.assertIn('attachments', resp.json)
+
+    def test_heartbeat_is_false_if_error_happens(self):
+        with mock.patch('pyramid_storage.s3.S3FileStorage.delete') as mocked:
+            mocked.side_effect = ValueError
+            resp = self.app.get('/__heartbeat__', status=503)
+        self.assertFalse(resp.json['attachments'])

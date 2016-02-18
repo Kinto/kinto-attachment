@@ -3,6 +3,7 @@ import hashlib
 
 from cliquet import Service
 from cliquet import utils as cliquet_utils
+from cliquet import logger
 from cliquet.errors import raise_invalid
 from cliquet.storage import Filter
 from cliquet.events import ResourceChanged
@@ -12,10 +13,14 @@ from kinto.authorization import RouteFactory
 from pyramid.events import subscriber
 from pyramid import httpexceptions
 from pyramid_storage.exceptions import FileNotAllowed
+from six import StringIO
 
 
 FILE_FIELD = 'attachment'
 FILE_LINKS = '__attachments__'
+
+HEARTBEAT_CONTENT = '{"test": "write"}'
+HEARTBEAT_FILENAME = 'heartbeat.json'
 
 
 class AttachmentRouteFactory(RouteFactory):
@@ -81,6 +86,23 @@ def collection_uri(request, prefix=False):
 
 def record_uri(request, prefix=False):
     return _object_uri(request, 'record', request.matchdict, prefix)
+
+
+def attachments_ping(request):
+    """Heartbeat view for the attachments backend.
+    :returns: ``True`` if succeeds to write and delete, ``False`` otherwise.
+    """
+    status = False
+    attachment = request.attachment
+    try:
+        location = attachment.save_file(StringIO(HEARTBEAT_CONTENT),
+                                        HEARTBEAT_FILENAME,
+                                        replace=True)
+        attachment.delete(location)
+        status = True
+    except Exception as e:
+        logger.exception(e)
+    return status
 
 
 def save_record(record, request):
