@@ -6,7 +6,7 @@ from cliquet import utils as cliquet_utils
 from cliquet import logger
 from cliquet.errors import raise_invalid
 from cliquet.storage import Filter
-from cliquet.events import ResourceChanged
+from cliquet.events import ResourceChanged, ACTIONS
 from cliquet.authorization import DYNAMIC as DYNAMIC_PERMISSION
 from kinto.views.records import Record
 from kinto.authorization import RouteFactory
@@ -155,7 +155,7 @@ def delete_attachment(request, link_field=None, uri=None):
 # XXX: Use AfterResourceChanged when implemented.
 @subscriber(ResourceChanged,
             for_resources=('record', 'collection', 'bucket'),
-            for_actions=('delete',))
+            for_actions=(ACTIONS.DELETE,))
 def on_delete_record(event):
     """When a resource record is deleted, delete all related attachments.
     When a bucket or collection is deleted, it removes the attachments of
