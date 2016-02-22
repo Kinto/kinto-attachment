@@ -4,7 +4,11 @@ Changelog
 0.4.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**New feature**
+
+- Previous files can be kept if the setting ``kinto.keep_old_files`` is set
+  to ``true``. This can be useful when clients try to download files from a
+  collection of records that is not up-to-date.
 
 
 0.3.0 (2016-02-05)

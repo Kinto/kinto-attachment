@@ -12,6 +12,7 @@ from kinto.views.records import Record
 from kinto.authorization import RouteFactory
 from pyramid.events import subscriber
 from pyramid import httpexceptions
+from pyramid.settings import asbool
 from pyramid_storage.exceptions import FileNotAllowed
 from six import StringIO
 
@@ -169,8 +170,11 @@ def on_delete_record(event):
 
 @attachment.post(permission=DYNAMIC_PERMISSION)
 def attachment_post(request):
-    # Remove potential existing attachment.
-    delete_attachment(request)
+    settings = request.registry.settings
+    keep_old_files = asbool(settings.get('attachment.keep_old_files', False))
+    if not keep_old_files:
+        # Remove potential existing attachment.
+        delete_attachment(request)
 
     # Store file locally.
     folder_pattern = request.registry.settings.get('attachment.folder', '')
