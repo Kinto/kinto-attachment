@@ -266,6 +266,38 @@ class DefaultBucketTest(BaseWebTestLocal, unittest.TestCase):
                       record_uri)
 
 
+class KeepOldFilesTest(BaseWebTestLocal, unittest.TestCase):
+    def make_app(self):
+        import webtest
+        from kinto import main as testapp
+        from kinto import DEFAULT_SETTINGS
+        from cliquet.tests import support as cliquet_support
+
+        settings = cliquet_support.DEFAULT_SETTINGS.copy()
+        settings.update(**DEFAULT_SETTINGS)
+        settings['storage_backend'] = 'cliquet.storage.memory'
+        settings['permission_backend'] = 'cliquet.permission.memory'
+        settings['userid_hmac_secret'] = "this is not a secret"
+        settings['includes'] = "kinto_attachment"
+
+        settings['kinto.attachment.base_path'] = "/tmp"
+        settings['kinto.attachment.base_url'] = ""
+        settings['kinto.attachment.keep_old_files'] = "true"
+
+        app = webtest.TestApp(testapp({}, **settings))
+        app.RequestClass = cliquet_support.get_request_class(prefix="v1")
+        return app
+
+    def test_files_are_kept_when_attachment_is_replaced(self):
+        resp = self.upload(status=201)
+        location1 = resp.json["location"]
+        resp = self.upload(status=200)
+        location2 = resp.json["location"]
+        self.assertNotEqual(location1, location2)
+        self.assertTrue(self.backend.exists(location2))
+        self.assertTrue(self.backend.exists(location1))
+
+
 class HeartbeartTest(BaseWebTestS3, unittest.TestCase):
     def test_attachments_is_added_to_heartbeat_view(self):
         resp = self.app.get('/__heartbeat__')
