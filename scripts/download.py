@@ -58,7 +58,7 @@ def download_files(client, records, folder, chunk_size=1024):
 
 
 def main():
-    parser = cli_utils.set_parser_server_options(
+    parser = cli_utils.add_parser_options(
         description='Download files from Kinto')
     parser.add_argument('-f', '--folder', help='Folder to download files in.',
                         type=str, default=".")
