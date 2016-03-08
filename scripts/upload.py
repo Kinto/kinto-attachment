@@ -88,7 +88,7 @@ def upload_files(client, files, compress):
 
 
 def main():
-    parser = cli_utils.set_parser_server_options(
+    parser = cli_utils.add_parser_options(
         description='Upload files to Kinto',
         default_server=DEFAULT_SERVER)
 
