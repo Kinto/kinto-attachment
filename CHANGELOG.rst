@@ -1,14 +1,24 @@
 Changelog
 =========
 
-0.4.0 (unreleased)
+0.4.0 (2016-03-09)
 ------------------
 
-**New feature**
+**New features**
 
 - Previous files can be kept if the setting ``kinto.keep_old_files`` is set
   to ``true``. This can be useful when clients try to download files from a
   collection of records that is not up-to-date.
+- Add heartbeat entry for attachments backend (#41)
+
+**Bug fixes**
+
+- Now compatible with the default bucket (#42)
+- Now compatible with Python 3 (#44)
+
+**Internal changes**
+
+- Upload/Download scripts now use ``kinto.py`` (#38)
 
 
 0.3.0 (2016-02-05)
