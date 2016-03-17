@@ -1,27 +1,19 @@
 import json
 import hashlib
 
-from cliquet import Service
 from cliquet import utils as cliquet_utils
-from cliquet import logger
 from cliquet.errors import raise_invalid
 from cliquet.storage import Filter
-from cliquet.events import ResourceChanged, ACTIONS
-from cliquet.authorization import DYNAMIC as DYNAMIC_PERMISSION
+
 from kinto.views.records import Record
 from kinto.authorization import RouteFactory
-from pyramid.events import subscriber
 from pyramid import httpexceptions
-from pyramid.settings import asbool
 from pyramid_storage.exceptions import FileNotAllowed
-from six import StringIO
 
-
-FILE_FIELD = 'attachment'
 FILE_LINKS = '__attachments__'
 
-HEARTBEAT_CONTENT = '{"test": "write"}'
-HEARTBEAT_FILENAME = 'heartbeat.json'
+
+RECORD_PATH = '/buckets/{bucket_id}/collections/{collection_id}/records/{id}'
 
 
 class AttachmentRouteFactory(RouteFactory):
@@ -46,17 +38,6 @@ class AttachmentRouteFactory(RouteFactory):
         else:
             self.permission_object_id = collection_uri(request)
             self.required_permission = 'create'
-
-
-_record_path = ('/buckets/{bucket_id}/collections/{collection_id}'
-                '/records/{id}')
-
-attachment = Service(name='attachment',
-                     description='Attach file to record',
-                     path=_record_path + '/attachment',
-                     cors_enabled=True,
-                     cors_origins='*',
-                     factory=AttachmentRouteFactory)
 
 
 def sha256(content):
@@ -87,23 +68,6 @@ def collection_uri(request, prefix=False):
 
 def record_uri(request, prefix=False):
     return _object_uri(request, 'record', request.matchdict, prefix)
-
-
-def attachments_ping(request):
-    """Heartbeat view for the attachments backend.
-    :returns: ``True`` if succeeds to write and delete, ``False`` otherwise.
-    """
-    status = False
-    attachment = request.attachment
-    try:
-        location = attachment.save_file(StringIO(HEARTBEAT_CONTENT),
-                                        HEARTBEAT_FILENAME,
-                                        replace=True)
-        attachment.delete(location)
-        status = True
-    except Exception as e:
-        logger.exception(e)
-    return status
 
 
 def patch_record(record, request):
@@ -152,38 +116,12 @@ def delete_attachment(request, link_field=None, uri=None):
     storage.delete_all("", FILE_LINKS, filters=filters, with_deleted=False)
 
 
-# XXX: Use AfterResourceChanged when implemented.
-@subscriber(ResourceChanged,
-            for_resources=('record', 'collection', 'bucket'),
-            for_actions=(ACTIONS.DELETE,))
-def on_delete_record(event):
-    """When a resource record is deleted, delete all related attachments.
-    When a bucket or collection is deleted, it removes the attachments of
-    every underlying records.
-    """
-    # Retrieve attachments for these records using links.
-    resource_name = event.payload['resource_name']
-    filter_field = '%s_uri' % resource_name
-    uri = event.payload['uri']
-    delete_attachment(event.request, link_field=filter_field, uri=uri)
-
-
-@attachment.post(permission=DYNAMIC_PERMISSION)
-def attachment_post(request):
-    settings = request.registry.settings
-    keep_old_files = asbool(settings.get('attachment.keep_old_files', False))
-    if not keep_old_files:
-        # Remove potential existing attachment.
-        delete_attachment(request)
-
-    # Store file locally.
+def save_file(content, request, folder, randomize=True):
     folder_pattern = request.registry.settings.get('attachment.folder', '')
     folder = folder_pattern.format(**request.matchdict) or None
-    content = request.POST[FILE_FIELD]
+
     try:
-        location = request.attachment.save(content,
-                                           randomize=True,
-                                           folder=folder)
+        location = request.attachment.save(content, folder=folder)
     except FileNotAllowed:
         error_msg = 'File extension is not allowed.'
         raise_invalid(request, location='body', description=error_msg)
@@ -212,25 +150,4 @@ def attachment_post(request):
         'record_uri': record_uri(request)
     })
 
-    # Update related record.
-    record = {k: v for k, v in request.POST.items() if k != FILE_FIELD}
-    for k, v in record.items():
-        record[k] = json.loads(v)
-    record.setdefault('data', {})[FILE_FIELD] = attachment
-    patch_record(record, request)
-
-    # Return attachment data (with location header)
-    request.response.headers['Location'] = record_uri(request, prefix=True)
     return attachment
-
-
-@attachment.delete(permission=DYNAMIC_PERMISSION)
-def attachment_delete(request):
-    delete_attachment(request)
-
-    # Remove metadata.
-    record = {"data": {}}
-    record["data"][FILE_FIELD] = None
-    patch_record(record, request)
-
-    raise httpexceptions.HTTPNoContent()
