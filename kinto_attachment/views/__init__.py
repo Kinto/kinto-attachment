@@ -1,10 +1,11 @@
 import json
 
-from . import utils
 from pyramid import httpexceptions
 from pyramid.settings import asbool
 from cliquet import logger
 from six import StringIO
+
+from kinto_attachment import utils
 
 HEARTBEAT_CONTENT = '{"test": "write"}'
 HEARTBEAT_FILENAME = 'heartbeat.json'

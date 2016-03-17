@@ -48,6 +48,13 @@ class BaseWebTest(object):
         self.record_id = _id = str(uuid.uuid4())
         self.record_uri = self.get_record_uri('fennec', 'fonts', _id)
         self.attachment_uri = self.record_uri + '/attachment'
+        self.endpoint_uri = self.record_uri + '/attachment'
+        self.default_files = [(b'attachment', b'image.jpg', b'--fake--')]
+        self.file_field = b'attachment'
+
+    @property
+    def nb_uploaded_files(self):
+        return len(self.default_files)
 
     def make_app(self):
         curdir = os.path.dirname(os.path.realpath(__file__))
@@ -56,18 +63,25 @@ class BaseWebTest(object):
         return app
 
     def upload(self, files=None, params=[], headers={}, status=None):
-        files = files or [(b'attachment', b'image.jpg', b'--fake--')]
+        files = files or self.default_files
         headers = headers or self.headers.copy()
         content_type, body = self.app.encode_multipart(params, files)
         headers['Content-Type'] = cliquet_utils.encode_header(content_type)
 
-        resp = self.app.post(self.attachment_uri, body, headers=headers,
+        resp = self.app.post(self.endpoint_uri, body, headers=headers,
                              status=status)
         if 200 <= resp.status_code < 300:
-            relativeurl = resp.json['location'].replace(self.base_url, '')
-            self._created.append(relativeurl)
+            if 'location' in resp.json:
+                self._add_to_cleanup(resp.json)
+            else:
+                for attachment in resp.json:
+                    self._add_to_cleanup(attachment)
 
         return resp
+
+    def _add_to_cleanup(self, attachment):
+        relativeurl = attachment['location'].replace(self.base_url, '')
+        self._created.append(relativeurl)
 
     def create_collection(self, bucket_id, collection_id):
         bucket_uri = '/buckets/%s' % bucket_id
@@ -85,6 +99,10 @@ class BaseWebTest(object):
     def get_record_uri(self, bucket_id, collection_id, record_id):
         return ('/buckets/{bucket_id}/collections/{collection_id}'
                 '/records/{record_id}').format(**locals())
+
+    def get_record(self, resp):
+        # Alias to resp.json, in a separate method to easily be extended.
+        return resp.json
 
 
 class BaseWebTestLocal(BaseWebTest):
@@ -122,3 +140,16 @@ class BaseWebTestS3(BaseWebTest):
             self._s3_bucket_created = True
 
         return app
+
+
+class BaseBundleWebTestLocal(BaseWebTestLocal):
+    def setUp(self):
+        super(BaseBundleWebTestLocal, self).setUp()
+        self.endpoint_uri = self.record_uri + '/attachments'
+        self.default_files = [(b'attachments', b'un.jpg', b'--one--'),
+                              (b'attachments', b'deux.jpg', b'--two--'), ]
+        self.file_field = b'attachments'
+
+    def get_record(self, resp):
+        # Always return the first record.
+        return resp.json[0]

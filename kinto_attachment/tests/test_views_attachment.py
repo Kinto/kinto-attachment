@@ -5,7 +5,8 @@ import uuid
 from six.moves.urllib.parse import urlparse
 from cliquet.tests.support import unittest
 
-from . import BaseWebTestLocal, BaseWebTestS3, get_user_headers
+from . import (BaseWebTestLocal, BaseWebTestS3, BaseBundleWebTestLocal,
+               get_user_headers)
 
 
 class UploadTest(object):
@@ -69,19 +70,19 @@ class DeleteTest(object):
     def test_attachment_is_removed_on_delete(self):
         fullurl = self.attachment['location']
         self.assertTrue(self.exists(fullurl))
-        self.app.delete(self.attachment_uri, headers=self.headers, status=204)
+        self.app.delete(self.endpoint_uri, headers=self.headers, status=204)
         self.assertFalse(self.exists(fullurl))
 
     def test_metadata_are_removed_on_delete(self):
-        self.app.delete(self.attachment_uri, headers=self.headers, status=204)
+        self.app.delete(self.endpoint_uri, headers=self.headers, status=204)
         resp = self.app.get(self.record_uri, headers=self.headers)
         self.assertIsNone(resp.json['data'].get('attachment'))
 
     def test_link_is_removed_on_delete(self):
         storage = self.app.app.registry.storage
         links, _ = storage.get_all("", '__attachments__')
-        self.assertEqual(len(links), 1)
-        self.app.delete(self.attachment_uri, headers=self.headers, status=204)
+        self.assertEqual(len(links), self.nb_uploaded_files)
+        self.app.delete(self.endpoint_uri, headers=self.headers, status=204)
         links, _ = storage.get_all("", '__attachments__')
         self.assertEqual(len(links), 0)
 
@@ -107,7 +108,7 @@ class DeleteTest(object):
     def test_attachments_links_are_removed_forever(self):
         storage = self.app.app.registry.storage
         links, _ = storage.get_all("", '__attachments__')
-        self.assertEqual(len(links), 1)
+        self.assertEqual(len(links), self.nb_uploaded_files)
         self.app.delete(self.record_uri, headers=self.headers)
         links, _ = storage.get_all("", '__attachments__')
         self.assertEqual(len(links), 0)
@@ -127,7 +128,7 @@ class S3DeleteTest(DeleteTest, BaseWebTestS3, unittest.TestCase):
     pass
 
 
-class AttachmentViewTest(BaseWebTestLocal, unittest.TestCase):
+class AttachmentViewTest(object):
 
     def test_only_post_and_options_is_accepted(self):
         self.app.get(self.attachment_uri, headers=self.headers, status=405)
@@ -142,31 +143,33 @@ class AttachmentViewTest(BaseWebTestLocal, unittest.TestCase):
         self.app.put_json(self.record_uri, existing, headers=self.headers)
         self.upload()
         resp = self.app.get(self.record_uri, headers=self.headers)
-        self.assertIn('attachment', resp.json['data'])
+        self.assertIn(self.file_field, resp.json['data'])
         self.assertIn('author', resp.json['data'])
 
     def test_record_metadata_has_hash_hexdigest(self):
         r = self.upload()
         h = 'db511d372e98725a61278e90259c7d4c5484fc7a781d7dcc0c93d53b8929e2ba'
-        self.assertEqual(r.json['hash'], h)
+        self.assertEqual(self.get_record(r)['hash'], h)
 
     def test_record_metadata_has_randomized_location(self):
-        r = self.upload(files=[
-            (b'attachment', b'my-report.pdf', b'--binary--')
+        resp = self.upload(files=[
+            (self.file_field, b'my-report.pdf', b'--binary--')
         ])
-        self.assertNotIn('report', r.json['location'])
+        record = self.get_record(resp)
+        self.assertNotIn('report', record['location'])
 
     def test_record_location_contains_subfolder(self):
         self.upload()
         resp = self.app.get(self.record_uri, headers=self.headers)
-        location = resp.json['data']['attachment']['location']
+        location = resp.json['data'][self.file_field]['location']
         self.assertIn('fennec/fonts/', location)
 
     def test_record_metadata_provides_original_filename(self):
-        r = self.upload(files=[
-            (b'attachment', b'my-report.pdf', b'--binary--')
+        resp = self.upload(files=[
+            (self.file_field, b'my-report.pdf', b'--binary--')
         ])
-        self.assertEqual('my-report.pdf', r.json['filename'])
+        record = self.get_record(resp)
+        self.assertEqual('my-report.pdf', record['filename'])
 
     def test_record_is_created_with_fields(self):
         self.upload(params=[('data', '{"family": "sans"}')])
@@ -201,8 +204,8 @@ class AttachmentViewTest(BaseWebTestLocal, unittest.TestCase):
         self.assertIn("12 is not of type 'string'", resp.json['message'])
 
     def test_upload_refused_if_extension_not_allowed(self):
-        resp = self.upload(files=[(b'attachment', b'virus.exe', b'--fake--')],
-                           status=400)
+        resp = self.upload(files=[(self.file_field, b'virus.exe',
+                                   b'--fake--')], status=400)
         self.assertEqual(resp.json['message'],
                          'body: File extension is not allowed.')
 
@@ -253,11 +256,16 @@ class AttachmentViewTest(BaseWebTestLocal, unittest.TestCase):
         self.upload(status=200)
 
 
+class SingleAttachmentViewTest(AttachmentViewTest, BaseWebTestLocal,
+                               unittest.TestCase):
+    pass
+
+
 class DefaultBucketTest(BaseWebTestLocal, unittest.TestCase):
     def setUp(self):
         super(DefaultBucketTest, self).setUp()
         self.record_uri = self.get_record_uri('default', 'pix', uuid.uuid4())
-        self.attachment_uri = self.record_uri + '/attachment'
+        self.endpoint_uri = self.record_uri + '/attachment'
 
     def test_implicit_collection_creation_on_upload(self):
         resp = self.upload()

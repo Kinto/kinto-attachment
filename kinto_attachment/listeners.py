@@ -1,7 +1,7 @@
 from cliquet.events import ResourceChanged, ACTIONS
 from pyramid.events import subscriber
 
-from .views import utils
+from . import utils
 
 
 # XXX: Use AfterResourceChanged when implemented.

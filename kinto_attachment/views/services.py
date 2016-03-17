@@ -1,7 +1,8 @@
 from cliquet import Service
 from cliquet.authorization import DYNAMIC as DYNAMIC_PERMISSION
 
-from . import utils, post_attachment_view, delete_attachment_view
+from kinto_attachment import utils
+from . import post_attachment_view, delete_attachment_view
 
 SINGLE_FILE_FIELD = 'attachment'
 MULTIPLE_FILE_FIELD = 'attachments'
