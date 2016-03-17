@@ -116,12 +116,13 @@ def delete_attachment(request, link_field=None, uri=None):
     storage.delete_all("", FILE_LINKS, filters=filters, with_deleted=False)
 
 
-def save_file(content, request, folder, randomize=True):
+def save_file(content, request, randomize=True):
     folder_pattern = request.registry.settings.get('attachment.folder', '')
     folder = folder_pattern.format(**request.matchdict) or None
 
     try:
-        location = request.attachment.save(content, folder=folder)
+        location = request.attachment.save(content, folder=folder,
+                                           randomize=randomize)
     except FileNotAllowed:
         error_msg = 'File extension is not allowed.'
         raise_invalid(request, location='body', description=error_msg)
