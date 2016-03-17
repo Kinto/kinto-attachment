@@ -1,7 +1,11 @@
 from cliquet.tests.support import unittest
 
 from . import BaseBundleWebTestLocal
-from .test_views_attachment import DeleteTest, AttachmentViewTest
+from .test_views_attachment import DeleteTest, AttachmentViewTest, UploadTest
+
+
+class BundleUploadTest(UploadTest, BaseBundleWebTestLocal, unittest.TestCase):
+    pass
 
 
 class BundleDeleteTest(DeleteTest, BaseBundleWebTestLocal, unittest.TestCase):

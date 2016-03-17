@@ -5,8 +5,7 @@ import uuid
 from six.moves.urllib.parse import urlparse
 from cliquet.tests.support import unittest
 
-from . import (BaseWebTestLocal, BaseWebTestS3, BaseBundleWebTestLocal,
-               get_user_headers)
+from . import BaseWebTestLocal, BaseWebTestS3, get_user_headers
 
 
 class UploadTest(object):
@@ -16,7 +15,7 @@ class UploadTest(object):
     def test_record_is_created_with_metadata(self):
         self.upload()
         resp = self.app.get(self.record_uri, headers=self.headers)
-        self.assertIn('attachment', resp.json['data'])
+        self.assertIn(self.file_field, resp.json['data'])
 
     def test_returns_200_if_record_already_exists(self):
         self.app.put_json(self.record_uri, {}, headers=self.headers)
@@ -31,7 +30,8 @@ class UploadTest(object):
     def test_has_no_subfolder_if_setting_is_undefined(self):
         self.app.app.registry.settings.pop('attachment.folder')
         response = self.upload()
-        url = urlparse(response.json['location'])
+        record = self.get_record(response)
+        url = urlparse(record['location'])
         self.assertNotIn('/', url.path[1:])
 
     def exists(self, fullurl):
@@ -39,9 +39,9 @@ class UploadTest(object):
         return self.backend.exists(location)
 
     def test_previous_attachment_is_removed_on_replacement(self):
-        first = self.upload().json
+        first = self.get_record(self.upload())
         self.assertTrue(self.exists(first['location']))
-        second = self.upload().json
+        second = self.get_record(self.upload())
         self.assertFalse(self.exists(first['location']))
         self.assertTrue(self.exists(second['location']))
 
