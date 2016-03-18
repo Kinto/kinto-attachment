@@ -2,7 +2,7 @@
 Kinto Attachment
 ================
 
-.. image:: https://img.shields.io/travis/Kinto/kinto-attachment.svg
+.. image:: https://img.shields.io/travis/Kinto/kinto-attachment/master.svg
         :target: https://travis-ci.org/Kinto/kinto-attachment
 
 .. image:: https://img.shields.io/pypi/v/kinto-attachment.svg
