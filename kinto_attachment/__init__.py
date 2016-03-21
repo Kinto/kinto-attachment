@@ -34,3 +34,4 @@ def includeme(config):
         config.include('pyramid_storage.s3')
 
     config.scan('kinto_attachment.views')
+    config.scan('kinto_attachment.listeners')
