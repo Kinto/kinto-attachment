@@ -71,11 +71,7 @@ class BaseWebTest(object):
         resp = self.app.post(self.endpoint_uri, body, headers=headers,
                              status=status)
         if 200 <= resp.status_code < 300:
-            if 'location' in resp.json:
-                self._add_to_cleanup(resp.json)
-            else:
-                for attachment in resp.json:
-                    self._add_to_cleanup(attachment)
+            self._add_to_cleanup(resp.json)
 
         return resp
 
@@ -140,16 +136,3 @@ class BaseWebTestS3(BaseWebTest):
             self._s3_bucket_created = True
 
         return app
-
-
-class BaseBundleWebTestLocal(BaseWebTestLocal):
-    def setUp(self):
-        super(BaseBundleWebTestLocal, self).setUp()
-        self.endpoint_uri = self.record_uri + '/attachments'
-        self.default_files = [(b'attachments', b'un.jpg', b'--one--'),
-                              (b'attachments', b'deux.jpg', b'--two--'), ]
-        self.file_field = b'attachments'
-
-    def get_record(self, resp):
-        # Always return the first record.
-        return resp.json[0]

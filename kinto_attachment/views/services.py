@@ -25,23 +25,3 @@ def attachment_post(request):
 @attachment.delete(permission=DYNAMIC_PERMISSION)
 def attachment_delete(request):
     return delete_attachment_view(request, SINGLE_FILE_FIELD)
-
-
-attachments = Service(name='attachments',
-                      description='Attach files to record',
-                      path=utils.RECORD_PATH + '/attachments',
-                      cors_enabled=True,
-                      cors_origins='*',
-                      factory=utils.AttachmentRouteFactory)
-
-
-@attachments.post(permission=DYNAMIC_PERMISSION)
-def attachments_post(request):
-    return post_attachment_view(request, MULTIPLE_FILE_FIELD,
-                                randomize=False,
-                                multiple_attachments=True)
-
-
-@attachments.delete(permission=DYNAMIC_PERMISSION)
-def attachments_delete(request):
-    return delete_attachment_view(request, MULTIPLE_FILE_FIELD)
