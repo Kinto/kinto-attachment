@@ -11,7 +11,7 @@ HEARTBEAT_CONTENT = '{"test": "write"}'
 HEARTBEAT_FILENAME = 'heartbeat.json'
 
 
-def post_attachment_view(request, file_field, randomize=True):
+def post_attachment_view(request, file_field):
     settings = request.registry.settings
     keep_old_files = asbool(settings.get('attachment.keep_old_files', False))
     if not keep_old_files:
@@ -20,6 +20,11 @@ def post_attachment_view(request, file_field, randomize=True):
 
     # Store file locally.
     content = request.POST.get(file_field)
+
+    randomize = True
+    if 'randomize' in request.GET:
+        randomize = asbool(request.GET['randomize'])
+
     attachment = utils.save_file(content, request, randomize=randomize)
     # Update related record.
     record = {k: v for k, v in request.POST.items() if k != file_field}

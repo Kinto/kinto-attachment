@@ -16,7 +16,7 @@ attachment = Service(name='attachment',
 
 @attachment.post(permission=DYNAMIC_PERMISSION)
 def attachment_post(request):
-    return post_attachment_view(request, SINGLE_FILE_FIELD, randomize=True)
+    return post_attachment_view(request, SINGLE_FILE_FIELD)
 
 
 @attachment.delete(permission=DYNAMIC_PERMISSION)

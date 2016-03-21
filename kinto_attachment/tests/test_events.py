@@ -35,7 +35,7 @@ class ResourceChangedTest(BaseWebTest, unittest.TestCase):
     def test_payload_attribute_are_sound(self):
         self.upload()
         payload = listener.received[-1].payload
-        self.assertEqual(payload['uri'], self.attachment_uri)
+        self.assertEqual(payload['uri'], self.endpoint_uri)
         self.assertEqual(payload['resource_name'], 'record')
         self.assertEqual(payload['record_id'], self.record_id)
         self.assertEqual(payload['collection_id'], 'fonts')
