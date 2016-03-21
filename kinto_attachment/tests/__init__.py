@@ -49,8 +49,8 @@ class BaseWebTest(object):
         self.record_uri = self.get_record_uri('fennec', 'fonts', _id)
         self.attachment_uri = self.record_uri + '/attachment'
         self.endpoint_uri = self.record_uri + '/attachment'
-        self.default_files = [(b'attachment', b'image.jpg', b'--fake--')]
-        self.file_field = b'attachment'
+        self.default_files = [('attachment', 'image.jpg', b'--fake--')]
+        self.file_field = 'attachment'
 
     @property
     def nb_uploaded_files(self):
