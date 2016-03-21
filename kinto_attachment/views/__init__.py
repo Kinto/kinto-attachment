@@ -11,35 +11,28 @@ HEARTBEAT_CONTENT = '{"test": "write"}'
 HEARTBEAT_FILENAME = 'heartbeat.json'
 
 
-def post_attachment_view(request, file_field, randomize=True,
-                         multiple_attachments=False):
+def post_attachment_view(request, file_field, randomize=True):
     settings = request.registry.settings
     keep_old_files = asbool(settings.get('attachment.keep_old_files', False))
-    if multiple_attachments or not keep_old_files:
+    if not keep_old_files:
         # Remove potential existing attachment.
         utils.delete_attachment(request)
 
     # Store file locally.
-    contents = request.POST.getall(file_field)
-    attachments = []
-    for content in contents:
-        attachment = utils.save_file(content, request, randomize=randomize)
-        attachments.append(attachment)
+    content = request.POST.get(file_field)
+    attachment = utils.save_file(content, request, randomize=randomize)
     # Update related record.
     record = {k: v for k, v in request.POST.items() if k != file_field}
     for k, v in record.items():
         record[k] = json.loads(v)
 
-    if not multiple_attachments:
-        attachments = attachments[0]
-
-    record.setdefault('data', {})[file_field] = attachments
+    record.setdefault('data', {})[file_field] = attachment
     utils.patch_record(record, request)
 
     # Return attachment data (with location header)
     request.response.headers['Location'] = utils.record_uri(request,
                                                             prefix=True)
-    return attachments
+    return attachment
 
 
 def delete_attachment_view(request, file_field):
