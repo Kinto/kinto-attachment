@@ -115,7 +115,7 @@ QueryString options
 
 By default, the server will randomize the name of the attached files. If you
 don't want this behavior and prefer to keep the original file name, you can
-pass `?randomize=false` in the QueryString.
+pass ``?randomize=false`` in the QueryString.
 
 Attributes
 ----------
