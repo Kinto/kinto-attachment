@@ -47,7 +47,6 @@ class BaseWebTest(object):
         self.create_collection('fennec', 'fonts')
         self.record_id = _id = str(uuid.uuid4())
         self.record_uri = self.get_record_uri('fennec', 'fonts', _id)
-        self.attachment_uri = self.record_uri + '/attachment'
         self.endpoint_uri = self.record_uri + '/attachment'
         self.default_files = [('attachment', 'image.jpg', b'--fake--')]
         self.file_field = 'attachment'
@@ -62,13 +61,19 @@ class BaseWebTest(object):
         app.RequestClass = cliquet_support.get_request_class(prefix="v1")
         return app
 
-    def upload(self, files=None, params=[], headers={}, status=None):
+    def upload(self, files=None, params=[], headers={}, status=None,
+               randomize=True):
         files = files or self.default_files
         headers = headers or self.headers.copy()
         content_type, body = self.app.encode_multipart(params, files)
         headers['Content-Type'] = cliquet_utils.encode_header(content_type)
 
-        resp = self.app.post(self.endpoint_uri, body, headers=headers,
+        if not randomize:
+            endpoint_url = self.endpoint_uri + '?randomize=false'
+        else:
+            endpoint_url = self.endpoint_uri
+
+        resp = self.app.post(endpoint_url, body, headers=headers,
                              status=status)
         if 200 <= resp.status_code < 300:
             self._add_to_cleanup(resp.json)

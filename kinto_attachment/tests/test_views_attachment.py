@@ -131,12 +131,12 @@ class S3DeleteTest(DeleteTest, BaseWebTestS3, unittest.TestCase):
 class AttachmentViewTest(object):
 
     def test_only_post_and_options_is_accepted(self):
-        self.app.get(self.attachment_uri, headers=self.headers, status=405)
-        self.app.put(self.attachment_uri, headers=self.headers, status=405)
-        self.app.patch(self.attachment_uri, headers=self.headers, status=405)
+        self.app.get(self.endpoint_uri, headers=self.headers, status=405)
+        self.app.put(self.endpoint_uri, headers=self.headers, status=405)
+        self.app.patch(self.endpoint_uri, headers=self.headers, status=405)
         headers = self.headers.copy()
         headers['Access-Control-Request-Method'] = 'POST'
-        self.app.options(self.attachment_uri, headers=headers, status=200)
+        self.app.options(self.endpoint_uri, headers=headers, status=200)
 
     def test_record_is_updated_with_metadata(self):
         existing = {'data': {'author': 'frutiger'}}
@@ -157,6 +157,13 @@ class AttachmentViewTest(object):
         ])
         record = self.get_record(resp)
         self.assertNotIn('report', record['location'])
+
+    def test_record_metadata_can_unrandomize_location(self):
+        resp = self.upload(files=[
+            (self.file_field, b'my-report.pdf', b'--binary--')
+        ], randomize=False)
+        record = self.get_record(resp)
+        self.assertIn('report', record['location'])
 
     def test_record_location_contains_subfolder(self):
         self.upload()
