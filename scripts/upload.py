@@ -114,7 +114,7 @@ def main():
     existing = client.get_records()
     to_upload = files_to_upload(existing, args.files)
     upload_files(client, to_upload, compress=args.gzip,
-                 unrandomize=args.unrandomize)
+                 randomize=args.randomize)
 
 
 if __name__ == '__main__':
