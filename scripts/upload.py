@@ -96,7 +96,7 @@ def main():
 
     parser.add_argument('--gzip', dest='gzip', action='store_true',
                         help='Gzip files before upload')
-    parser.add_argument('--unrandomize', dest='randomize', action='store_false',
+    parser.add_argument('--keep-filenames', dest='randomize', action='store_false',
                         help='Do not randomize file IDs on the server')
     parser.add_argument('files', metavar='FILE', action='store',
                         nargs='+')
