@@ -1,4 +1,5 @@
 from kinto_attachment.views import attachments_ping
+from pyramid.static import static_view
 
 
 def includeme(config):
@@ -35,3 +36,6 @@ def includeme(config):
 
     config.scan('kinto_attachment.views')
     config.scan('kinto_attachment.listeners')
+    static = static_view('/tmp/', use_subpath=True)
+    config.add_route('catchall_static', '/attachments/*subpath')
+    config.add_view(static, route_name="catchall_static")
