@@ -54,7 +54,7 @@ def files_to_upload(records, files):
     return to_upload
 
 
-def upload_files(client, files, compress):
+def upload_files(client, files, compress, randomize):
     permissions = {}  # XXX: Permissions are inherited from collection.
 
     for filepath, record in files:
@@ -79,7 +79,9 @@ def upload_files(client, files, compress):
         record_uri = client._get_endpoint('record', id=record['id'])
         attachment_uri = '%s/attachment' % record_uri
         multipart = [("attachment", (filename, filecontent, mimetype))]
+        params = {'randomize': randomize}
         body, _ = client.session.request(method='post',
+                                         params=params,
                                          endpoint=attachment_uri,
                                          data=json.dumps(attributes),
                                          permissions=json.dumps(permissions),
@@ -94,6 +96,8 @@ def main():
 
     parser.add_argument('--gzip', dest='gzip', action='store_true',
                         help='Gzip files before upload')
+    parser.add_argument('--keep-filenames', dest='randomize', action='store_false',
+                        help='Do not randomize file IDs on the server')
     parser.add_argument('files', metavar='FILE', action='store',
                         nargs='+')
     args = parser.parse_args()
@@ -109,7 +113,8 @@ def main():
 
     existing = client.get_records()
     to_upload = files_to_upload(existing, args.files)
-    upload_files(client, to_upload, compress=args.gzip)
+    upload_files(client, to_upload, compress=args.gzip,
+                 randomize=args.randomize)
 
 
 if __name__ == '__main__':
