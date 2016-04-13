@@ -46,7 +46,7 @@ Store on Amazon S3:
 
     kinto.attachment.aws.access_key = <AWS access key>
     kinto.attachment.aws.secret_key = <AWS secret key>
-    kinto.attachment.aws.bucket = <bucket name>
+    kinto.attachment.aws.bucket_name = <bucket name>
     kinto.attachment.aws.acl = <AWS ACL permissions|public-read>
 
 
