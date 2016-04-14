@@ -55,6 +55,10 @@ def attachments_ping(request):
     """Heartbeat view for the attachments backend.
     :returns: ``True`` if succeeds to write and delete, ``False`` otherwise.
     """
+    # Do nothing if server is readonly.
+    if request.registry.settings.get('readonly'):
+        return True
+
     status = False
     attachment = request.attachment
     try:

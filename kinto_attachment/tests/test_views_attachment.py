@@ -323,3 +323,14 @@ class HeartbeartTest(BaseWebTestS3, unittest.TestCase):
             mocked.side_effect = ValueError
             resp = self.app.get('/__heartbeat__', status=503)
         self.assertFalse(resp.json['attachments'])
+
+    def test_heartbeat_is_true_if_server_is_readonly(self):
+        patch = mock.patch('pyramid_storage.s3.S3FileStorage.delete')
+        self.addCleanup(patch.stop)
+        mocked = patch.start()
+        mocked.side_effect = ValueError
+
+        with mock.patch.dict(self.app.app.registry.settings,
+                             [('readonly', True)]):
+            resp = self.app.get('/__heartbeat__')
+        self.assertTrue(resp.json['attachments'])
