@@ -46,11 +46,17 @@ Store on Amazon S3:
 
     kinto.attachment.aws.access_key = <AWS access key>
     kinto.attachment.aws.secret_key = <AWS secret key>
-    kinto.attachment.aws.bucket = <bucket name>
+    kinto.attachment.aws.bucket_name = <bucket name>
     kinto.attachment.aws.acl = <AWS ACL permissions|public-read>
 
 
+.. notes::
+
+    ``access_key`` and ``secret_key`` may be omitted when using AWS Identity
+    and Access Management (IAM).
+
 See `Pyramid Storage <https://pythonhosted.org/pyramid_storage/>`_.
+
 
 Default bucket
 --------------
