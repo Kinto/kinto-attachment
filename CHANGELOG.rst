@@ -4,7 +4,19 @@ Changelog
 0.5.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**New features**
+
+- Add ability to disable filename randomization using a ``?randomize=false`` querystring (#62)
+- Add a ``--keep-filenames`` option in ``upload.py`` script to disable randomization (#63)
+
+**Bug fixes**
+
+- Fix a setting name for S3 bucket in README (#68)
+- Do nothing in heartbeat if server is readonly (fixes #69)
+
+**Internal changes**
+
+- Big refactor of views (#61)
 
 
 0.4.0 (2016-03-09)
