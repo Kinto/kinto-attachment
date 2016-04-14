@@ -1,8 +1,16 @@
+include Makefile
 include CHANGELOG.rst
 include LICENSE
 include README.rst
+include tox.ini
+include *.txt
 
-recursive-include tests *
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
+recursive-include tests *
 recursive-include scripts *.py
+recursive-include demo *.html
+recursive-include demo *.js
+recursive-include demo *.rst
+recursive-include kinto_attachment *.ini
+recursive-include kinto_attachment *.py

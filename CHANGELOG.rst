@@ -4,7 +4,9 @@ Changelog
 0.6.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**Bug fixes**
+
+- Fix MANIFEST.in rules
 
 
 0.5.0 (2016-04-14)
