@@ -56,7 +56,7 @@ def attachments_ping(request):
     :returns: ``True`` if succeeds to write and delete, ``False`` otherwise.
     """
     # Do nothing if server is readonly.
-    if request.registry.settings.get('readonly'):
+    if asbool(request.registry.settings.get('readonly', False)):
         return True
 
     status = False

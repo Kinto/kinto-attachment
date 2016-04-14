@@ -331,6 +331,6 @@ class HeartbeartTest(BaseWebTestS3, unittest.TestCase):
         mocked.side_effect = ValueError
 
         with mock.patch.dict(self.app.app.registry.settings,
-                             [('readonly', True)]):
+                             [('readonly', 'true')]):
             resp = self.app.get('/__heartbeat__')
         self.assertTrue(resp.json['attachments'])
