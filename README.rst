@@ -50,7 +50,7 @@ Store on Amazon S3:
     kinto.attachment.aws.acl = <AWS ACL permissions|public-read>
 
 
-.. notes::
+.. note::
 
     ``access_key`` and ``secret_key`` may be omitted when using AWS Identity
     and Access Management (IAM).
