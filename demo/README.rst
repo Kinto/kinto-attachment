@@ -14,7 +14,7 @@ and can be used to play with the file feature.
 Run the demo locally
 --------------------
 
-* Follow `the instructions in Kinto documentation <http://kinto.readthedocs.org>`_
+* Follow `the instructions in Kinto documentation <http://kinto.readthedocs.io>`_
 to get a local instance running.
 
 * Follow the instructions of this plugin to install and set the appropriate settings
