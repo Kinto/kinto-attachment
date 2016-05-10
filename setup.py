@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+import codecs
+import os
+from setuptools import setup, find_packages
 
+here = os.path.abspath(os.path.dirname(__file__))
 
-with open('README.rst') as readme_file:
-    readme = readme_file.read()
+with codecs.open(os.path.join(here, 'README.rst'), encoding='utf-8') as f:
+    readme = f.read()
 
-with open('CHANGELOG.rst') as history_file:
-    history = history_file.read()
+with codecs.open(os.path.join(here, 'CHANGELOG.rst'), encoding='utf-8') as f:
+    history = f.read()
 
 requirements = [
     'boto',
@@ -32,11 +32,7 @@ setup(
     author="Mozilla",
     author_email='kinto@mozilla.org',
     url='https://github.com/Kinto/kinto-attachment',
-    packages=[
-        'kinto_attachment',
-    ],
-    package_dir={'kinto_attachment':
-                 'kinto_attachment'},
+    packages=find_packages(),
     include_package_data=True,
     install_requires=requirements,
     license="Apache License (2.0)",
@@ -52,6 +48,6 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
     ],
-    test_suite='tests',
+    test_suite='kinto_attachment.tests',
     tests_require=test_requirements
 )
