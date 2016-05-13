@@ -1,11 +1,21 @@
 Changelog
 =========
 
-0.6.0 (unreleased)
+1.0.0 (unreleased)
 ------------------
+
+**Breaking changes**
 
 - Update to ``kinto.core`` for compatibility with Kinto 3.0. This
   release is no longer compatible with Kinto < 3.0, please upgrade!
+- By default record attachments now contains a relative location to
+  the ``base_url`` defined in the settings instead of an absolute
+  location. (#73)
+
+**New features**
+
+- Add a ``prepend_base_url`` settings to let people concatenate the
+  ``base_url`` in the attachment location. (#73)
 
 
 0.5.1 (2016-04-14)

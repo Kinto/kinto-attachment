@@ -1,3 +1,4 @@
+from pyramid.settings import asbool
 from kinto_attachment.views import attachments_ping
 
 
@@ -23,9 +24,20 @@ def includeme(config):
 
     # Advertise public setting.
     config.registry.public_settings.add('attachment.base_url')
+    config.registry.public_settings.add('attachment.prepend_base_url')
 
     # Register heartbeat to check attachments storage.
     config.registry.heartbeats['attachments'] = attachments_ping
+
+    # Should we prepend the location in the record with the base_url
+    attachment_prepend_base_url = asbool(
+        settings.get('attachment.prepend_base_url', False)
+    )
+
+    # Make sure to add the settings so that we can advertise it publicly.
+    config.add_settings({
+        "attachment.prepend_base_url": attachment_prepend_base_url
+    })
 
     # Enable attachment backend.
     if 'storage.base_path' in storage_settings:
