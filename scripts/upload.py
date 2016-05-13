@@ -76,7 +76,7 @@ def upload_files(client, files, compress, randomize):
             filecontent = gzip.compress(filecontent)
             mimetype = 'application/x-gzip'
 
-        record_uri = client._get_endpoint('record', id=record['id'])
+        record_uri = client.get_endpoint('record', id=record['id'])
         attachment_uri = '%s/attachment' % record_uri
         multipart = [("attachment", (filename, filecontent, mimetype))]
         params = {'randomize': randomize}
