@@ -3,7 +3,7 @@ import os
 import uuid
 
 from six.moves.urllib.parse import urlparse
-from cliquet.tests.support import unittest
+from kinto.tests.core.support import unittest
 
 from . import BaseWebTestLocal, BaseWebTestS3, get_user_headers
 
@@ -286,12 +286,12 @@ class KeepOldFilesTest(BaseWebTestLocal, unittest.TestCase):
         import webtest
         from kinto import main as testapp
         from kinto import DEFAULT_SETTINGS
-        from cliquet.tests import support as cliquet_support
+        from kinto.tests.core import support as core_support
 
-        settings = cliquet_support.DEFAULT_SETTINGS.copy()
+        settings = core_support.DEFAULT_SETTINGS.copy()
         settings.update(**DEFAULT_SETTINGS)
-        settings['storage_backend'] = 'cliquet.storage.memory'
-        settings['permission_backend'] = 'cliquet.permission.memory'
+        settings['storage_backend'] = 'kinto.core.storage.memory'
+        settings['permission_backend'] = 'kinto.core.permission.memory'
         settings['userid_hmac_secret'] = "this is not a secret"
         settings['includes'] = "kinto_attachment"
 
@@ -300,7 +300,7 @@ class KeepOldFilesTest(BaseWebTestLocal, unittest.TestCase):
         settings['kinto.attachment.keep_old_files'] = "true"
 
         app = webtest.TestApp(testapp({}, **settings))
-        app.RequestClass = cliquet_support.get_request_class(prefix="v1")
+        app.RequestClass = core_support.get_request_class(prefix="v1")
         return app
 
     def test_files_are_kept_when_attachment_is_replaced(self):

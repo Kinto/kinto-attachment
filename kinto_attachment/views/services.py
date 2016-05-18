@@ -1,5 +1,5 @@
-from cliquet import Service
-from cliquet.authorization import DYNAMIC as DYNAMIC_PERMISSION
+from kinto.core import Service
+from kinto.core.authorization import DYNAMIC as DYNAMIC_PERMISSION
 
 from kinto_attachment import utils
 from . import post_attachment_view, delete_attachment_view

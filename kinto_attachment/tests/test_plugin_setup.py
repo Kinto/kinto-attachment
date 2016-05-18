@@ -1,4 +1,4 @@
-from cliquet.tests.support import unittest
+from kinto.tests.core.support import unittest
 
 from . import BaseWebTestLocal
 
