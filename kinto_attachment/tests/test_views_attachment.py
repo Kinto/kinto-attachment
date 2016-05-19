@@ -45,11 +45,6 @@ class UploadTest(object):
         self.assertFalse(self.exists(first['location']))
         self.assertTrue(self.exists(second['location']))
 
-    def test_relative_url_is_returned_by_default(self):
-        resp = self.upload(status=201)
-        location = resp.json["location"]
-        assert not location.startswith("https://cdn.firefox.net/")
-
 
 class LocalUploadTest(UploadTest, BaseWebTestLocal, unittest.TestCase):
     def test_file_is_created_on_local_filesystem(self):
@@ -316,69 +311,6 @@ class KeepOldFilesTest(BaseWebTestLocal, unittest.TestCase):
         self.assertNotEqual(location1, location2)
         self.assertTrue(self.backend.exists(location2))
         self.assertTrue(self.backend.exists(location1))
-
-
-class PrependLocationLocalTest(BaseWebTestLocal, unittest.TestCase):
-    def make_app(self):
-        import webtest
-        from kinto import main as testapp
-        from kinto import DEFAULT_SETTINGS
-        from cliquet.tests import support as cliquet_support
-
-        settings = cliquet_support.DEFAULT_SETTINGS.copy()
-        settings.update(**DEFAULT_SETTINGS)
-        settings['storage_backend'] = 'cliquet.storage.memory'
-        settings['permission_backend'] = 'cliquet.permission.memory'
-        settings['userid_hmac_secret'] = "this is not a secret"
-        settings['includes'] = "kinto_attachment"
-
-        settings['kinto.attachment.base_path'] = "/tmp"
-        settings['kinto.attachment.base_url'] = "https://cdn.firefox.net/"
-        settings['kinto.attachment.prepend_base_url'] = "true"
-
-        app = webtest.TestApp(testapp({}, **settings))
-        app.RequestClass = cliquet_support.get_request_class(prefix="v1")
-        return app
-
-    def test_full_url_is_returned_if_prepend_settings(self):
-        resp = self.upload(status=201)
-        location = resp.json["location"]
-        assert location.startswith("https://cdn.firefox.net/")
-
-
-class PrependLocationS3Test(BaseWebTestS3, unittest.TestCase):
-    def make_app(self):
-        import webtest
-        from kinto import main as testapp
-        from kinto import DEFAULT_SETTINGS
-        from cliquet.tests import support as cliquet_support
-
-        settings = cliquet_support.DEFAULT_SETTINGS.copy()
-        settings.update(**DEFAULT_SETTINGS)
-        settings['storage_backend'] = 'cliquet.storage.memory'
-        settings['permission_backend'] = 'cliquet.permission.memory'
-        settings['userid_hmac_secret'] = "this is not a secret"
-        settings['includes'] = "kinto_attachment"
-
-        settings['kinto.attachment.base_url'] = "https://cdn.firefox.net/"
-        settings['kinto.attachment.prepend_base_url'] = "true"
-
-        settings['kinto.attachment.aws.host'] = "localhost"
-        settings['kinto.attachment.aws.port'] = "5000"
-        settings['kinto.attachment.aws.is_secure'] = False
-        settings['kinto.attachment.aws.use_path_style'] = True
-        settings['kinto.attachment.aws.access_key'] = "aws"
-        settings['kinto.attachment.aws.secret_key'] = "aws"
-        settings['kinto.attachment.aws.bucket_name'] = "myfiles"
-
-        app = webtest.TestApp(testapp({}, **settings))
-        app.RequestClass = cliquet_support.get_request_class(prefix="v1")
-        return app
-
-    def test_full_url_is_returned_if_prepend_settings(self):
-        resp = self.upload(status=201)
-        location = resp.json["location"]
-        assert location.startswith("https://cdn.firefox.net/")
 
 
 class HeartbeartTest(BaseWebTestS3, unittest.TestCase):

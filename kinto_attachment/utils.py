@@ -132,10 +132,7 @@ def save_file(content, request, randomize=True):
     filecontent = content.file.read()
 
     # File metadata.
-    if request.registry.settings['attachment.prepend_base_url']:
-        fullurl = request.attachment.url(location)
-    else:
-        fullurl = location
+    fullurl = request.attachment.url(location)
 
     size = len(filecontent)
     filehash = sha256(filecontent)
