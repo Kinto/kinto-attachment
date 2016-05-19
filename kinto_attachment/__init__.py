@@ -1,4 +1,3 @@
-from pyramid.settings import asbool
 from kinto_attachment.views import attachments_ping
 
 

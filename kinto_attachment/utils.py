@@ -133,7 +133,6 @@ def save_file(content, request, randomize=True):
 
     # File metadata.
     fullurl = request.attachment.url(location)
-
     size = len(filecontent)
     filehash = sha256(filecontent)
     attachment = {
