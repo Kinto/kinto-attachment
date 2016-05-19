@@ -1,4 +1,4 @@
-from cliquet.events import ResourceChanged, ACTIONS
+from kinto.core.events import ResourceChanged, ACTIONS
 from pyramid.events import subscriber
 
 from . import utils

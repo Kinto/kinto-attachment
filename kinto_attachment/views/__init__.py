@@ -2,7 +2,7 @@ import json
 
 from pyramid import httpexceptions
 from pyramid.settings import asbool
-from cliquet import logger
+from kinto.core import logger
 from six import StringIO
 
 from kinto_attachment import utils

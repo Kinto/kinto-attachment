@@ -2,8 +2,8 @@ import uuid
 import os
 
 import webtest
-from cliquet import utils as cliquet_utils
-from cliquet.tests import support as cliquet_support
+from kinto.core import utils as core_utils
+from kinto.tests.core import support as core_support
 from pyramid_storage.s3 import S3FileStorage
 from pyramid_storage.interfaces import IFileStorage
 
@@ -20,7 +20,7 @@ SAMPLE_SCHEMA = {
 
 def get_user_headers(user):
     credentials = "%s:secret" % user
-    authorization = 'Basic {0}'.format(cliquet_utils.encode64(credentials))
+    authorization = 'Basic {0}'.format(core_utils.encode64(credentials))
     return {
         'Authorization': authorization
     }
@@ -58,7 +58,7 @@ class BaseWebTest(object):
     def make_app(self):
         curdir = os.path.dirname(os.path.realpath(__file__))
         app = webtest.TestApp("config:%s" % self.config, relative_to=curdir)
-        app.RequestClass = cliquet_support.get_request_class(prefix="v1")
+        app.RequestClass = core_support.get_request_class(prefix="v1")
         return app
 
     def upload(self, files=None, params=[], headers={}, status=None,
@@ -66,7 +66,7 @@ class BaseWebTest(object):
         files = files or self.default_files
         headers = headers or self.headers.copy()
         content_type, body = self.app.encode_multipart(params, files)
-        headers['Content-Type'] = cliquet_utils.encode_header(content_type)
+        headers['Content-Type'] = core_utils.encode_header(content_type)
 
         if not randomize:
             endpoint_url = self.endpoint_uri + '?randomize=false'

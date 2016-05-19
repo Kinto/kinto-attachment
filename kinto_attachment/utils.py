@@ -1,9 +1,9 @@
 import json
 import hashlib
 
-from cliquet import utils as cliquet_utils
-from cliquet.errors import raise_invalid
-from cliquet.storage import Filter
+from kinto.core import utils as core_utils
+from kinto.core.errors import raise_invalid
+from kinto.core.storage import Filter
 
 from kinto.views.records import Record
 from kinto.authorization import RouteFactory
@@ -18,7 +18,7 @@ RECORD_PATH = '/buckets/{bucket_id}/collections/{collection_id}/records/{id}'
 
 class AttachmentRouteFactory(RouteFactory):
     def __init__(self, request):
-        """Attachment is not a Cliquet resource.
+        """Attachment is not a Kinto resource.
 
         The required permission is:
         * ``write`` if the related record exists;
@@ -50,7 +50,7 @@ def _object_uri(request, resource_name, matchdict, prefix):
     route_name = '%s-record' % resource_name
     full = request.route_path(route_name, **matchdict)
     if not prefix:
-        return cliquet_utils.strip_uri_prefix(full)
+        return core_utils.strip_uri_prefix(full)
     return full
 
 
@@ -106,7 +106,7 @@ def delete_attachment(request, link_field=None, uri=None):
         uri = record_uri(request)
 
     # Remove file.
-    filters = [Filter(link_field, uri, cliquet_utils.COMPARISON.EQ)]
+    filters = [Filter(link_field, uri, core_utils.COMPARISON.EQ)]
     storage = request.registry.storage
     file_links, _ = storage.get_all("", FILE_LINKS, filters=filters)
     for link in file_links:
