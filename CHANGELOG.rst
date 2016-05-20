@@ -11,7 +11,7 @@ Changelog
 
 **New features**
 
-- Add a ``kinto.attaachment.extra.base_url`` settings to be exposed publicly. (#73)
+- Add a ``kinto.attachment.extra.base_url`` settings to be exposed publicly. (#73)
 
 
 0.5.1 (2016-04-14)
