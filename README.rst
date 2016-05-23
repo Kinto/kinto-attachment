@@ -289,7 +289,24 @@ Known limitations
 
 * No support for chunk upload (#10)
 * Files are not removed when server is purged with ``POST /v1/__flush__``
-* Absolute URL is stored in record metadata (#24)
+
+Relative URL in records (workaround)
+------------------------------------
+
+Currently the full URL is returned in records. This is very convenient for API consumers
+which can access the attached file just using the value in the ``location`` attribute.
+
+However, the way it is implemented has a limitation: the full URL is stored in each record
+directly. This is annoying because changing the ``base_url`` setting
+won't actually change the ``location`` attributes on existing records.
+
+As workaround, it is possible to set the ``kinto.attachment.base_url`` to an empty
+value. The ``location`` attribute in records will now contain a *relative* URL.
+
+Using another setting ``kinto.attachment.extra.base_url``, it is possible to advertise
+the base URL that can be preprended by clients to obtain the full attachment URL.
+If specified, it is going to be exposed in the capabilities of the root URL endpoint.
+
 
 Run tests
 =========
