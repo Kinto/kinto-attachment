@@ -16,10 +16,16 @@ def includeme(config):
     storage_settings.setdefault('storage.extensions', 'any')
     config.add_settings(storage_settings)
 
+    # It may be useful to define an additional base_url setting.
+    # (see workaround about relative base_url in README)
+    extra_base_url = settings.get('attachment.extra.base_url',
+                                  settings.get('attachment.base_url'))
+
     # # Expose capability.
     config.add_api_capability("attachments",
                               description="Add file attachments to records",
-                              url="https://github.com/Kinto/kinto-attachment/")
+                              url="https://github.com/Kinto/kinto-attachment/",
+                              base_url=extra_base_url)
 
     # Advertise public setting.
     config.registry.public_settings.add('attachment.base_url')

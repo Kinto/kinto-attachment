@@ -10,8 +10,14 @@ Changelog
 0.6.0 (2016-05-19)
 ------------------
 
+**Breaking changes**
+
 - Update to ``kinto.core`` for compatibility with Kinto 3.0. This
   release is no longer compatible with Kinto < 3.0, please upgrade!
+
+**New features**
+
+- Add a ``kinto.attachment.extra.base_url`` settings to be exposed publicly. (#73)
 
 
 0.5.1 (2016-04-14)
