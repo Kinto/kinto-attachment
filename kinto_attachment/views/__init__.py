@@ -14,6 +14,7 @@ HEARTBEAT_FILENAME = 'heartbeat.json'
 def post_attachment_view(request, file_field):
     settings = request.registry.settings
     keep_old_files = asbool(settings.get('attachment.keep_old_files', False))
+
     if not keep_old_files:
         # Remove potential existing attachment.
         utils.delete_attachment(request)
@@ -25,7 +26,13 @@ def post_attachment_view(request, file_field):
     if 'randomize' in request.GET:
         randomize = asbool(request.GET['randomize'])
 
-    attachment = utils.save_file(content, request, randomize=randomize)
+    gzipped = asbool(settings.get('attachment.gzipped', False))
+    if 'gzipped' in request.GET:
+        gzipped = asbool(request.GET['gzipped'])
+
+    attachment = utils.save_file(content, request, randomize=randomize,
+                                 gzipped=gzipped)
+
     # Update related record.
     record = {k: v for k, v in request.POST.items() if k != file_field}
     for k, v in record.items():

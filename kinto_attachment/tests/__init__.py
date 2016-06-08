@@ -1,6 +1,9 @@
 import uuid
 import os
 
+import six.moves.urllib.parse as urlparse
+from six.moves.urllib.parse import urlencode
+
 import webtest
 from kinto.core import utils as core_utils
 from kinto.tests.core import support as core_support
@@ -16,6 +19,14 @@ SAMPLE_SCHEMA = {
         "author": {"type": "string"},
     }
 }
+
+
+def build_url(url, **params):
+    url_parts = list(urlparse.urlparse(url))
+    query = dict(urlparse.parse_qsl(url_parts[4]))
+    query.update(params)
+    url_parts[4] = urlencode(query)
+    return urlparse.urlunparse(url_parts)
 
 
 def get_user_headers(user):
@@ -62,14 +73,21 @@ class BaseWebTest(object):
         return app
 
     def upload(self, files=None, params=[], headers={}, status=None,
-               randomize=True):
+               randomize=True, gzipped=False):
         files = files or self.default_files
         headers = headers or self.headers.copy()
         content_type, body = self.app.encode_multipart(params, files)
         headers['Content-Type'] = core_utils.encode_header(content_type)
 
+        params = {}
         if not randomize:
-            endpoint_url = self.endpoint_uri + '?randomize=false'
+            params['randomize'] = 'false'
+
+        if gzipped:
+            params['gzipped'] = 'true'
+
+        if len(params) > 0:
+            endpoint_url = build_url(self.endpoint_uri, **params)
         else:
             endpoint_url = self.endpoint_uri
 
