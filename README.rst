@@ -132,8 +132,11 @@ don't want this behavior and prefer to keep the original file name, you can
 pass ``?randomize=false`` in the QueryString.
 
 By default, the server won't gzip files unless you specifically used the
-``kinto.attachment.gzipped`` option. But you can overwite that option
-by passing a ``?gzipped=true`` in the QueryString.
+``kinto.attachment.gzipped`` option if you want to **force** gzip to all
+collections.
+
+You can overwite that option by passing a ``?gzipped=true`` in the QueryString
+to specifically gzip some files.
 
 
 Attributes
