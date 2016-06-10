@@ -1,10 +1,11 @@
 Changelog
 =========
 
-0.6.1 (unreleased)
+0.7.0 (2016-06-10)
 ------------------
 
-- Nothing changed yet.
+- Add the gzip option to automatically gzip files on upload (#85)
+- Run functional test on latest kinto release as well as kinto master (#86)
 
 
 0.6.0 (2016-05-19)
