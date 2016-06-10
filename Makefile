@@ -38,3 +38,11 @@ distclean: clean
 
 maintainer-clean: distclean
 	rm -fr $(OBJECTS) .tox/ dist/ build/
+
+run-kinto:
+	cd /tmp; python -m SimpleHTTPServer 8000 &
+	$(VENV)/bin/kinto --ini kinto_attachment/tests/config/functional.ini migrate
+	$(VENV)/bin/kinto --ini kinto_attachment/tests/config/functional.ini start
+
+need-kinto-running:
+	@curl http://localhost:8888/v1/ 2>/dev/null 1>&2 || (echo "Run 'make run-kinto' before starting tests." && exit 1)

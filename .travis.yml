@@ -4,7 +4,6 @@ env:
     - TOX_ENV=py27
     - TOX_ENV=py34
     - TOX_ENV=kinto-master
-    - TOX_ENV=upload-download-scripts
     - TOX_ENV=flake8
 install:
     - make install
@@ -16,3 +15,20 @@ after_success:
     # Report coverage results to coveralls.io
     - pip install coveralls
     - coveralls
+matrix:
+  include:
+    - env:
+        - TOX_ENV=upload-download-scripts
+      install:
+        - make install
+        - make run-kinto &
+    - env:
+        - TOX_ENV=upload-download-scripts
+          WITH=kinto-master
+      install:
+        - make install
+        - pip install -U https://github.com/Kinto/kinto/zipball/master
+        - make run-kinto &
+    - python: 3.5
+      env:
+        - TOX_ENV=py35
