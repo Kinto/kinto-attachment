@@ -13,17 +13,17 @@ def sha256(content):
 
 
 def download_files(client, records, folder, chunk_size=1024):
+
     for record in records:
         if 'attachment' not in record:
             continue
 
         attachment = record['attachment']
-
         # Check if file was Gzipped during upload (see `upload.py`)
-        is_gzip = 'original' in record
+        is_gzip = 'original' in attachment
         if is_gzip:
-            filename = record['original']['filename']
-            remote_hash = record['original']['hash']
+            filename = attachment['original']['filename']
+            remote_hash = attachment['original']['hash']
         else:
             filename = attachment['filename']
             remote_hash = attachment['hash']

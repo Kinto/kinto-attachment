@@ -1,5 +1,7 @@
 import json
 import hashlib
+import gzip
+from six import BytesIO
 
 from kinto.core import utils as core_utils
 from kinto.core.errors import raise_invalid
@@ -116,32 +118,62 @@ def delete_attachment(request, link_field=None, uri=None):
     storage.delete_all("", FILE_LINKS, filters=filters, with_deleted=False)
 
 
-def save_file(content, request, randomize=True):
+def save_file(content, request, randomize=True, gzipped=False):
     folder_pattern = request.registry.settings.get('attachment.folder', '')
     folder = folder_pattern.format(**request.matchdict) or None
-
-    try:
-        location = request.attachment.save(content, folder=folder,
-                                           randomize=randomize)
-    except FileNotAllowed:
-        error_msg = 'File extension is not allowed.'
-        raise_invalid(request, location='body', description=error_msg)
 
     # Read file to compute hash.
     content.file.seek(0)
     filecontent = content.file.read()
+
+    if gzipped:
+        original = {
+            'filename': content.filename,
+            'hash': sha256(filecontent),
+            'mimetype': content.type,
+            'size': len(filecontent),
+        }
+        mimetype = 'application/x-gzip'
+        filename = content.filename + '.gz'
+
+        # in-memory gzipping
+        out = BytesIO()
+        with gzip.GzipFile(fileobj=out, mode="w") as f:
+            f.write(filecontent)
+
+        filecontent = out.getvalue()
+        out.seek(0)
+        content.file = out
+        content.filename = filename
+    else:
+        original = None
+        mimetype = content.type
+        filename = content.filename
+
+    save_options = {'folder': folder,
+                    'randomize': randomize}
+    if gzipped:
+        save_options['extensions'] = ['gz']
+
+    try:
+        location = request.attachment.save(content, **save_options)
+    except FileNotAllowed:
+        error_msg = 'File extension is not allowed.'
+        raise_invalid(request, location='body', description=error_msg)
 
     # File metadata.
     fullurl = request.attachment.url(location)
     size = len(filecontent)
     filehash = sha256(filecontent)
     attachment = {
-        'filename': content.filename,
+        'filename': filename,
         'location': fullurl,
         'hash': filehash,
-        'mimetype': content.type,
+        'mimetype': mimetype,
         'size': size
     }
+    if original is not None:
+        attachment['original'] = original
 
     # Store link between record and attachment (for later deletion).
     request.registry.storage.create("", FILE_LINKS, {

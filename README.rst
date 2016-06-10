@@ -34,6 +34,14 @@ In the Kinto project settings
     kinto.attachment.folder = {bucket_id}/{collection_id}
     kinto.attachment.keep_old_files = true
 
+
+If you want uploaded files to get gzipped when stored:
+
+.. code-block:: ini
+
+    kinto.attachment.gzipped = true
+
+
 Store files locally:
 
 .. code-block:: ini
@@ -123,6 +131,14 @@ By default, the server will randomize the name of the attached files. If you
 don't want this behavior and prefer to keep the original file name, you can
 pass ``?randomize=false`` in the QueryString.
 
+By default, the server won't gzip files unless you specifically used the
+``kinto.attachment.gzipped`` option if you want to **force** gzip to all
+collections.
+
+You can overwite that option by passing a ``?gzipped=true`` in the QueryString
+to specifically gzip some files.
+
+
 Attributes
 ----------
 
@@ -144,7 +160,7 @@ with the following fields:
                 "filename": "IMG_20150219_174559.jpg",
                 "hash": "hPME6i9avCf/LFaznYr+sHtwQEX7mXYHSu+vgtygpM8=",
                 "location": "http://cdn.service.org/files/ffa9c7b9-7561-406b-b7f9-e00ac94644ff.jpg",
-                "mimetype": "text/plain",
+                "mimetype": "image/jpeg",
                 "size": 1481798
             },
             "id": "c2ce1975-0e52-4b2f-a5db-80166aeca688",
@@ -156,6 +172,41 @@ with the following fields:
             "write": ["basicauth:6de355038fd943a2dc91405063b91018bb5dd97a08d1beb95713d23c2909748f"]
         }
     }
+
+
+If the file is gzipped by the server, an ``original`` key is added in the ``attachment``
+key, containing the file info **before** it's gzipped. The ``attachment`` keys are
+in that case referring to the gzipped file:
+
+
+.. code-block:: json
+
+    {
+        "data": {
+            "attachment": {
+                "filename": "IMG_20150219_174559.jpg.gz",
+                "hash": "hPME6i9avCf/LFaznYr+sHtwQEX7mXYHSu+vgtygpM8=",
+                "location": "http://cdn.service.org/files/ffa9c7b9-7561-406b-b7f9-e00ac94644ff.jpg.gz",
+                "mimetype": "application/x-gzip",
+                "size": 14818,
+                "original": {
+                    "filename": "IMG_20150219_174559.jpg",
+                    "hash": "hPME6i9avCf/LFaznYr+sHtwQEX7mXYHSu+vgtygpM8=",
+                    "mimetype": "image/jpeg",
+                    "size": 1481798
+                }
+            },
+            "id": "c2ce1975-0e52-4b2f-a5db-80166aeca688",
+            "last_modified": 1447834938251,
+            "theme": "orange",
+            "type": "wallpaper"
+        },
+        "permissions": {
+            "write": ["basicauth:6de355038fd943a2dc91405063b91018bb5dd97a08d1beb95713d23c2909748f"]
+        }
+    }
+
+
 
 
 Usage
@@ -184,7 +235,7 @@ Using HTTPie
         "filename": "IMG_20150219_174559.jpg",
         "hash": "hPME6i9avCf/LFaznYr+sHtwQEX7mXYHSu+vgtygpM8=",
         "location": "http://cdn.service.org/files/ffa9c7b9-7561-406b-b7f9-e00ac94644ff.jpg",
-        "mimetype": "text/plain",
+        "mimetype": "image/jpeg",
         "size": 1481798
     }
 

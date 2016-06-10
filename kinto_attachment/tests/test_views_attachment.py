@@ -165,6 +165,12 @@ class AttachmentViewTest(object):
         record = self.get_record(resp)
         self.assertIn('report', record['location'])
 
+    def test_file_was_zipped(self):
+        resp = self.upload(files=[
+            (self.file_field, b'my-report.pdf', b'--binary--')
+        ], gzipped=True)
+        self.assertIn('original', resp.json)
+
     def test_record_location_contains_subfolder(self):
         self.upload()
         resp = self.app.get(self.record_uri, headers=self.headers)
@@ -261,6 +267,15 @@ class AttachmentViewTest(object):
 
         self.headers.update(get_user_headers('jean-louis'))
         self.upload(status=200)
+
+
+class ZippedAttachementViewTest(BaseWebTestLocal, unittest.TestCase):
+    config = 'config/local_gzipped.ini'
+
+    def test_file_get_zipped_by_default(self):
+        r = self.upload()
+        self.assertEqual(r.json['mimetype'], 'application/x-gzip')
+        self.assertEqual(r.json['filename'], 'image.jpg.gz')
 
 
 class SingleAttachmentViewTest(AttachmentViewTest, BaseWebTestLocal,

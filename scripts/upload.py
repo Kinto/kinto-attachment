@@ -56,34 +56,20 @@ def files_to_upload(records, files):
 
 def upload_files(client, files, compress, randomize):
     permissions = {}  # XXX: Permissions are inherited from collection.
+    params = {'randomize': randomize}
+    if compress:
+        params['gzipped'] = True
 
     for filepath, record in files:
         mimetype, _ = mimetypes.guess_type(filepath)
         filename = os.path.basename(filepath)
         filecontent = open(filepath, "rb").read()
-        if not compress:
-            attributes = {}
-        else:
-            attributes = {
-                'original': {
-                    'filename': filename,
-                    'hash': sha256(filecontent),
-                    'mimetype': mimetype,
-                    'size': len(filecontent)
-                }
-            }
-            filename += '.gz'
-            filecontent = gzip.compress(filecontent)
-            mimetype = 'application/x-gzip'
-
         record_uri = client.get_endpoint('record', id=record['id'])
         attachment_uri = '%s/attachment' % record_uri
         multipart = [("attachment", (filename, filecontent, mimetype))]
-        params = {'randomize': randomize}
         body, _ = client.session.request(method='post',
                                          params=params,
                                          endpoint=attachment_uri,
-                                         data=json.dumps(attributes),
                                          permissions=json.dumps(permissions),
                                          files=multipart)
         pprint.pprint(body)
