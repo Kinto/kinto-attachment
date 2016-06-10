@@ -2,6 +2,7 @@ VIRTUALENV = virtualenv
 VENV := $(shell echo $${VIRTUAL_ENV-.venv})
 PYTHON = $(VENV)/bin/python
 INSTALL_STAMP = $(VENV)/.install.stamp
+TEMPDIR := $(shell mktemp -d)
 
 .IGNORE: clean distclean maintainer-clean
 .PHONY: all install virtualenv tests
@@ -19,6 +20,12 @@ $(INSTALL_STAMP): $(PYTHON) setup.py
 virtualenv: $(PYTHON)
 $(PYTHON):
 	virtualenv $(VENV)
+
+build-requirements:
+	$(VIRTUALENV) $(TEMPDIR)
+	$(TEMPDIR)/bin/pip install -U pip
+	$(TEMPDIR)/bin/pip install -Ue .
+	$(TEMPDIR)/bin/pip freeze > requirements.txt
 
 moto:
 	$(VENV)/bin/moto_server s3bucket_path -H 0.0.0.0 -p 5000
