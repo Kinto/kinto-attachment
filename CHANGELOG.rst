@@ -4,6 +4,10 @@ Changelog
 0.8.0 (unreleased)
 ------------------
 
+**New features**
+
+- Prevent ``attachment`` attributes to be modified manually (fixes #83)
+
 **Bug fixes**
 
 - Fix crash when the file is not uploaded using ``attachment`` field name (fixes #57)

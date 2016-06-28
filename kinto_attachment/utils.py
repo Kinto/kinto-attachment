@@ -89,6 +89,8 @@ def patch_record(record, request):
     request.body = json.dumps(record).encode('utf-8')
     resource = Record(request, context)
     request.current_resource_name = 'record'
+    setattr(request, '_attachment_auto_save', True)  # Flag in update listener.
+
     try:
         saved = resource.patch()
     except httpexceptions.HTTPNotFound:
