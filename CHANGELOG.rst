@@ -8,6 +8,11 @@ Changelog
 
 - Prevent ``attachment`` attributes to be modified manually (fixes #83)
 
+**Bug fixes**
+
+- Fix crash when the file is not uploaded using ``attachment`` field name (fixes #57)
+
+
 0.7.0 (2016-06-10)
 ------------------
 
