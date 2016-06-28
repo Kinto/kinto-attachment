@@ -26,7 +26,7 @@ def on_delete_record(event):
             for_resources=('record',),
             for_actions=(ACTIONS.UPDATE,))
 def on_update_record(event):
-    if event.request.bound_data.pop('attachment_auto', False):
+    if getattr(event.request, '_attachment_auto_save', False):
         # Record attributes are being by the plugin itself.
         return
 

@@ -87,9 +87,9 @@ def patch_record(record, request):
     # Simulate update of fields.
     request.validated = record
     request.body = json.dumps(record).encode('utf-8')
-    request.bound_data['attachment_auto'] = True
     resource = Record(request, context)
     request.current_resource_name = 'record'
+    setattr(request, '_attachment_auto_save', True)  # Flag in update listener.
 
     try:
         saved = resource.patch()
