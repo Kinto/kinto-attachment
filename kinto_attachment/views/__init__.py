@@ -3,6 +3,7 @@ import json
 from pyramid import httpexceptions
 from pyramid.settings import asbool
 from kinto.core import logger
+from kinto.core.errors import http_error
 from six import StringIO
 
 from kinto_attachment import utils
@@ -21,6 +22,9 @@ def post_attachment_view(request, file_field):
 
     # Store file locally.
     content = request.POST.get(file_field)
+    if content is None:
+        raise http_error(httpexceptions.HTTPBadRequest(),
+                         message="Attachment missing.")
 
     randomize = True
     if 'randomize' in request.GET:
