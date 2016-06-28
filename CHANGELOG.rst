@@ -6,7 +6,9 @@ Changelog
 
 **Bug fixes**
 
+- Fix crash when the file is not uploaded using ``attachment`` field name (fixes #57)
 - Prevent crash when filename is not provided (fixes #81)
+
 
 0.7.0 (2016-06-10)
 ------------------

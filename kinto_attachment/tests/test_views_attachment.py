@@ -228,6 +228,12 @@ class AttachmentViewTest(object):
         self.assertEqual(resp.json['message'],
                          'body: File extension is not allowed.')
 
+    def test_upload_refused_if_field_is_not_attachment(self):
+        resp = self.upload(files=[('fichierjoint', b'image.jpg', b'--fake--')],
+                           status=400)
+        self.assertEqual(resp.json['message'],
+                         'Attachment missing.')
+
     # Permissions.
 
     def test_upload_refused_if_not_authenticated(self):
