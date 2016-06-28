@@ -4,8 +4,9 @@ Changelog
 0.8.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**Bug fixes**
 
+- Prevent crash when filename is not provided (fixes #81)
 
 0.7.0 (2016-06-10)
 ------------------
