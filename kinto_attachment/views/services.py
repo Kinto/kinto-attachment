@@ -9,8 +9,6 @@ SINGLE_FILE_FIELD = 'attachment'
 attachment = Service(name='attachment',
                      description='Attach a file to a record',
                      path=utils.RECORD_PATH + '/attachment',
-                     cors_enabled=True,
-                     cors_origins='*',
                      factory=utils.AttachmentRouteFactory)
 
 
