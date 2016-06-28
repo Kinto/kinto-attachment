@@ -1,3 +1,4 @@
+import cgi
 import json
 import hashlib
 import gzip
@@ -125,6 +126,10 @@ def save_file(content, request, randomize=True, gzipped=False):
     folder = folder_pattern.format(**request.matchdict) or None
 
     # Read file to compute hash.
+    if not isinstance(content, cgi.FieldStorage):
+        error_msg = 'Filename is required.'
+        raise_invalid(request, location='body', description=error_msg)
+
     content.file.seek(0)
     filecontent = content.file.read()
 

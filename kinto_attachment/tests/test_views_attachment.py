@@ -224,6 +224,12 @@ class AttachmentViewTest(object):
         resp = self.upload(params=[('data', '{"author": 12}')], status=400)
         self.assertIn("12 is not of type 'string'", resp.json['message'])
 
+    def test_attachment_must_have_a_filename(self):
+        resp = self.upload(files=[(self.file_field, b'', b'--fake--')],
+                           status=400)
+        self.assertEqual(resp.json['message'],
+                         'body: Filename is required.')
+
     def test_upload_refused_if_extension_not_allowed(self):
         resp = self.upload(files=[(self.file_field, b'virus.exe',
                                    b'--fake--')], status=400)

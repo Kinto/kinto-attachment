@@ -1,5 +1,5 @@
+import cgi
 from six import BytesIO
-import mock
 
 from kinto.tests.core.support import unittest
 from kinto_attachment.utils import save_file
@@ -36,7 +36,7 @@ class _Request(object):
 class TestUtils(unittest.TestCase):
 
     def test_save_file_gzip(self):
-        my_font = mock.Mock()
+        my_font = cgi.FieldStorage()
         my_font.filename = 'font.ttf'
         my_font.file = BytesIO(b'content')
         my_font.type = 'application/x-font'
@@ -46,7 +46,7 @@ class TestUtils(unittest.TestCase):
         self.assertTrue('original' in res)
 
     def test_save_file_not_gzip(self):
-        my_font = mock.Mock()
+        my_font = cgi.FieldStorage()
         my_font.filename = 'font.ttf'
         my_font.file = BytesIO(b'content')
         my_font.type = 'application/x-font'
