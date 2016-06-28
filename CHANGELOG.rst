@@ -4,8 +4,9 @@ Changelog
 0.8.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**New features**
 
+- Prevent ``attachment`` attributes to be modified manually (fixes #83)
 
 0.7.0 (2016-06-10)
 ------------------

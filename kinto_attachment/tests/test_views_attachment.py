@@ -197,6 +197,14 @@ class AttachmentViewTest(object):
         self.assertEqual(resp.json['data']['family'], 'sans')
         self.assertEqual(resp.json['data']['author'], 'frutiger')
 
+    def test_record_attachment_metadata_cannot_be_removed_manually(self):
+        self.upload(params=[('data', '{"family": "sans"}')])
+        body = {'data': {'attachment': {'manual': 'true'}}}
+        resp = self.app.patch_json(self.record_uri, body, headers=self.headers,
+                                   status=400)
+        self.assertIn('Attachment metadata cannot be modified',
+                      resp.json['message'])
+
     def test_record_is_created_with_appropriate_permissions(self):
         self.upload()
         current_principal = ("basicauth:c6c27f0c7297ba7d4abd2a70c8a2cb88a06a3"
