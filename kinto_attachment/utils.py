@@ -29,7 +29,7 @@ class AttachmentRouteFactory(RouteFactory):
         super(AttachmentRouteFactory, self).__init__(request)
         self.resource_name = 'record'
         try:
-            resource = Record(request, self)
+            resource = Record(request, context=self)
             request.current_resource_name = 'record'
             existing = resource.get()
         except httpexceptions.HTTPNotFound:
@@ -87,7 +87,7 @@ def patch_record(record, request):
     # Simulate update of fields.
     request.validated = record
     request.body = json.dumps(record).encode('utf-8')
-    resource = Record(request, context)
+    resource = Record(request, context=context)
     request.current_resource_name = 'record'
     try:
         saved = resource.patch()
