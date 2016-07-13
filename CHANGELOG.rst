@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.7.1 (2016-07-13)
+------------------
+
+**Bug fixes**
+
+- Update the call to the Record resource to use named attributes. (#97)
+
+
 0.7.0 (2016-06-10)
 ------------------
 
