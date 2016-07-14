@@ -3,8 +3,8 @@ import os
 import uuid
 
 from six.moves.urllib.parse import urlparse
+from kinto.core.errors import ERRORS
 from kinto.tests.core.support import unittest
-
 from . import BaseWebTestLocal, BaseWebTestS3, get_user_headers
 
 
@@ -241,6 +241,7 @@ class AttachmentViewTest(object):
                            status=400)
         self.assertEqual(resp.json['message'],
                          'Attachment missing.')
+        self.assertEqual(resp.json['errno'], ERRORS.INVALID_POSTED_DATA.value)
 
     # Permissions.
 
