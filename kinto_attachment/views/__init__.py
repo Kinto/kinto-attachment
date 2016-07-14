@@ -26,7 +26,13 @@ def post_attachment_view(request, file_field):
                          message="Content-Type should be multipart/form-data")
 
     # Store file locally.
-    content = request.POST.get(file_field)
+    try:
+        content = request.POST.get(file_field)
+    except ValueError as e:
+        raise http_error(httpexceptions.HTTPBadRequest(),
+                         errno=ERRORS.INVALID_PARAMETERS.value,
+                         message=str(e))
+
     if content is None:
         raise http_error(httpexceptions.HTTPBadRequest(),
                          errno=ERRORS.INVALID_POSTED_DATA,
