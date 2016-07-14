@@ -20,6 +20,11 @@ def post_attachment_view(request, file_field):
         # Remove potential existing attachment.
         utils.delete_attachment(request)
 
+    if "multipart/form-data" not in request.headers.get('Content-Type', ''):
+        raise http_error(httpexceptions.HTTPBadRequest(),
+                         errno=ERRORS.INVALID_PARAMETERS,
+                         message="Content-Type should be multipart/form-data")
+
     # Store file locally.
     content = request.POST.get(file_field)
     if content is None:

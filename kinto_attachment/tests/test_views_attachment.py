@@ -243,6 +243,15 @@ class AttachmentViewTest(object):
                          'Attachment missing.')
         self.assertEqual(resp.json['errno'], ERRORS.INVALID_POSTED_DATA.value)
 
+    def test_upload_refused_if_header_is_not_multipart(self):
+        self.headers['Content-Type'] = 'application/json'
+        resp = self.app.post(self.endpoint_uri, {},
+                             headers=self.headers,
+                             status=400)
+        self.assertEqual(resp.json['message'],
+                         "Content-Type should be multipart/form-data")
+        self.assertEqual(resp.json['errno'], ERRORS.INVALID_PARAMETERS.value)
+
     # Permissions.
 
     def test_upload_refused_if_not_authenticated(self):
