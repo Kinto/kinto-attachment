@@ -50,11 +50,26 @@ def post_attachment_view(request, file_field):
                                  gzipped=gzipped)
 
     # Update related record.
-    record = {k: v for k, v in request.POST.items() if k != file_field}
-    for k, v in record.items():
-        record[k] = json.loads(v)
+    posted_data = {k: v for k, v in request.POST.items() if k != file_field}
+    record = {'data': {}}
+    for field in ('data', 'permissions'):
+        if field in posted_data:
+            try:
+                record[field] = json.loads(posted_data.pop(field))
+            except ValueError as e:
+                error_msg = "body: %s is not valid JSON (%s)" % (field, str(e))
+                raise http_error(httpexceptions.HTTPBadRequest(),
+                                 errno=ERRORS.INVALID_POSTED_DATA,
+                                 message=error_msg)
+    # Some fields remaining in posted_data after popping: invalid!
+    for field in posted_data.keys():
+        error_msg = "body: %r not in ('data', 'permissions')" % field
+        raise http_error(httpexceptions.HTTPBadRequest(),
+                         errno=ERRORS.INVALID_POSTED_DATA,
+                         message=error_msg)
 
-    record.setdefault('data', {})[file_field] = attachment
+    record['data'][file_field] = attachment
+
     utils.patch_record(record, request)
 
     # Return attachment data (with location header)
