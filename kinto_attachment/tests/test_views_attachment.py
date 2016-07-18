@@ -220,6 +220,20 @@ class AttachmentViewTest(object):
 
     # Content Validation.
 
+    def test_records_fields_must_be_valid_json(self):
+        resp = self.upload(params=[('data', '{>author: 12}')], status=400)
+        self.assertIn('body: data is not valid JSON', resp.json['message'])
+
+    def test_permissions_must_be_valid_json(self):
+        resp = self.upload(params=[('permissions', '{"read": >}')], status=400)
+        self.assertIn('body: permissions is not valid JSON',
+                      resp.json['message'])
+
+    def test_unknown_fields_are_not_accepted(self):
+        resp = self.upload(params=[('my_field', 'a_value')], status=400)
+        self.assertIn("body: 'my_field' not in ('data', 'permissions')",
+                      resp.json['message'])
+
     def test_record_fields_are_validated_against_schema(self):
         resp = self.upload(params=[('data', '{"author": 12}')], status=400)
         self.assertIn("12 is not of type 'string'", resp.json['message'])
