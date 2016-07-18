@@ -6,7 +6,7 @@ enum34==1.1.6
 functools32==3.2.3.post2
 iso8601==0.1.11
 jsonschema==2.5.1
-kinto==3.1.1
+kinto==3.3.0
 PasteDeploy==1.5.2
 pyramid==1.7
 pyramid-multiauth==0.8.0
