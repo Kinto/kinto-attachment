@@ -11,8 +11,10 @@ Changelog
 **Bug fixes**
 
 - Fix crash when the file is not uploaded using ``attachment`` field name (fixes #57)
+- Fix crash when the multipart content-type is invalid.
 - Prevent crash when filename is not provided (fixes #81)
 - Update the call to the Record resource to use named attributes. (#97)
+- Show detailed error when data is not posted with multipart content-type.
 
 **Internal changes**
 

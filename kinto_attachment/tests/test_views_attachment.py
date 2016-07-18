@@ -3,8 +3,8 @@ import os
 import uuid
 
 from six.moves.urllib.parse import urlparse
+from kinto.core.errors import ERRORS
 from kinto.tests.core.support import unittest
-
 from . import BaseWebTestLocal, BaseWebTestS3, get_user_headers
 
 
@@ -241,6 +241,25 @@ class AttachmentViewTest(object):
                            status=400)
         self.assertEqual(resp.json['message'],
                          'Attachment missing.')
+        self.assertEqual(resp.json['errno'], ERRORS.INVALID_POSTED_DATA.value)
+
+    def test_upload_refused_if_header_is_not_multipart(self):
+        self.headers['Content-Type'] = 'application/json'
+        resp = self.app.post(self.endpoint_uri, {},
+                             headers=self.headers,
+                             status=400)
+        self.assertEqual(resp.json['message'],
+                         "Content-Type should be multipart/form-data")
+        self.assertEqual(resp.json['errno'], ERRORS.INVALID_PARAMETERS.value)
+
+    def test_upload_refused_if_header_is_invalid_multipart(self):
+        self.headers['Content-Type'] = 'multipart/form-data'
+        resp = self.app.post(self.endpoint_uri, {},
+                             headers=self.headers,
+                             status=400)
+        self.assertEqual(resp.json['message'].replace(": b'", ": '"),
+                         "Invalid boundary in multipart form: ''")
+        self.assertEqual(resp.json['errno'], ERRORS.INVALID_PARAMETERS.value)
 
     # Permissions.
 
