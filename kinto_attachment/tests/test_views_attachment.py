@@ -257,7 +257,7 @@ class AttachmentViewTest(object):
         resp = self.app.post(self.endpoint_uri, {},
                              headers=self.headers,
                              status=400)
-        self.assertEqual(resp.json['message'],
+        self.assertEqual(resp.json['message'].replace(": b'", ": '"),
                          "Invalid boundary in multipart form: ''")
         self.assertEqual(resp.json['errno'], ERRORS.INVALID_PARAMETERS.value)
 
