@@ -158,7 +158,7 @@ with the following fields:
         "data": {
             "attachment": {
                 "filename": "IMG_20150219_174559.jpg",
-                "hash": "hPME6i9avCf/LFaznYr+sHtwQEX7mXYHSu+vgtygpM8=",
+                "hash": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
                 "location": "http://cdn.service.org/files/ffa9c7b9-7561-406b-b7f9-e00ac94644ff.jpg",
                 "mimetype": "image/jpeg",
                 "size": 1481798
@@ -185,7 +185,7 @@ in that case referring to the gzipped file:
         "data": {
             "attachment": {
                 "filename": "IMG_20150219_174559.jpg.gz",
-                "hash": "hPME6i9avCf/LFaznYr+sHtwQEX7mXYHSu+vgtygpM8=",
+                "hash": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
                 "location": "http://cdn.service.org/files/ffa9c7b9-7561-406b-b7f9-e00ac94644ff.jpg.gz",
                 "mimetype": "application/x-gzip",
                 "size": 14818,
@@ -233,7 +233,7 @@ Using HTTPie
 
     {
         "filename": "IMG_20150219_174559.jpg",
-        "hash": "hPME6i9avCf/LFaznYr+sHtwQEX7mXYHSu+vgtygpM8=",
+        "hash": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
         "location": "http://cdn.service.org/files/ffa9c7b9-7561-406b-b7f9-e00ac94644ff.jpg",
         "mimetype": "image/jpeg",
         "size": 1481798
