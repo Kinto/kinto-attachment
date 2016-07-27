@@ -1,4 +1,8 @@
+import pkg_resources
 from kinto_attachment.views import attachments_ping
+
+#: Module version, as defined in PEP-0396.
+__version__ = pkg_resources.get_distribution(__package__).version
 
 
 def includeme(config):
@@ -23,6 +27,7 @@ def includeme(config):
 
     # # Expose capability.
     config.add_api_capability("attachments",
+                              version=__version__,
                               description="Add file attachments to records",
                               url="https://github.com/Kinto/kinto-attachment/",
                               base_url=extra_base_url)

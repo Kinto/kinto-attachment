@@ -1,5 +1,6 @@
 from kinto.tests.core.support import unittest
 
+from kinto_attachment import __version__
 from . import BaseWebTestLocal
 
 
@@ -9,6 +10,7 @@ class HelloViewTest(BaseWebTestLocal, unittest.TestCase):
         capabilities = resp.json["capabilities"]
         self.assertIn("attachments", capabilities)
         expected = {
+            "version": __version__,
             "description": "Add file attachments to records",
             "url": "https://github.com/Kinto/kinto-attachment/",
             "base_url": "https://files.server.com/root/"
