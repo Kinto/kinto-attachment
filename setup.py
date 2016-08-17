@@ -14,7 +14,7 @@ with codecs.open(os.path.join(here, 'CHANGELOG.rst'), encoding='utf-8') as f:
 
 requirements = [
     'boto',
-    'kinto>=1.11.0',
+    'kinto>=4.0.0',
     'pyramid_storage>=0.1.0',
 ]
 
