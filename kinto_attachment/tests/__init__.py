@@ -6,7 +6,12 @@ from six.moves.urllib.parse import urlencode
 
 import webtest
 from kinto.core import utils as core_utils
-from kinto.tests.core import support as core_support
+try:
+    from kinto.core import testing as core_support
+except ImportError:
+    # Fallback for Kinto < 4.1.0
+    from kinto.tests.core import support as core_support
+
 from pyramid_storage.s3 import S3FileStorage
 from pyramid_storage.interfaces import IFileStorage
 

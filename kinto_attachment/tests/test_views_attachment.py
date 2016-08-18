@@ -1,10 +1,10 @@
 import mock
 import os
 import uuid
+import unittest
 
 from six.moves.urllib.parse import urlparse
 from kinto.core.errors import ERRORS
-from kinto.tests.core.support import unittest
 from . import BaseWebTestLocal, BaseWebTestS3, get_user_headers
 
 
@@ -354,7 +354,11 @@ class KeepOldFilesTest(BaseWebTestLocal, unittest.TestCase):
         import webtest
         from kinto import main as testapp
         from kinto import DEFAULT_SETTINGS
-        from kinto.tests.core import support as core_support
+        try:
+            from kinto.core import testing as core_support
+        except ImportError:
+            # Fallback for Kinto < 4.1.0
+            from kinto.tests.core import support as core_support
 
         settings = core_support.DEFAULT_SETTINGS.copy()
         settings.update(**DEFAULT_SETTINGS)

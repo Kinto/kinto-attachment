@@ -1,7 +1,7 @@
 import cgi
+import unittest
 from six import BytesIO
 
-from kinto.tests.core.support import unittest
 from kinto_attachment.utils import save_file
 
 

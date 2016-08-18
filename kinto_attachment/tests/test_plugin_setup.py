@@ -1,5 +1,4 @@
-from kinto.tests.core.support import unittest
-
+import unittest
 from kinto_attachment import __version__
 from . import BaseWebTestLocal
 

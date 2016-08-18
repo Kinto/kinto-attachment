@@ -1,5 +1,4 @@
-from kinto.tests.core.support import unittest
-
+import unittest
 from . import BaseWebTest
 
 
