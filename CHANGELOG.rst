@@ -1,12 +1,17 @@
 Changelog
 =========
 
-0.9.0 (unreleased)
+1.0.0 (unreleased)
 ------------------
 
-- Add the plugin version in the capability.
+**Breaking change**
+
 - Remove the ``base_url`` from the public settings because the
   accurate value is in the capability.
+
+**Protocol**
+
+- Add the plugin version in the capability.
 
 
 0.8.0 (2016-07-18)
