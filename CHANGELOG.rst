@@ -5,6 +5,8 @@ Changelog
 ------------------
 
 - Add the plugin version in the capability.
+- Remove the ``base_url`` from the public settings because the
+  accurate value is in the capability.
 
 
 0.8.0 (2016-07-18)

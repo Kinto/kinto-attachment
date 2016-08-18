@@ -32,9 +32,6 @@ def includeme(config):
                               url="https://github.com/Kinto/kinto-attachment/",
                               base_url=extra_base_url)
 
-    # Advertise public setting.
-    config.registry.public_settings.add('attachment.base_url')
-
     # Register heartbeat to check attachments storage.
     config.registry.heartbeats['attachments'] = attachments_ping
 
