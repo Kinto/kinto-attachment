@@ -1,5 +1,4 @@
-from kinto.tests.core.support import unittest
-
+import unittest
 from kinto_attachment import __version__
 from . import BaseWebTestLocal
 
@@ -16,9 +15,3 @@ class HelloViewTest(BaseWebTestLocal, unittest.TestCase):
             "base_url": "https://files.server.com/root/"
         }
         self.assertEqual(expected, capabilities["attachments"])
-
-    def test_public_url_is_provided_in_public_settings(self):
-        resp = self.app.get("/")
-        settings = resp.json["settings"]
-        self.assertEqual(settings["attachment.base_url"],
-                         "https://cdn.firefox.net/")
