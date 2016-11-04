@@ -4,6 +4,7 @@ import hashlib
 import gzip
 from six import BytesIO
 
+from cornice import __version__ as cornice_version
 from kinto.core import utils as core_utils
 from kinto.core.errors import raise_invalid
 from kinto.core.storage import Filter
@@ -86,7 +87,12 @@ def patch_record(record, request):
     request.matched_route.pattern = record_pattern
 
     # Simulate update of fields.
-    request.validated = record
+    # Backward compatible with cornice < 2.0.0
+    if cornice_version < "2":  # pragma: no cover
+        request.validated = record
+    else:  # pragma: no cover
+        request.validated = {'body': record}
+
     request.body = json.dumps(record).encode('utf-8')
     resource = Record(request, context=context)
     request.current_resource_name = 'record'

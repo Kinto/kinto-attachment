@@ -236,7 +236,7 @@ class AttachmentViewTest(object):
 
     def test_record_fields_are_validated_against_schema(self):
         resp = self.upload(params=[('data', '{"author": 12}')], status=400)
-        self.assertIn("12 is not of type 'string'", resp.json['message'])
+        self.assertIn("author in body: 12 is not of type ", resp.json['message'])
 
     def test_attachment_must_have_a_filename(self):
         resp = self.upload(files=[(self.file_field, b'', b'--fake--')],

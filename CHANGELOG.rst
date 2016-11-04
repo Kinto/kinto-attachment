@@ -4,7 +4,9 @@ Changelog
 1.1.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**Bug fixes**
+
+- Make kinto-attachment compatible with both cornice 1.x and 2.x (#115)
 
 
 1.0.0 (2016-09-07)
