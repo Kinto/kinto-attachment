@@ -88,9 +88,9 @@ def patch_record(record, request):
 
     # Simulate update of fields.
     # Backward compatible with cornice < 2.0.0
-    if cornice_version < "2":
+    if cornice_version < "2":  # pragma: no cover
         request.validated = record
-    else:
+    else:  # pragma: no cover
         request.validated = {'body': record}
 
     request.body = json.dumps(record).encode('utf-8')
