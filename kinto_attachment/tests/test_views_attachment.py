@@ -330,6 +330,12 @@ class ZippedAttachementViewTest(BaseWebTestLocal, unittest.TestCase):
         self.assertEqual(r.json['mimetype'], 'application/x-gzip')
         self.assertEqual(r.json['filename'], 'image.jpg.gz')
 
+    def test_capability_expose_gzipped(self):
+        resp = self.app.get("/")
+        capabilities = resp.json["capabilities"]
+        self.assertIn("attachments", capabilities)
+        self.assertTrue(capabilities["attachments"]['gzipped'])
+
 
 class SingleAttachmentViewTest(AttachmentViewTest, BaseWebTestLocal,
                                unittest.TestCase):

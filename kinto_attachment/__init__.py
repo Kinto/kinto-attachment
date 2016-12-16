@@ -1,4 +1,5 @@
 import pkg_resources
+from pyramid.settings import asbool
 from kinto_attachment.views import attachments_ping
 
 #: Module version, as defined in PEP-0396.
@@ -24,12 +25,13 @@ def includeme(config):
     # (see workaround about relative base_url in README)
     extra_base_url = settings.get('attachment.extra.base_url',
                                   settings.get('attachment.base_url'))
-
+    gzipped = asbool(settings.get('attachment.gzipped', False))
     # # Expose capability.
     config.add_api_capability("attachments",
                               version=__version__,
                               description="Add file attachments to records",
                               url="https://github.com/Kinto/kinto-attachment/",
+                              gzipped=gzipped,
                               base_url=extra_base_url)
 
     # Register heartbeat to check attachments storage.
