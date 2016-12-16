@@ -1,10 +1,10 @@
 Changelog
 =========
 
-1.1.0 (unreleased)
+1.1.0 (2016-12-16)
 ------------------
 
-- Nothing changed yet.
+- Expose the gzipped settings value in the capability (#117)
 
 
 1.0.1 (2016-11-04)
