@@ -12,6 +12,7 @@ class HelloViewTest(BaseWebTestLocal, unittest.TestCase):
             "version": __version__,
             "description": "Add file attachments to records",
             "url": "https://github.com/Kinto/kinto-attachment/",
-            "base_url": "https://files.server.com/root/"
+            "base_url": "https://files.server.com/root/",
+            "gzipped": False
         }
         self.assertEqual(expected, capabilities["attachments"])
