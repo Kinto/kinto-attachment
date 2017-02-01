@@ -17,6 +17,12 @@ class UploadTest(object):
         resp = self.app.get(self.record_uri, headers=self.headers)
         self.assertIn(self.file_field, resp.json['data'])
 
+    def test_record_is_created_with_valid_id(self):
+        self.record_uri = self.get_record_uri('fennec', 'fonts', 'logo')
+        self.endpoint_uri = self.record_uri + '/attachment'
+        self.app.put_json(self.record_uri, {}, headers=self.headers)
+        self.upload(status=200)
+
     def test_returns_200_if_record_already_exists(self):
         self.app.put_json(self.record_uri, {}, headers=self.headers)
         self.upload(status=200)

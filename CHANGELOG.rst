@@ -4,7 +4,9 @@ Changelog
 1.2.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**Bug fixes**
+
+- Fix invalid request when attaching a file on non UUID record id (fixes #122)
 
 
 1.1.1 (2017-02-01)
