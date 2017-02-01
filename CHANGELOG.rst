@@ -4,7 +4,9 @@ Changelog
 1.2.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**Bug fixes**
+
+- Fixes compatibility with Kinto 5.3 (fixes #120)
 
 
 1.1.0 (2016-12-16)
