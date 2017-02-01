@@ -83,6 +83,7 @@ def patch_record(record, request):
 
     # Instantiate record resource with current request.
     context = RouteFactory(request)
+    context.resource_name = 'record'
     context.get_permission_object_id = lambda r, i: record_uri(r)
     record_pattern = request.matched_route.pattern.replace('/attachment', '')
     request.matched_route.pattern = record_pattern
@@ -92,7 +93,6 @@ def patch_record(record, request):
 
     request.body = json.dumps(record).encode('utf-8')
     resource = Record(request, context=context)
-    request.current_resource_name = 'record'
     setattr(request, '_attachment_auto_save', True)  # Flag in update listener.
 
     try:
