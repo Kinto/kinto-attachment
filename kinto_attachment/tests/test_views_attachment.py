@@ -360,11 +360,7 @@ class KeepOldFilesTest(BaseWebTestLocal, unittest.TestCase):
         import webtest
         from kinto import main as testapp
         from kinto import DEFAULT_SETTINGS
-        try:
-            from kinto.core import testing as core_support
-        except ImportError:  # Pragma: no cover
-            # Fallback for Kinto < 4.1.0
-            from kinto.tests.core import support as core_support
+        from kinto.core import testing as core_support
 
         settings = core_support.DEFAULT_SETTINGS.copy()
         settings.update(**DEFAULT_SETTINGS)
