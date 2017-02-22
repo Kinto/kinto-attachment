@@ -25,7 +25,7 @@ build-requirements:
 	$(VIRTUALENV) $(TEMPDIR)
 	$(TEMPDIR)/bin/pip install -U pip
 	$(TEMPDIR)/bin/pip install -Ue .
-	$(TEMPDIR)/bin/pip freeze > requirements.txt
+	$(TEMPDIR)/bin/pip freeze | grep -v -- '^-e' > requirements.txt
 
 moto:
 	$(VENV)/bin/moto_server s3bucket_path -H 0.0.0.0 -p 5000
