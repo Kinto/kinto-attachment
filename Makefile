@@ -19,7 +19,7 @@ $(INSTALL_STAMP): $(PYTHON) setup.py
 
 virtualenv: $(PYTHON)
 $(PYTHON):
-	virtualenv $(VENV)
+	$(VIRTUALENV) $(VENV)
 
 build-requirements:
 	$(VIRTUALENV) $(TEMPDIR)
