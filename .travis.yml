@@ -28,9 +28,3 @@ matrix:
         - make install
         - pip install -U https://github.com/Kinto/kinto/zipball/master
         - make run-kinto &
-    - python: 2.7
-      env:
-        - TOX_ENV=py27
-      install:
-        - make install
-        - pip install -U 'kinto<6'
