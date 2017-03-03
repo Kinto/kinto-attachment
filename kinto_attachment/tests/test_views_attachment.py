@@ -3,7 +3,7 @@ import os
 import uuid
 import unittest
 
-from six.moves.urllib.parse import urlparse
+from urllib.parse import urlparse
 from kinto.core.errors import ERRORS
 from . import BaseWebTestLocal, BaseWebTestS3, get_user_headers
 

@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 import pkg_resources
 from pyramid.settings import asbool
 from kinto_attachment.views import attachments_ping

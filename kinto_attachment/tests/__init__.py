@@ -1,8 +1,7 @@
 import uuid
 import os
 
-import six.moves.urllib.parse as urlparse
-from six.moves.urllib.parse import urlencode
+from urllib.parse import urlparse, urlencode, parse_qsl, urlunparse
 
 import webtest
 from kinto.core import utils as core_utils
@@ -23,11 +22,11 @@ SAMPLE_SCHEMA = {
 
 
 def build_url(url, **params):
-    url_parts = list(urlparse.urlparse(url))
-    query = dict(urlparse.parse_qsl(url_parts[4]))
+    url_parts = list(urlparse(url))
+    query = dict(parse_qsl(url_parts[4]))
     query.update(params)
     url_parts[4] = urlencode(query)
-    return urlparse.urlunparse(url_parts)
+    return urlunparse(url_parts)
 
 
 def get_user_headers(user):
@@ -78,7 +77,7 @@ class BaseWebTest(object):
         files = files or self.default_files
         headers = headers or self.headers.copy()
         content_type, body = self.app.encode_multipart(params, files)
-        headers['Content-Type'] = core_utils.encode_header(content_type)
+        headers['Content-Type'] = content_type
 
         params = {}
         if not randomize:

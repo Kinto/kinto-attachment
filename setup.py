@@ -20,7 +20,6 @@ requirements = [
 
 test_requirements = [
     'mock',
-    'unittest2',
     'webtest'
 ]
 
