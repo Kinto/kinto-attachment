@@ -47,7 +47,7 @@ maintainer-clean: distclean
 	rm -fr $(OBJECTS) .tox/ dist/ build/
 
 run-kinto:
-	cd /tmp; python -m SimpleHTTPServer 8000 &
+	cd /tmp; python -m http.server 8000 &
 	$(VENV)/bin/kinto migrate --ini kinto_attachment/tests/config/functional.ini
 	$(VENV)/bin/kinto start --ini kinto_attachment/tests/config/functional.ini
 
