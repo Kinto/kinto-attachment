@@ -2,7 +2,7 @@ import cgi
 import json
 import hashlib
 import gzip
-from six import BytesIO
+from io import BytesIO
 
 from kinto.core import utils as core_utils
 from kinto.core.errors import raise_invalid

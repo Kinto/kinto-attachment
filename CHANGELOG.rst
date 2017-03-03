@@ -1,10 +1,12 @@
 Changelog
 =========
 
-1.2.0 (unreleased)
+2.0.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**Breaking changes**
+
+- Remove Python 2.7 support and upgrade to Python 3.5. (#125)
 
 
 1.1.2 (2017-02-01)

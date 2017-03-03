@@ -1,6 +1,6 @@
 import cgi
 import unittest
-from six import BytesIO
+from io import BytesIO
 
 from kinto_attachment.utils import save_file
 

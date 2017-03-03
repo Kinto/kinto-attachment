@@ -1,10 +1,10 @@
 import json
+from io import BytesIO
 
 from pyramid import httpexceptions
 from pyramid.settings import asbool
 from kinto.core import logger
 from kinto.core.errors import ERRORS, http_error
-from six import StringIO
 
 from kinto_attachment import utils
 
@@ -100,7 +100,7 @@ def attachments_ping(request):
     status = False
     attachment = request.attachment
     try:
-        location = attachment.save_file(StringIO(HEARTBEAT_CONTENT),
+        location = attachment.save_file(BytesIO(HEARTBEAT_CONTENT.encode('utf-8')),
                                         HEARTBEAT_FILENAME,
                                         replace=True)
         attachment.delete(location)

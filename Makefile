@@ -1,4 +1,4 @@
-VIRTUALENV = virtualenv
+VIRTUALENV = virtualenv --python python3.5
 VENV := $(shell echo $${VIRTUAL_ENV-.venv})
 PYTHON = $(VENV)/bin/python
 INSTALL_STAMP = $(VENV)/.install.stamp
@@ -31,7 +31,7 @@ moto:
 	$(VENV)/bin/moto_server s3bucket_path -H 0.0.0.0 -p 5000
 
 tests-once: install
-	$(VENV)/bin/tox -e py27
+	$(VENV)/bin/py.test kinto_attachment/tests --cov-report term-missing --cov-fail-under 100 --cov kinto_attachment
 
 tests:
 	$(VENV)/bin/tox
@@ -47,9 +47,9 @@ maintainer-clean: distclean
 	rm -fr $(OBJECTS) .tox/ dist/ build/
 
 run-kinto:
-	cd /tmp; python -m SimpleHTTPServer 8000 &
-	$(VENV)/bin/kinto --ini kinto_attachment/tests/config/functional.ini migrate
-	$(VENV)/bin/kinto --ini kinto_attachment/tests/config/functional.ini start
+	cd /tmp; python -m http.server 8000 &
+	$(VENV)/bin/kinto migrate --ini kinto_attachment/tests/config/functional.ini
+	$(VENV)/bin/kinto start --ini kinto_attachment/tests/config/functional.ini
 
 need-kinto-running:
 	@curl http://localhost:8888/v1/ 2>/dev/null 1>&2 || (echo "Run 'make run-kinto' before starting tests." && exit 1)

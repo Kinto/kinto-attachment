@@ -20,13 +20,12 @@ requirements = [
 
 test_requirements = [
     'mock',
-    'unittest2',
     'webtest'
 ]
 
 setup(
     name='kinto-attachment',
-    version='1.2.0.dev0',
+    version='2.0.0.dev0',
     description="Attach files to Kinto records",
     long_description=readme + '\n\n' + history,
     author="Mozilla",
@@ -43,10 +42,9 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
-        "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
     ],
     test_suite='kinto_attachment.tests',
     tests_require=test_requirements
