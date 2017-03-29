@@ -4,7 +4,9 @@ Changelog
 2.0.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**Bug fixes**
+
+- Set request parameters before instantiating a record resource. (#127)
 
 
 2.0.0 (2017-03-03)
