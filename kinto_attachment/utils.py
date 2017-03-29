@@ -30,10 +30,10 @@ class AttachmentRouteFactory(RouteFactory):
         super(AttachmentRouteFactory, self).__init__(request)
         self.resource_name = 'record'
         try:
-            resource = Record(request, context=self)
             request.current_resource_name = 'record'
             request.validated.setdefault('header', {})
             request.validated.setdefault('querystring', {})
+            resource = Record(request, context=self)
             existing = resource.get()
         except httpexceptions.HTTPNotFound:
             existing = None
