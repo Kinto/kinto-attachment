@@ -159,3 +159,24 @@ class BaseWebTestS3(BaseWebTest):
             self._s3_bucket_created = True
 
         return app
+
+class BaseWebTestSeafile(BaseWebTest):
+    config = 'config/seafile.ini'
+
+    def __init__(self, *args, **kwargs):
+        self._seafile_bucket_created = False
+        super(BaseWebTestSeafile, self).__init__(*args, **kwargs)
+
+    def make_app(self):
+        app = super(BaseWebTestSeafile, self).make_app()
+
+        # Create the Seafile bucket if necessary
+        if not self._seafile_bucket_created:
+            prefix = 'kinto.attachment.'
+            settings = app.app.registry.settings
+            seafile_client = seafileapi.connect(settings[prefix + 'seafile.servername'], settings[prefix + 'seafile.username'], settings[prefix + 'seafile.password']);
+            bucket_name = settings[prefix + 'seafile.bucket_name']
+            repo = seafile_client.repose.create_repo(bucket_name)
+            self._seafile_bucket_created = True
+
+        return app

@@ -63,6 +63,8 @@ class LocalUploadTest(UploadTest, BaseWebTestLocal, unittest.TestCase):
 class S3UploadTest(UploadTest, BaseWebTestS3, unittest.TestCase):
     pass
 
+class SeafileUploadTest(UploadTest, BaseWebTestSeafile, unittest.TestCase):
+    pass
 
 class DeleteTest(object):
     def setUp(self):
