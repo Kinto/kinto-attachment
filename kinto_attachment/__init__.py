@@ -1,6 +1,7 @@
 import pkg_resources
 from pyramid.settings import asbool
 from kinto_attachment.views import attachments_ping
+from pyramid.static import static_view
 
 #: Module version, as defined in PEP-0396.
 __version__ = pkg_resources.get_distribution(__package__).version
@@ -45,3 +46,6 @@ def includeme(config):
 
     config.scan('kinto_attachment.views')
     config.scan('kinto_attachment.listeners')
+    static = static_view('/tmp/', use_subpath=True)
+    config.add_route('catchall_static', '/attachments/*subpath')
+    config.add_view(static, route_name="catchall_static")
