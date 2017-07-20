@@ -1,1 +1,1 @@
-kinto-client
+kinto-http
