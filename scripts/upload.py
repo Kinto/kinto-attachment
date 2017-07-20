@@ -1,4 +1,3 @@
-import gzip
 import json
 import hashlib
 import mimetypes
@@ -6,8 +5,8 @@ import os
 import pprint
 import uuid
 
-from kinto_client import cli_utils
-from kinto_client.exceptions import KintoException
+from kinto_http import cli_utils
+from kinto_http.exceptions import KintoException
 
 DEFAULT_SERVER = "http://localhost:8888/v1"
 
@@ -18,17 +17,24 @@ def sha256(content):
     return m.hexdigest()
 
 
-def files_to_upload(records, files):
+def files_to_upload(records, files, force=False):
     records_by_id = {r['id']: r for r in records if 'attachment' in r}
+    existing_files = {r['attachment']['filename']: r for r in records if 'attachment' in r}
+    existing_original_files = {r['attachment']['original']['filename']: r
+                               for r in records
+                               if 'attachment' in r and 'original' in r['attachment']}
     to_upload = []
     for filepath in files:
         filename = os.path.basename(filepath)
 
-        identifier = hashlib.md5(filename.encode('utf-8')).hexdigest()
-        record_id = str(uuid.UUID(identifier))
+        record = None
+        if filename in existing_files.keys():
+            record = existing_files[filename]
+        elif filename in existing_original_files.keys():
+            record = existing_original_files[filename]
 
-        record = records_by_id.pop(record_id, None)
         if record:
+            records_by_id.pop(record['id'], None)
             local_hash = sha256(open(filepath, 'rb').read())
 
             # If file was uploaded gzipped, compare with hash of
@@ -38,12 +44,14 @@ def files_to_upload(records, files):
                 remote_hash = record['attachment']['hash']
 
             # If hash has changed, upload !
-            if local_hash != remote_hash:
+            if local_hash != remote_hash or force:
                 print("File '%s' has changed." % filename)
                 to_upload.append((filepath, record))
             else:
                 print("File '%s' is up-to-date." % filename)
         else:
+            identifier = hashlib.md5(filename.encode('utf-8')).hexdigest()
+            record_id = str(uuid.UUID(identifier))
             record = {'id': record_id}
             to_upload.append((filepath, record))
 
@@ -67,12 +75,16 @@ def upload_files(client, files, compress, randomize):
         record_uri = client.get_endpoint('record', id=record['id'])
         attachment_uri = '%s/attachment' % record_uri
         multipart = [("attachment", (filename, filecontent, mimetype))]
-        body, _ = client.session.request(method='post',
-                                         params=params,
-                                         endpoint=attachment_uri,
-                                         permissions=json.dumps(permissions),
-                                         files=multipart)
-        pprint.pprint(body)
+        try:
+            body, _ = client.session.request(method='post',
+                                             params=params,
+                                             endpoint=attachment_uri,
+                                             permissions=json.dumps(permissions),
+                                             files=multipart)
+        except KintoException as e:
+            print(filepath, "error during upload.", e)
+        else:
+            pprint.pprint(body)
 
 
 def main():
@@ -84,6 +96,8 @@ def main():
                         help='Gzip files before upload')
     parser.add_argument('--keep-filenames', dest='randomize', action='store_false',
                         help='Do not randomize file IDs on the server')
+    parser.add_argument('--force', dest='force', action='store_true',
+                        help='Force upload even if the hash matches')
     parser.add_argument('files', metavar='FILE', action='store',
                         nargs='+')
     args = parser.parse_args()
@@ -98,7 +112,7 @@ def main():
         pass
 
     existing = client.get_records()
-    to_upload = files_to_upload(existing, args.files)
+    to_upload = files_to_upload(existing, args.files, force=args.force)
     upload_files(client, to_upload, compress=args.gzip,
                  randomize=args.randomize)
 
