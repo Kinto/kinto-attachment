@@ -3,7 +3,7 @@ import hashlib
 import os
 
 import requests
-from kinto_client import cli_utils
+from kinto_http import cli_utils
 
 
 def sha256(content):
