@@ -6,7 +6,7 @@ Changelog
 
 **New features**
 
-- As support for the ``Content-Encoding`` header with the S3Backend (#132)
+- Add support for the ``Content-Encoding`` header with the S3Backend (#132)
 
 
 2.0.1 (2017-04-06)
