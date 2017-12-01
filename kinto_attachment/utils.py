@@ -137,6 +137,8 @@ def save_file(content, request, randomize=True, gzipped=False,
 
     content.file.seek(0)
     filecontent = content.file.read()
+    filehash = sha256(filecontent)
+    size = len(filecontent)
 
     original = None
     save_options = {'folder': folder,
@@ -159,9 +161,9 @@ def save_file(content, request, randomize=True, gzipped=False,
     elif gzipped:
         original = {
             'filename': content.filename,
-            'hash': sha256(filecontent),
+            'hash': filehash,
             'mimetype': content.type,
-            'size': len(filecontent),
+            'size': size,
         }
         mimetype = 'application/x-gzip'
         filename = content.filename + '.gz'
@@ -178,6 +180,9 @@ def save_file(content, request, randomize=True, gzipped=False,
         out.seek(0)
         content.file = out
         content.filename = filename
+        if not use_content_encoding:
+            filehash = sha256(filecontent)
+            size = len(filecontent)
     else:
         mimetype = content.type
         filename = content.filename
@@ -190,8 +195,6 @@ def save_file(content, request, randomize=True, gzipped=False,
 
     # File metadata.
     fullurl = request.attachment.url(location)
-    size = len(filecontent)
-    filehash = sha256(filecontent)
     attachment = {
         'filename': filename,
         'location': fullurl,
