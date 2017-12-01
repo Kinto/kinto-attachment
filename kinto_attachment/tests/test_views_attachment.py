@@ -6,6 +6,7 @@ import unittest
 
 from urllib.parse import urlparse
 from kinto.core.errors import ERRORS
+from kinto_attachment.utils import sha256
 from . import BaseWebTestLocal, BaseWebTestS3, get_user_headers
 
 
@@ -68,6 +69,8 @@ class LocalUploadTest(UploadTest, BaseWebTestLocal, unittest.TestCase):
         self.assertTrue(attachment['location'].endswith('.pdf'))
         self.assertEqual(attachment['mimetype'], 'application/pdf')
         relativeurl = attachment['location'].replace(self.base_url, '')
+        self.assertEqual(attachment['hash'], sha256(b'--binary--'))
+        self.assertEqual(attachment['size'], len(b'--binary--'))
         file_path = os.path.join('/tmp', relativeurl)
         self.assertTrue(os.path.exists(file_path))
         with open(file_path, 'rb') as f:
@@ -83,6 +86,8 @@ class S3UploadTest(UploadTest, BaseWebTestS3, unittest.TestCase):
         self.assertTrue(attachment['location'].endswith('.pdf'))
         self.assertEqual(attachment['mimetype'], 'application/pdf')
         relative_url = attachment['location'].replace(self.base_url, '')
+        self.assertEqual(attachment['hash'], sha256(b'--binary--'))
+        self.assertEqual(attachment['size'], len(b'--binary--'))
         resp = requests.get("http://localhost:5000/myfiles/{}".format(relative_url))
         self.assertEqual(resp.headers['Content-Type'], 'application/pdf')
         self.assertEqual(resp.text, '--binary--')
