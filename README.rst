@@ -138,6 +138,10 @@ collections.
 You can overwite that option by passing a ``?gzipped=true`` in the QueryString
 to specifically gzip some files.
 
+By default, the server will serve the gzip file, if you want the HTTP
+client to automatically decompress the file while loading it you can
+specify it when uploading the file by passing a ``?use_content_encoding=true``
+
 
 Attributes
 ----------

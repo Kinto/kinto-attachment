@@ -1,5 +1,6 @@
 import mock
 import os
+import requests
 import uuid
 import unittest
 
@@ -59,9 +60,33 @@ class LocalUploadTest(UploadTest, BaseWebTestLocal, unittest.TestCase):
         relativeurl = fullurl.replace(self.base_url, '')
         self.assertTrue(os.path.exists(os.path.join('/tmp', relativeurl)))
 
+    def test_file_is_not_gzipped_on_local_filesystem(self):
+        resp = self.upload(files=[
+            (self.file_field, b'my-report.pdf', b'--binary--')
+        ], gzipped=True, use_content_encoding=True)
+        attachment = resp.json
+        self.assertTrue(attachment['location'].endswith('.pdf'))
+        self.assertEqual(attachment['mimetype'], 'application/pdf')
+        relativeurl = attachment['location'].replace(self.base_url, '')
+        file_path = os.path.join('/tmp', relativeurl)
+        self.assertTrue(os.path.exists(file_path))
+        with open(file_path, 'rb') as f:
+            self.assertEqual(f.read(), b'--binary--')
+
 
 class S3UploadTest(UploadTest, BaseWebTestS3, unittest.TestCase):
-    pass
+    def test_file_is_served_with_content_encoding_header(self):
+        resp = self.upload(files=[
+            (self.file_field, b'my-report.pdf', b'--binary--')
+        ], gzipped=False, use_content_encoding=True)
+        attachment = resp.json
+        self.assertTrue(attachment['location'].endswith('.pdf'))
+        self.assertEqual(attachment['mimetype'], 'application/pdf')
+        relative_url = attachment['location'].replace(self.base_url, '')
+        resp = requests.get("http://localhost:5000/myfiles/{}".format(relative_url))
+        self.assertEqual(resp.headers['Content-Type'], 'application/pdf')
+        self.assertEqual(resp.text, '--binary--')
+        self.assertEqual(resp.headers.get('Content-Encoding'), 'gzip')
 
 
 class DeleteTest(object):
@@ -181,7 +206,7 @@ class AttachmentViewTest(object):
         resp = self.upload(files=[
             (self.file_field, b'my-report.pdf', b'--binary--')
         ], gzipped=True, use_content_encoding=True)
-        self.assertIn('original', resp.json)
+        self.assertNotIn('original', resp.json)
 
     def test_record_location_contains_subfolder(self):
         self.upload()
