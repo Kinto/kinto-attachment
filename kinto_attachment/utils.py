@@ -124,7 +124,8 @@ def delete_attachment(request, link_field=None, uri=None):
     storage.delete_all("", FILE_LINKS, filters=filters, with_deleted=False)
 
 
-def save_file(content, request, randomize=True, gzipped=False):
+def save_file(content, request, randomize=True, gzipped=False,
+              use_content_encoding=False):
     folder_pattern = request.registry.settings.get('attachment.folder', '')
     folder = folder_pattern.format(**request.matchdict) or None
 
@@ -143,8 +144,15 @@ def save_file(content, request, randomize=True, gzipped=False):
             'mimetype': content.type,
             'size': len(filecontent),
         }
-        mimetype = 'application/x-gzip'
-        filename = content.filename + '.gz'
+        if use_content_encoding:
+            # Http will decompress gzipped data automatically if the header
+            # 'Content-Encoding' is present. So, this mimetype here we can
+            # still use the original one as well as the file name.
+            mimetype = content.type
+            filename = content.filename
+        else:
+            mimetype = 'application/x-gzip'
+            filename = content.filename + '.gz'
 
         # in-memory gzipping
         out = BytesIO()
@@ -163,7 +171,13 @@ def save_file(content, request, randomize=True, gzipped=False):
     save_options = {'folder': folder,
                     'randomize': randomize}
     if gzipped:
-        save_options['extensions'] = ['gz']
+        if use_content_encoding:
+            save_options['headers'] = {
+                'content-type': mimetype,
+                'content-encoding': 'gzip'
+            }
+        else:
+            save_options['extensions'] = ['gz']
 
     try:
         location = request.attachment.save(content, **save_options)

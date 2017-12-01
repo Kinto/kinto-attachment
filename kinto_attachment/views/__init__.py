@@ -46,8 +46,13 @@ def post_attachment_view(request, file_field):
     if 'gzipped' in request.GET:
         gzipped = asbool(request.GET['gzipped'])
 
+    use_content_encoding = False
+    if 'use_content_encoding' in request.GET:
+        use_content_encoding = asbool(request.GET['use_content_encoding'])
+
     attachment = utils.save_file(content, request, randomize=randomize,
-                                 gzipped=gzipped)
+                                 gzipped=gzipped,
+                                 use_content_encoding=use_content_encoding)
 
     # Update related record.
     posted_data = {k: v for k, v in request.POST.items() if k != file_field}

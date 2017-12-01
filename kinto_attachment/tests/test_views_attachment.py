@@ -177,6 +177,12 @@ class AttachmentViewTest(object):
         ], gzipped=True)
         self.assertIn('original', resp.json)
 
+    def test_file_was_zipped_with_content_encoding(self):
+        resp = self.upload(files=[
+            (self.file_field, b'my-report.pdf', b'--binary--')
+        ], gzipped=True, use_content_encoding=True)
+        self.assertIn('original', resp.json)
+
     def test_record_location_contains_subfolder(self):
         self.upload()
         resp = self.app.get(self.record_uri, headers=self.headers)

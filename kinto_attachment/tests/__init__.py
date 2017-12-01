@@ -73,7 +73,7 @@ class BaseWebTest(object):
         return app
 
     def upload(self, files=None, params=[], headers={}, status=None,
-               randomize=True, gzipped=False):
+               randomize=True, gzipped=False, use_content_encoding=False):
         files = files or self.default_files
         headers = headers or self.headers.copy()
         content_type, body = self.app.encode_multipart(params, files)
@@ -85,6 +85,9 @@ class BaseWebTest(object):
 
         if gzipped:
             params['gzipped'] = 'true'
+
+        if use_content_encoding:
+            params['use_content_encoding'] = 'true'
 
         if len(params) > 0:
             endpoint_url = build_url(self.endpoint_uri, **params)
