@@ -73,21 +73,30 @@ class BaseWebTest(object):
         return app
 
     def upload(self, files=None, params=[], headers={}, status=None,
-               randomize=True, gzipped=False, use_content_encoding=False):
+               randomize=None, gzipped=None, use_content_encoding=None):
         files = files or self.default_files
         headers = headers or self.headers.copy()
         content_type, body = self.app.encode_multipart(params, files)
         headers['Content-Type'] = content_type
 
         params = {}
-        if not randomize:
-            params['randomize'] = 'false'
+        if randomize is not None:
+            if randomize:
+                params['randomize'] = 'true'
+            else:
+                params['randomize'] = 'false'
 
-        if gzipped:
-            params['gzipped'] = 'true'
+        if gzipped is not None:
+            if gzipped:
+                params['gzipped'] = 'true'
+            else:
+                params['gzipped'] = 'false'
 
-        if use_content_encoding:
-            params['use_content_encoding'] = 'true'
+        if use_content_encoding is not None:
+            if use_content_encoding:
+                params['use_content_encoding'] = 'true'
+            else:
+                params['use_content_encoding'] = 'false'
 
         if len(params) > 0:
             endpoint_url = build_url(self.endpoint_uri, **params)

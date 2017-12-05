@@ -38,15 +38,31 @@ def post_attachment_view(request, file_field):
                          errno=ERRORS.INVALID_POSTED_DATA,
                          message="Attachment missing.")
 
+    # Per resource settings
+    resource_settings = {
+        'gzipped': asbool(settings.get('attachment.gzipped', False)),
+        'use_content_encoding': asbool(settings.get('attachment.use_content_encoding', False))
+    }
+
+    collection_id = '/buckets/{bucket_id}/collections/{collection_id}'.format_map(
+        request.matchdict)
+    bucket_id = '/buckets/{bucket_id}'.format_map(request.matchdict)
+
+    if bucket_id in request.registry.attachment_resources:
+        resource_settings.update(request.registry.attachment_resources[bucket_id])
+
+    if collection_id in request.registry.attachment_resources:
+        resource_settings.update(request.registry.attachment_resources[collection_id])
+
     randomize = True
     if 'randomize' in request.GET:
         randomize = asbool(request.GET['randomize'])
 
-    gzipped = asbool(settings.get('attachment.gzipped', False))
+    gzipped = resource_settings['gzipped']
     if 'gzipped' in request.GET:
         gzipped = asbool(request.GET['gzipped'])
 
-    use_content_encoding = False
+    use_content_encoding = resource_settings['use_content_encoding']
     if 'use_content_encoding' in request.GET:
         use_content_encoding = asbool(request.GET['use_content_encoding'])
 

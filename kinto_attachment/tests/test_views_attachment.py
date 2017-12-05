@@ -379,6 +379,54 @@ class ZippedAttachementViewTest(BaseWebTestLocal, unittest.TestCase):
         self.assertTrue(capabilities["attachments"]['gzipped'])
 
 
+class PerResourceConfigAttachementViewTest(BaseWebTestS3, unittest.TestCase):
+    config = 'config/s3_per_resource.ini'
+
+    def setUpFingerprintingDefenses(self):
+        self.create_collection('fingerprinting-defenses', 'fonts')
+        _id = str(uuid.uuid4())
+        record_uri = self.get_record_uri('fingerprinting-defenses', 'fonts', _id)
+        self.endpoint_uri = record_uri + '/attachment'
+
+    def checkUseContentTypeS3Response(self, response, content_encoding=True):
+        relative_url = response.json['location'].replace(self.base_url, '')
+        resp = requests.get("http://localhost:5000/myfiles/{}".format(relative_url))
+
+        self.assertEqual(resp.headers['Content-Type'], 'image/jpeg')
+        self.assertEqual(resp.text, '--fake--')
+        if content_encoding:
+            self.assertEqual(resp.headers.get('Content-Encoding'), 'gzip')
+        else:
+            self.assertIsNone(resp.headers.get('Content-Encoding'))
+
+    def test_file_get_zipped_by_default(self):
+        r = self.upload()
+        self.assertEqual(r.json['mimetype'], 'application/x-gzip')
+        self.assertEqual(r.json['filename'], 'image.jpg.gz')
+
+    def test_file_uses_encoding(self):
+        self.setUpFingerprintingDefenses()
+        r = self.upload()
+
+        self.assertEqual(r.json['mimetype'], 'image/jpeg')
+        self.assertEqual(r.json['filename'], 'image.jpg')
+
+        self.checkUseContentTypeS3Response(r)
+
+    def test_querystring_overrides_default_settings_for_gzipped(self):
+        r = self.upload(gzipped=False)
+        self.assertEqual(r.json['mimetype'], 'image/jpeg')
+        self.assertEqual(r.json['filename'], 'image.jpg')
+
+    def test_querystring_overrides_default_settings_for_use_encoding(self):
+        self.setUpFingerprintingDefenses()
+        r = self.upload(use_content_encoding=False)
+        self.assertEqual(r.json['mimetype'], 'image/jpeg')
+        self.assertEqual(r.json['filename'], 'image.jpg')
+        self.checkUseContentTypeS3Response(r, content_encoding=False)
+
+
+
 class SingleAttachmentViewTest(AttachmentViewTest, BaseWebTestLocal,
                                unittest.TestCase):
     pass
