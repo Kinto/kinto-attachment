@@ -1,10 +1,12 @@
 Changelog
 =========
 
-2.0.2 (unreleased)
+2.1.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**New features**
+
+- Add support for the ``Content-Encoding`` header with the S3Backend (#132)
 
 
 2.0.1 (2017-04-06)

@@ -1,10 +1,12 @@
 import mock
 import os
+import requests
 import uuid
 import unittest
 
 from urllib.parse import urlparse
 from kinto.core.errors import ERRORS
+from kinto_attachment.utils import sha256
 from . import BaseWebTestLocal, BaseWebTestS3, get_user_headers
 
 
@@ -59,9 +61,37 @@ class LocalUploadTest(UploadTest, BaseWebTestLocal, unittest.TestCase):
         relativeurl = fullurl.replace(self.base_url, '')
         self.assertTrue(os.path.exists(os.path.join('/tmp', relativeurl)))
 
+    def test_file_is_not_gzipped_on_local_filesystem(self):
+        resp = self.upload(files=[
+            (self.file_field, b'my-report.pdf', b'--binary--')
+        ], gzipped=True, use_content_encoding=True)
+        attachment = resp.json
+        self.assertTrue(attachment['location'].endswith('.pdf'))
+        self.assertEqual(attachment['mimetype'], 'application/pdf')
+        relativeurl = attachment['location'].replace(self.base_url, '')
+        self.assertEqual(attachment['hash'], sha256(b'--binary--'))
+        self.assertEqual(attachment['size'], len(b'--binary--'))
+        file_path = os.path.join('/tmp', relativeurl)
+        self.assertTrue(os.path.exists(file_path))
+        with open(file_path, 'rb') as f:
+            self.assertEqual(f.read(), b'--binary--')
+
 
 class S3UploadTest(UploadTest, BaseWebTestS3, unittest.TestCase):
-    pass
+    def test_file_is_served_with_content_encoding_header(self):
+        resp = self.upload(files=[
+            (self.file_field, b'my-report.pdf', b'--binary--')
+        ], gzipped=False, use_content_encoding=True)
+        attachment = resp.json
+        self.assertTrue(attachment['location'].endswith('.pdf'))
+        self.assertEqual(attachment['mimetype'], 'application/pdf')
+        relative_url = attachment['location'].replace(self.base_url, '')
+        self.assertEqual(attachment['hash'], sha256(b'--binary--'))
+        self.assertEqual(attachment['size'], len(b'--binary--'))
+        resp = requests.get("http://localhost:5000/myfiles/{}".format(relative_url))
+        self.assertEqual(resp.headers['Content-Type'], 'application/pdf')
+        self.assertEqual(resp.text, '--binary--')
+        self.assertEqual(resp.headers.get('Content-Encoding'), 'gzip')
 
 
 class DeleteTest(object):
@@ -176,6 +206,12 @@ class AttachmentViewTest(object):
             (self.file_field, b'my-report.pdf', b'--binary--')
         ], gzipped=True)
         self.assertIn('original', resp.json)
+
+    def test_file_was_zipped_with_content_encoding(self):
+        resp = self.upload(files=[
+            (self.file_field, b'my-report.pdf', b'--binary--')
+        ], gzipped=True, use_content_encoding=True)
+        self.assertNotIn('original', resp.json)
 
     def test_record_location_contains_subfolder(self):
         self.upload()
@@ -341,6 +377,53 @@ class ZippedAttachementViewTest(BaseWebTestLocal, unittest.TestCase):
         capabilities = resp.json["capabilities"]
         self.assertIn("attachments", capabilities)
         self.assertTrue(capabilities["attachments"]['gzipped'])
+
+
+class PerResourceConfigAttachementViewTest(BaseWebTestS3, unittest.TestCase):
+    config = 'config/s3_per_resource.ini'
+
+    def setUpFingerprintingDefenses(self):
+        self.create_collection('fingerprinting-defenses', 'fonts')
+        _id = str(uuid.uuid4())
+        record_uri = self.get_record_uri('fingerprinting-defenses', 'fonts', _id)
+        self.endpoint_uri = record_uri + '/attachment'
+
+    def checkUseContentTypeS3Response(self, response, content_encoding=True):
+        relative_url = response.json['location'].replace(self.base_url, '')
+        resp = requests.get("http://localhost:5000/myfiles/{}".format(relative_url))
+
+        self.assertEqual(resp.headers['Content-Type'], 'image/jpeg')
+        self.assertEqual(resp.text, '--fake--')
+        if content_encoding:
+            self.assertEqual(resp.headers.get('Content-Encoding'), 'gzip')
+        else:
+            self.assertIsNone(resp.headers.get('Content-Encoding'))
+
+    def test_file_get_zipped_by_default(self):
+        r = self.upload()
+        self.assertEqual(r.json['mimetype'], 'application/x-gzip')
+        self.assertEqual(r.json['filename'], 'image.jpg.gz')
+
+    def test_file_uses_encoding(self):
+        self.setUpFingerprintingDefenses()
+        r = self.upload()
+
+        self.assertEqual(r.json['mimetype'], 'image/jpeg')
+        self.assertEqual(r.json['filename'], 'image.jpg')
+
+        self.checkUseContentTypeS3Response(r)
+
+    def test_querystring_overrides_default_settings_for_gzipped(self):
+        r = self.upload(gzipped=False)
+        self.assertEqual(r.json['mimetype'], 'image/jpeg')
+        self.assertEqual(r.json['filename'], 'image.jpg')
+
+    def test_querystring_overrides_default_settings_for_use_encoding(self):
+        self.setUpFingerprintingDefenses()
+        r = self.upload(use_content_encoding=False)
+        self.assertEqual(r.json['mimetype'], 'image/jpeg')
+        self.assertEqual(r.json['filename'], 'image.jpg')
+        self.checkUseContentTypeS3Response(r, content_encoding=False)
 
 
 class SingleAttachmentViewTest(AttachmentViewTest, BaseWebTestLocal,

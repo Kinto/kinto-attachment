@@ -38,16 +38,36 @@ def post_attachment_view(request, file_field):
                          errno=ERRORS.INVALID_POSTED_DATA,
                          message="Attachment missing.")
 
+    # Per resource settings
+    resource_settings = {
+        'gzipped': asbool(settings.get('attachment.gzipped', False)),
+        'use_content_encoding': asbool(settings.get('attachment.use_content_encoding', False))
+    }
+
+    cid = '/buckets/{bucket_id}/collections/{collection_id}'.format_map(request.matchdict)
+    bid = '/buckets/{bucket_id}'.format_map(request.matchdict)
+
+    if bid in request.registry.attachment_resources:
+        resource_settings.update(request.registry.attachment_resources[bid])
+
+    if cid in request.registry.attachment_resources:
+        resource_settings.update(request.registry.attachment_resources[cid])
+
     randomize = True
     if 'randomize' in request.GET:
         randomize = asbool(request.GET['randomize'])
 
-    gzipped = asbool(settings.get('attachment.gzipped', False))
+    gzipped = resource_settings['gzipped']
     if 'gzipped' in request.GET:
         gzipped = asbool(request.GET['gzipped'])
 
+    use_content_encoding = resource_settings['use_content_encoding']
+    if 'use_content_encoding' in request.GET:
+        use_content_encoding = asbool(request.GET['use_content_encoding'])
+
     attachment = utils.save_file(content, request, randomize=randomize,
-                                 gzipped=gzipped)
+                                 gzipped=gzipped,
+                                 use_content_encoding=use_content_encoding)
 
     # Update related record.
     posted_data = {k: v for k, v in request.POST.items() if k != file_field}

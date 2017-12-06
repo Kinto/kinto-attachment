@@ -1,4 +1,6 @@
 import pkg_resources
+from collections import defaultdict
+from pyramid.exceptions import ConfigurationError
 from pyramid.settings import asbool
 from kinto_attachment.views import attachments_ping
 
@@ -11,10 +13,33 @@ def includeme(config):
     settings = config.get_settings()
 
     storage_settings = {}
-    for k, v in settings.items():
-        if k.startswith('attachment.'):
-            k = k.replace('attachment.', 'storage.')
-            storage_settings[k] = v
+    config.registry.attachment_resources = defaultdict(dict)
+
+    for setting_name, setting_value in settings.items():
+        if setting_name.startswith('attachment.'):
+            if setting_name.startswith('attachment.resources.'):
+                # Resource specific config
+                parts = setting_name.split('.')[2:]
+                if len(parts) == 2:
+                    resource, name = parts
+                    if '_' in resource:
+                        bucket_id, collection_id = resource.rsplit('_', 1)
+                        resource_id = '/buckets/{}/collections/{}'.format(bucket_id, collection_id)
+                    else:
+                        resource_id = '/buckets/{}'.format(resource)
+                else:
+                    message = 'Configuration rule malformed: `{}`'.format(setting_name)
+                    raise ConfigurationError(message)
+
+                if name in ['gzipped', 'use_content_encoding']:
+                    config.registry.attachment_resources[resource_id][name] = asbool(setting_value)
+                else:
+                    message = '`{}` is not a supported setting name. Read `{}`'.format(
+                        name, setting_name)
+                    raise ConfigurationError(message)
+            else:
+                setting_name = setting_name.replace('attachment.', 'storage.')
+                storage_settings[setting_name] = setting_value
 
     # Force some pyramid_storage settings.
     storage_settings['storage.name'] = 'attachment'
@@ -26,7 +51,8 @@ def includeme(config):
     extra_base_url = settings.get('attachment.extra.base_url',
                                   settings.get('attachment.base_url'))
     gzipped = asbool(settings.get('attachment.gzipped', False))
-    # # Expose capability.
+
+    # Expose capability.
     config.add_api_capability("attachments",
                               version=__version__,
                               description="Add file attachments to records",
