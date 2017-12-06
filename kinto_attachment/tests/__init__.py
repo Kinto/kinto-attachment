@@ -81,22 +81,13 @@ class BaseWebTest(object):
 
         params = {}
         if randomize is not None:
-            if randomize:
-                params['randomize'] = 'true'
-            else:
-                params['randomize'] = 'false'
+            params['randomize'] = 'true' if randomize else 'false'
 
         if gzipped is not None:
-            if gzipped:
-                params['gzipped'] = 'true'
-            else:
-                params['gzipped'] = 'false'
+            params['gzipped'] = 'true' if gzipped else 'false'
 
         if use_content_encoding is not None:
-            if use_content_encoding:
-                params['use_content_encoding'] = 'true'
-            else:
-                params['use_content_encoding'] = 'false'
+            params['use_content_encoding'] = 'true' if use_content_encoding else 'false'
 
         if len(params) > 0:
             endpoint_url = build_url(self.endpoint_uri, **params)

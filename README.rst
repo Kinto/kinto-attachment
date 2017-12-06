@@ -48,7 +48,8 @@ If you want uploaded files to get gzipped when stored:
 The ``use_content_encoding`` option
 -----------------------------------
 
-If you want uploaded files to be Gzipped and automatically unzipped with S3 you can activate the Content-Encoding header:
+If you want uploaded files to be Gzipped and automatically unzipped on the client side
+when downloading with S3 you can activate the content encoding setting:
 
 .. code-block:: ini
 
@@ -60,28 +61,29 @@ can use the resource configuration key:
 
 .. code-block:: ini
 
-	# For a whole bucket (/buckets/fennec-staging)
+    # For a whole bucket (/buckets/fennec-staging)
     kinto.attachment.resources.fennec-staging.use_content_encoding = false
     kinto.attachment.resources.fennec-staging.gzipped = true
 
-	# Or for a specific collection in it (/buckets/fingerprinting-defenses-staging/fonts)
+    # Or for a specific collection in it (/buckets/fingerprinting-defenses-staging/fonts)
     kinto.attachment.resources.fingerprinting-defenses-staging_fonts.use_content_encoding = true
 
-Be careful, ``use_content_encoding`` will force the gzipping of the files
-for the S3 storage but the metadata will look like it wasn't compressed.
+Be careful, ``use_content_encoding`` automatically sets ``gzipped =
+true`` with the S3 storage but the metadata will look like it wasn't
+compressed.
 
 In case you want to use the ``gzipped`` option you need to also make
 sure that ``use_content_encoding`` is set to `False`.
 
-You can say that you want to use ``Content-Encoding`` everywhere but for
+You can say that you want to use content encoding everywhere but for
 the ``fennec-staging`` bucket:
 
 .. code-block:: ini
 
-	# Global setting
-	kinto.attachment.use_content_encoding = true
+    # Global setting
+    kinto.attachment.use_content_encoding = true
 
-	# For a whole bucket (/buckets/fennec-staging)
+    # For a whole bucket (/buckets/fennec-staging)
     kinto.attachment.resources.fennec-staging.use_content_encoding = false
     kinto.attachment.resources.fennec-staging.gzipped = true
 
@@ -90,10 +92,10 @@ Or that you want to use ``gzipped`` everywhere but for the
 
 .. code-block:: ini
 
-	# Global default setting
-	kinto.attachment.gzipped = true
+    # Global default setting
+    kinto.attachment.gzipped = true
 
-	# For a whole bucket (/buckets/fennec-staging)
+    # For a whole bucket (/buckets/fennec-staging)
     kinto.attachment.resources.fingerprinting-defenses-staging.use_content_encoding = true
 
 
@@ -200,7 +202,7 @@ You can overwite that option by passing a ``?gzipped=true`` in the QueryString
 to specifically gzip some files.
 
 By default, the server will serve the gzip file, if you want the HTTP
-client to automatically decompress the file while loading it you can
+client to automatically decompress the file while loading it from S3 you can
 specify it when uploading the file by passing a ``?use_content_encoding=true``
 
 

@@ -33,6 +33,10 @@ moto:
 tests-once: install
 	$(VENV)/bin/py.test kinto_attachment/tests --cov-report term-missing --cov-fail-under 100 --cov kinto_attachment
 
+flake8:
+	$(VENV)/bin/pip install -U flake8
+	$(VENV)/bin/flake8 kinto_attachment
+
 tests:
 	$(VENV)/bin/tox
 

@@ -44,15 +44,14 @@ def post_attachment_view(request, file_field):
         'use_content_encoding': asbool(settings.get('attachment.use_content_encoding', False))
     }
 
-    collection_id = '/buckets/{bucket_id}/collections/{collection_id}'.format_map(
-        request.matchdict)
-    bucket_id = '/buckets/{bucket_id}'.format_map(request.matchdict)
+    cid = '/buckets/{bucket_id}/collections/{collection_id}'.format_map(request.matchdict)
+    bid = '/buckets/{bucket_id}'.format_map(request.matchdict)
 
-    if bucket_id in request.registry.attachment_resources:
-        resource_settings.update(request.registry.attachment_resources[bucket_id])
+    if bid in request.registry.attachment_resources:
+        resource_settings.update(request.registry.attachment_resources[bid])
 
-    if collection_id in request.registry.attachment_resources:
-        resource_settings.update(request.registry.attachment_resources[collection_id])
+    if cid in request.registry.attachment_resources:
+        resource_settings.update(request.registry.attachment_resources[cid])
 
     randomize = True
     if 'randomize' in request.GET:

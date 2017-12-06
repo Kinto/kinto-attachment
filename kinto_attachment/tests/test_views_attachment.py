@@ -426,7 +426,6 @@ class PerResourceConfigAttachementViewTest(BaseWebTestS3, unittest.TestCase):
         self.checkUseContentTypeS3Response(r, content_encoding=False)
 
 
-
 class SingleAttachmentViewTest(AttachmentViewTest, BaseWebTestLocal,
                                unittest.TestCase):
     pass
