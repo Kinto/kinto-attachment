@@ -66,7 +66,7 @@ can use the resource configuration key:
     kinto.attachment.resources.fennec-staging.gzipped = true
 
     # Or for a specific collection in it (/buckets/fingerprinting-defenses-staging/fonts)
-    kinto.attachment.resources.fingerprinting-defenses-staging_fonts.use_content_encoding = true
+    kinto.attachment.resources.fingerprinting-defenses-staging.fonts.use_content_encoding = true
 
 Be careful, ``use_content_encoding`` automatically sets ``gzipped =
 true`` with the S3 storage but the metadata will look like it wasn't
