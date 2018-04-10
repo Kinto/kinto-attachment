@@ -43,9 +43,9 @@ class IncludeMeTest(unittest.TestCase):
 
     def test_includeme_raises_error_for_malformed_resource_settings(self):
         with pytest.raises(ConfigurationError) as excinfo:
-            self.includeme(settings={"attachment.resources.fennec.fonts.gzipped": "true"})
+            self.includeme(settings={"attachment.resources.fen.nec.fonts.gzipped": "true"})
         assert str(excinfo.value) == (
-            'Configuration rule malformed: `attachment.resources.fennec.fonts.gzipped`')
+            'Configuration rule malformed: `attachment.resources.fen.nec.fonts.gzipped`')
 
     def test_includeme_raises_error_if_wrong_resource_settings_is_defined(self):
         with pytest.raises(ConfigurationError) as excinfo:
