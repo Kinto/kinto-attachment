@@ -35,7 +35,7 @@ class IncludeMeTest(unittest.TestCase):
         config = self.includeme(settings={
             "attachment.base_path": "/tmp",
             "attachment.resources.fennec.gzipped": "true",
-            "attachment.resources.fingerprinting_fonts.use_content_encoding": "true"
+            "attachment.resources.fingerprinting.fonts.use_content_encoding": "true"
         })
         assert isinstance(config.registry.attachment_resources, dict)
         assert '/buckets/fennec' in config.registry.attachment_resources

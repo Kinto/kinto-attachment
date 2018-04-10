@@ -19,14 +19,15 @@ def includeme(config):
         if setting_name.startswith('attachment.'):
             if setting_name.startswith('attachment.resources.'):
                 # Resource specific config
-                parts = setting_name.split('.')[2:]
-                if len(parts) == 2:
-                    resource, name = parts
-                    if '_' in resource:
-                        bucket_id, collection_id = resource.rsplit('_', 1)
-                        resource_id = '/buckets/{}/collections/{}'.format(bucket_id, collection_id)
-                    else:
-                        resource_id = '/buckets/{}'.format(resource)
+                parts = setting_name.replace('attachment.resources.', '').split('.')
+                # attachment.resources.{bid}.gzipped
+                # attachment.resources.{bid}.{cid}.gzipped
+                if len(parts) == 3:
+                    bucket_id, collection_id, name = parts
+                    resource_id = '/buckets/{}/collections/{}'.format(bucket_id, collection_id)
+                elif len(parts) == 2:
+                    bucket_id, name = parts
+                    resource_id = '/buckets/{}'.format(bucket_id)
                 else:
                     message = 'Configuration rule malformed: `{}`'.format(setting_name)
                     raise ConfigurationError(message)
