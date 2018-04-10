@@ -4,7 +4,10 @@ Changelog
 2.2.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**Breaking changes**
+
+- The collection specific ``use_content_encoding`` setting must now be separated with ``.`` instead of ``_``.
+  (eg. use ``kinto.attachment.resources.bid.cid.use_content_encoding`` instead of ``kinto.attachment.resources.bid_cid.use_content_encoding``) (fixes #134)
 
 
 2.1.0 (2017-12-06)
