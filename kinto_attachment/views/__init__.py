@@ -102,6 +102,7 @@ def delete_attachment_view(request, file_field):
     settings = request.registry.settings
     keep_old_files = asbool(settings.get('attachment.keep_old_files', False))
 
+    print(keep_old_files)
     if not keep_old_files:
         utils.delete_attachment(request)
 
