@@ -478,9 +478,8 @@ class KeepOldFilesTest(BaseWebTestLocal, unittest.TestCase):
     def test_files_are_kept_when_record_is_deleted(self):
         resp = self.upload(status=201)
         location = resp.json["location"]
-        record_uri = resp.headers['Location']
 
-        self.app.delete(record_uri)
+        self.app.delete(self.record_uri, headers=self.headers)
 
         self.assertTrue(self.backend.exists(location))
 
