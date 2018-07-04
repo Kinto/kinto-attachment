@@ -475,6 +475,15 @@ class KeepOldFilesTest(BaseWebTestLocal, unittest.TestCase):
         self.assertTrue(self.backend.exists(location2))
         self.assertTrue(self.backend.exists(location1))
 
+    def test_files_are_kept_when_record_is_deleted(self):
+        resp = self.upload(status=201)
+        location = resp.json["location"]
+        record_uri = resp.headers['Location']
+
+        self.app.delete(record_uri)
+
+        self.assertTrue(self.backend.exists(location))
+
 
 class HeartbeartTest(BaseWebTestS3, unittest.TestCase):
     def test_attachments_is_added_to_heartbeat_view(self):

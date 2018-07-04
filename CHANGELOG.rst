@@ -4,7 +4,9 @@ Changelog
 3.1.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**Bug fix**
+
+- Do not delete attachment when record is deleted if ``keep_old_files`` setting is true (#137)
 
 
 3.0.0 (2018-04-10)

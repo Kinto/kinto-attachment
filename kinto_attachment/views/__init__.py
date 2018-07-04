@@ -99,7 +99,11 @@ def post_attachment_view(request, file_field):
 
 
 def delete_attachment_view(request, file_field):
-    utils.delete_attachment(request)
+    settings = request.registry.settings
+    keep_old_files = asbool(settings.get('attachment.keep_old_files', False))
+
+    if not keep_old_files:
+        utils.delete_attachment(request)
 
     # Remove metadata.
     record = {"data": {}}
