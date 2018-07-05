@@ -2,6 +2,7 @@ from kinto.core.events import ResourceChanged, ACTIONS
 from kinto.core.errors import http_error
 from pyramid.events import subscriber
 from pyramid.exceptions import HTTPBadRequest
+from pyramid.settings import asbool
 
 from . import utils
 
@@ -15,6 +16,11 @@ def on_delete_record(event):
     When a bucket or collection is deleted, it removes the attachments of
     every underlying records.
     """
+    settings = event.request.registry.settings
+    keep_old_files = asbool(settings.get('attachment.keep_old_files', False))
+    if keep_old_files:
+        return
+
     # Retrieve attachments for these records using links.
     resource_name = event.payload['resource_name']
     filter_field = '%s_uri' % resource_name
