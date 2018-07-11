@@ -19,7 +19,6 @@ class HelloViewTest(BaseWebTestLocal, unittest.TestCase):
             "description": "Add file attachments to records",
             "url": "https://github.com/Kinto/kinto-attachment/",
             "base_url": "https://files.server.com/root/",
-            "gzipped": False
         }
         self.assertEqual(expected, capabilities["attachments"])
 
@@ -35,7 +34,7 @@ class IncludeMeTest(unittest.TestCase):
         config = self.includeme(settings={
             "attachment.base_path": "/tmp",
             "attachment.resources.fennec.gzipped": "true",
-            "attachment.resources.fingerprinting.fonts.use_content_encoding": "true"
+            "attachment.resources.fingerprinting.fonts.randomize": "true",
         })
         assert isinstance(config.registry.attachment_resources, dict)
         assert '/buckets/fennec' in config.registry.attachment_resources

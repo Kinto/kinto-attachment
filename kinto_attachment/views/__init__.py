@@ -41,7 +41,7 @@ def post_attachment_view(request, file_field):
     # Per resource settings
     resource_settings = {
         'gzipped': asbool(settings.get('attachment.gzipped', False)),
-        'use_content_encoding': asbool(settings.get('attachment.use_content_encoding', False))
+        'randomize': asbool(settings.get('attachment.randomize', True)),
     }
 
     cid = '/buckets/{bucket_id}/collections/{collection_id}'.format_map(request.matchdict)
@@ -53,21 +53,10 @@ def post_attachment_view(request, file_field):
     if cid in request.registry.attachment_resources:
         resource_settings.update(request.registry.attachment_resources[cid])
 
-    randomize = True
-    if 'randomize' in request.GET:
-        randomize = asbool(request.GET['randomize'])
-
     gzipped = resource_settings['gzipped']
-    if 'gzipped' in request.GET:
-        gzipped = asbool(request.GET['gzipped'])
+    randomize = resource_settings['randomize']
 
-    use_content_encoding = resource_settings['use_content_encoding']
-    if 'use_content_encoding' in request.GET:
-        use_content_encoding = asbool(request.GET['use_content_encoding'])
-
-    attachment = utils.save_file(content, request, randomize=randomize,
-                                 gzipped=gzipped,
-                                 use_content_encoding=use_content_encoding)
+    attachment = utils.save_file(content, request, randomize=randomize, gzipped=gzipped)
 
     # Update related record.
     posted_data = {k: v for k, v in request.POST.items() if k != file_field}
@@ -102,7 +91,6 @@ def delete_attachment_view(request, file_field):
     settings = request.registry.settings
     keep_old_files = asbool(settings.get('attachment.keep_old_files', False))
 
-    print(keep_old_files)
     if not keep_old_files:
         utils.delete_attachment(request)
 

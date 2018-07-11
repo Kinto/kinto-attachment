@@ -1,10 +1,13 @@
 Changelog
 =========
 
-3.1.0 (unreleased)
+4.0.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**Breaking changes**
+
+- Gzip ``Content-Encoding`` is now always enabled when uploading on S3 (fixes #139)
+- Overriding settings via the querystring (eg. ``?gzipped``, ``randomize``, ``use_content_encoding``) is not possible anymore
 
 
 3.0.1 (2018-07-05)

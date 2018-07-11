@@ -34,71 +34,6 @@ In the Kinto project settings
     kinto.attachment.folder = {bucket_id}/{collection_id}
     kinto.attachment.keep_old_files = true
 
-
-The ``gzipped`` option
-----------------------
-
-If you want uploaded files to get gzipped when stored:
-
-.. code-block:: ini
-
-    kinto.attachment.gzipped = true
-
-
-The ``use_content_encoding`` option
------------------------------------
-
-If you want uploaded files to be Gzipped and automatically unzipped on the client side
-when downloading with S3 you can activate the content encoding setting:
-
-.. code-block:: ini
-
-    kinto.attachment.use_content_encoding = true
-
-In case you want to activate ``gzipped`` for some buckets or
-collections and activate ``use_content_encoding`` for some other, you
-can use the resource configuration key:
-
-.. code-block:: ini
-
-    # For a whole bucket (/buckets/fennec-staging)
-    kinto.attachment.resources.fennec-staging.use_content_encoding = false
-    kinto.attachment.resources.fennec-staging.gzipped = true
-
-    # Or for a specific collection in it (/buckets/fingerprinting-defenses-staging/fonts)
-    kinto.attachment.resources.fingerprinting-defenses-staging.fonts.use_content_encoding = true
-
-Be careful, ``use_content_encoding`` automatically sets ``gzipped =
-true`` with the S3 storage but the metadata will look like it wasn't
-compressed.
-
-In case you want to use the ``gzipped`` option you need to also make
-sure that ``use_content_encoding`` is set to `False`.
-
-You can say that you want to use content encoding everywhere but for
-the ``fennec-staging`` bucket:
-
-.. code-block:: ini
-
-    # Global setting
-    kinto.attachment.use_content_encoding = true
-
-    # For a whole bucket (/buckets/fennec-staging)
-    kinto.attachment.resources.fennec-staging.use_content_encoding = false
-    kinto.attachment.resources.fennec-staging.gzipped = true
-
-Or that you want to use ``gzipped`` everywhere but for the
-``fingerprinting-defenses-staging`` bucket:
-
-.. code-block:: ini
-
-    # Global default setting
-    kinto.attachment.gzipped = true
-
-    # For a whole bucket (/buckets/fennec-staging)
-    kinto.attachment.resources.fingerprinting-defenses-staging.use_content_encoding = true
-
-
 Local File storage
 ------------------
 
@@ -127,6 +62,50 @@ Store on Amazon S3:
     and Access Management (IAM).
 
 See `Pyramid Storage <https://pythonhosted.org/pyramid_storage/>`_.
+
+
+The ``gzipped`` option
+----------------------
+
+If you want uploaded files to get gzipped when stored (default: False):
+
+.. code-block:: ini
+
+    kinto.attachment.gzipped = true
+
+Or only for a particular bucket:
+
+.. code-block:: ini
+
+    kinto.attachment.resources.blog.gzipped = true
+
+Or a specific collection:
+
+.. code-block:: ini
+
+    kinto.attachment.resources.blog.articles.gzipped = true
+
+
+The ``randomize`` option
+------------------------
+
+If you want uploaded files to be stored with a random name (default: True):
+
+.. code-block:: ini
+
+    kinto.attachment.randomize = true
+
+Or only for a particular bucket:
+
+.. code-block:: ini
+
+    kinto.attachment.resources.blog.randomize = true
+
+Or a specific collection:
+
+.. code-block:: ini
+
+    kinto.attachment.resources.blog.articles.randomize = true
 
 
 Default bucket
@@ -186,24 +165,6 @@ Optional
 **DELETE /{record-url}/attachment**
 
 Deletes the attachement from the record.
-
-QueryString options
--------------------
-
-By default, the server will randomize the name of the attached files. If you
-don't want this behavior and prefer to keep the original file name, you can
-pass ``?randomize=false`` in the QueryString.
-
-By default, the server won't gzip files unless you specifically used the
-``kinto.attachment.gzipped`` option if you want to **force** gzip to all
-collections.
-
-You can overwite that option by passing a ``?gzipped=true`` in the QueryString
-to specifically gzip some files.
-
-By default, the server will serve the gzip file, if you want the HTTP
-client to automatically decompress the file while loading it from S3 you can
-specify it when uploading the file by passing a ``?use_content_encoding=true``
 
 
 Attributes
