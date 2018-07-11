@@ -359,12 +359,6 @@ class ZippedAttachementViewTest(BaseWebTestLocal, unittest.TestCase):
 class PerResourceConfigAttachementViewTest(BaseWebTestS3, unittest.TestCase):
     config = 'config/s3_per_resource.ini'
 
-    def setUpFingerprintingDefenses(self):
-        self.create_collection('fingerprinting-defenses', 'fonts')
-        _id = str(uuid.uuid4())
-        record_uri = self.get_record_uri('fingerprinting-defenses', 'fonts', _id)
-        self.endpoint_uri = record_uri + '/attachment'
-
     def test_file_get_zipped_in_fennec_bucket(self):
         r = self.upload()
 
@@ -377,8 +371,19 @@ class PerResourceConfigAttachementViewTest(BaseWebTestS3, unittest.TestCase):
         self.assertEqual(resp.headers['Content-Type'], 'application/octet-stream')
         self.assertNotIn('Content-Encoding', resp.headers)
 
+    def test_file_do_not_get_zipped_in_fennec_experiments_collection(self):
+        self.create_collection('fennec', 'experiments')
+        record_uri = self.get_record_uri('fennec', 'experiments', str(uuid.uuid4()))
+        self.endpoint_uri = record_uri + '/attachment'
+        r = self.upload()
+
+        self.assertNotIn('original', r.json['mimetype'])
+        self.assertEqual(r.json['mimetype'], 'image/jpeg')
+
     def test_file_uses_gzip_encoding(self):
-        self.setUpFingerprintingDefenses()
+        self.create_collection('fingerprinting-defenses', 'fonts')
+        record_uri = self.get_record_uri('fingerprinting-defenses', 'fonts', str(uuid.uuid4()))
+        self.endpoint_uri = record_uri + '/attachment'
         r = self.upload()
 
         self.assertNotIn('original', r.json['mimetype'])
