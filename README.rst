@@ -174,7 +174,7 @@ When a file is attached, the related record is given an ``attachment`` attribute
 with the following fields:
 
 - ``filename``: the original filename
-- ``hash``: a SHA-256 digest
+- ``hash``: a SHA-256 hex digest
 - ``location``: the URL of the attachment
 - ``mimetype``: the `media type <https://en.wikipedia.org/wiki/Media_type>`_ of
   the file
