@@ -11,7 +11,7 @@ from kinto.core.storage import Filter
 from kinto.views.records import Record
 from kinto.authorization import RouteFactory
 from pyramid import httpexceptions
-from pyramid_storage.local import LocalFileStorage
+from pyramid_storage.s3 import S3FileStorage
 from pyramid_storage.exceptions import FileNotAllowed
 
 FILE_LINKS = '__attachments__'
@@ -125,8 +125,7 @@ def delete_attachment(request, link_field=None, uri=None):
     storage.delete_all("", FILE_LINKS, filters=filters, with_deleted=False)
 
 
-def save_file(content, request, randomize=True, gzipped=False,
-              use_content_encoding=False):
+def save_file(content, request, randomize=True, gzipped=False):
     folder_pattern = request.registry.settings.get('attachment.folder', '')
     folder = folder_pattern.format(**request.matchdict) or None
 
@@ -135,30 +134,28 @@ def save_file(content, request, randomize=True, gzipped=False,
         error_msg = 'Filename is required.'
         raise_invalid(request, location='body', description=error_msg)
 
+    # Posted file attributes.
     content.file.seek(0)
     filecontent = content.file.read()
     filehash = sha256(filecontent)
     size = len(filecontent)
+    mimetype = content.type
+    filename = content.filename
 
     original = None
-    save_options = {'folder': folder,
-                    'randomize': randomize}
+    save_options = {'folder': folder, 'randomize': randomize}
 
-    should_gzip_content = False
+    # We have two situations where we will gzip the filecontent:
+    # - the gzipped setting was set to true
+    # - we upload to S3
+    #
+    # In the former, we store a Gzip file and the original file is lost
+    # In the latter, the Gzip is just the HTTP transport and is transparent for clients.
 
-    if use_content_encoding:
-        # Http will decompress gzipped data automatically if the header
-        # 'Content-Encoding' is present. So, this mimetype here we can
-        # still use the original one as well as the file name.
-        mimetype = content.type
-        filename = content.filename
-        save_options['headers'] = {
-            'content-type': mimetype,
-            'content-encoding': 'gzip'
-        }
-        should_gzip_content = not isinstance(request.attachment, LocalFileStorage)
+    store_on_s3 = isinstance(request.attachment, S3FileStorage)
+    should_gzip_content = gzipped or store_on_s3
 
-    elif gzipped:
+    if gzipped:
         original = {
             'filename': content.filename,
             'hash': filehash,
@@ -167,8 +164,15 @@ def save_file(content, request, randomize=True, gzipped=False,
         }
         mimetype = 'application/x-gzip'
         filename = content.filename + '.gz'
+        content.filename = filename
         save_options['extensions'] = ['gz']
-        should_gzip_content = True
+
+    elif store_on_s3:
+        # When uploading to S3 we send compressed content using HTTP headers.
+        save_options['headers'] = {
+            'content-type': mimetype,
+            'content-encoding': 'gzip'
+        }
 
     if should_gzip_content:
         # in-memory gzipping
@@ -179,13 +183,12 @@ def save_file(content, request, randomize=True, gzipped=False,
         filecontent = out.getvalue()
         out.seek(0)
         content.file = out
-        content.filename = filename
-        if not use_content_encoding:
+
+        if gzipped:
+            # We give the hash and size of the gzip content in the attachment
+            # metadata.
             filehash = sha256(filecontent)
             size = len(filecontent)
-    else:
-        mimetype = content.type
-        filename = content.filename
 
     try:
         location = request.attachment.save(content, **save_options)

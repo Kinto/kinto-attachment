@@ -32,7 +32,7 @@ def includeme(config):
                     message = 'Configuration rule malformed: `{}`'.format(setting_name)
                     raise ConfigurationError(message)
 
-                if name in ['gzipped', 'use_content_encoding']:
+                if name in ('gzipped', 'randomize'):
                     config.registry.attachment_resources[resource_id][name] = asbool(setting_value)
                 else:
                     message = '`{}` is not a supported setting name. Read `{}`'.format(
@@ -51,14 +51,12 @@ def includeme(config):
     # (see workaround about relative base_url in README)
     extra_base_url = settings.get('attachment.extra.base_url',
                                   settings.get('attachment.base_url'))
-    gzipped = asbool(settings.get('attachment.gzipped', False))
 
     # Expose capability.
     config.add_api_capability("attachments",
                               version=__version__,
                               description="Add file attachments to records",
                               url="https://github.com/Kinto/kinto-attachment/",
-                              gzipped=gzipped,
                               base_url=extra_base_url)
 
     # Register heartbeat to check attachments storage.
