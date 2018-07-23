@@ -13,8 +13,7 @@ HEARTBEAT_FILENAME = 'heartbeat.json'
 
 
 def post_attachment_view(request, file_field):
-    settings = request.registry.settings
-    keep_old_files = asbool(settings.get('attachment.keep_old_files', False))
+    keep_old_files = asbool(utils.setting_value(request, 'keep_old_files', default=False))
 
     if not keep_old_files:
         # Remove potential existing attachment.
@@ -38,23 +37,8 @@ def post_attachment_view(request, file_field):
                          errno=ERRORS.INVALID_POSTED_DATA,
                          message="Attachment missing.")
 
-    # Per resource settings
-    resource_settings = {
-        'gzipped': asbool(settings.get('attachment.gzipped', False)),
-        'randomize': asbool(settings.get('attachment.randomize', True)),
-    }
-
-    cid = '/buckets/{bucket_id}/collections/{collection_id}'.format_map(request.matchdict)
-    bid = '/buckets/{bucket_id}'.format_map(request.matchdict)
-
-    if bid in request.registry.attachment_resources:
-        resource_settings.update(request.registry.attachment_resources[bid])
-
-    if cid in request.registry.attachment_resources:
-        resource_settings.update(request.registry.attachment_resources[cid])
-
-    gzipped = resource_settings['gzipped']
-    randomize = resource_settings['randomize']
+    gzipped = utils.setting_value(request, 'gzipped', default=False)
+    randomize = utils.setting_value(request, 'randomize', default=True)
 
     attachment = utils.save_file(content, request, randomize=randomize, gzipped=gzipped)
 
@@ -88,8 +72,7 @@ def post_attachment_view(request, file_field):
 
 
 def delete_attachment_view(request, file_field):
-    settings = request.registry.settings
-    keep_old_files = asbool(settings.get('attachment.keep_old_files', False))
+    keep_old_files = asbool(utils.setting_value(request, 'keep_old_files', default=False))
 
     if not keep_old_files:
         utils.delete_attachment(request)

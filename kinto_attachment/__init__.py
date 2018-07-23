@@ -32,7 +32,7 @@ def includeme(config):
                     message = 'Configuration rule malformed: `{}`'.format(setting_name)
                     raise ConfigurationError(message)
 
-                if name in ('gzipped', 'randomize'):
+                if name in ('gzipped', 'randomize', 'keep_old_files'):
                     config.registry.attachment_resources[resource_id][name] = asbool(setting_value)
                 else:
                     message = '`{}` is not a supported setting name. Read `{}`'.format(

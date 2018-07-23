@@ -31,8 +31,7 @@ In the Kinto project settings
 
     kinto.includes = kinto_attachment
     kinto.attachment.base_url = http://cdn.service.org/files/
-    kinto.attachment.folder = {bucket_id}/{collection_id}
-    kinto.attachment.keep_old_files = true
+
 
 Local File storage
 ------------------
@@ -42,6 +41,7 @@ Store files locally:
 .. code-block:: ini
 
     kinto.attachment.base_path = /tmp
+
 
 S3 File Storage
 ---------------
@@ -62,6 +62,54 @@ Store on Amazon S3:
     and Access Management (IAM).
 
 See `Pyramid Storage <https://pythonhosted.org/pyramid_storage/>`_.
+
+
+The ``folder`` option
+---------------------
+
+With this option, the files will be stored in sub-folders.
+
+Use the ``{bucket_id}`` and ``{collection_id}`` placeholders to organize the files
+by bucket or collection.
+
+.. code-block:: ini
+
+    kinto.attachment.folder = {bucket_id}/{collection_id}
+
+Or only for a particular bucket:
+
+.. code-block:: ini
+
+    kinto.attachment.resources.blog.folder = blog-assets
+
+Or a specific collection:
+
+.. code-block:: ini
+
+    kinto.attachment.resources.blog.articles.folder = articles-images
+
+
+The ``keep_old_files`` option
+-----------------------------
+
+When set to ``true``, the files won't be deleted from disk/S3 when the associated record
+is deleted or when the attachment replaced.
+
+.. code-block:: ini
+
+    kinto.attachment.keep_old_files = true
+
+Or only for a particular bucket:
+
+.. code-block:: ini
+
+    kinto.attachment.resources.blog.keep_old_files = false
+
+Or a specific collection:
+
+.. code-block:: ini
+
+    kinto.attachment.resources.blog.articles.keep_old_files = true
 
 
 The ``gzipped`` option
@@ -235,8 +283,6 @@ in that case referring to the gzipped file:
     }
 
 
-
-
 Usage
 =====
 
@@ -347,6 +393,7 @@ Since the ``attachment`` attribute contains metadata of the compressed file
 the original file metadata are stored in a ``original`` attribute.
 
 See ``python3 scripts/upload.py --help`` for more details about options.
+
 
 Download files
 --------------
