@@ -16,8 +16,7 @@ def on_delete_record(event):
     When a bucket or collection is deleted, it removes the attachments of
     every underlying records.
     """
-    settings = event.request.registry.settings
-    keep_old_files = asbool(settings.get('attachment.keep_old_files', False))
+    keep_old_files = asbool(utils.setting_value(event.request, 'keep_old_files', default=False))
     if keep_old_files:
         return
 
