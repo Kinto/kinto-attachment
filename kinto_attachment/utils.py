@@ -221,13 +221,12 @@ def save_file(content, request, randomize=True, gzipped=False):
 
 def setting_value(request, name, default):
     value = request.registry.settings.get('attachment.{}'.format(name), default)
-    try:
-        bid = '/buckets/{bucket_id}'.format_map(request.matchdict)
+    if 'bucket_id' in request.matchdict:
+        bid = '/buckets/{bucket_id}'.format(**request.matchdict)
         if bid in request.registry.attachment_resources:
             value = request.registry.attachment_resources[bid][name]
-        cid = '/buckets/{bucket_id}/collections/{collection_id}'.format_map(request.matchdict)
-        if cid in request.registry.attachment_resources:
-            value = request.registry.attachment_resources[cid][name]
-    except KeyError:
-        pass
+        if 'collection_id':
+            cid = '/buckets/{bucket_id}/collections/{collection_id}'.format(**request.matchdict)
+            if cid in request.registry.attachment_resources:
+                value = request.registry.attachment_resources[cid][name]
     return value
