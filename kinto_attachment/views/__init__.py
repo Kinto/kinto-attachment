@@ -1,3 +1,4 @@
+import cgi
 import json
 from io import BytesIO
 
@@ -37,10 +38,9 @@ def post_attachment_view(request, file_field):
                          errno=ERRORS.INVALID_POSTED_DATA,
                          message="Attachment missing.")
 
-    gzipped = utils.setting_value(request, 'gzipped', default=False)
-    randomize = utils.setting_value(request, 'randomize', default=True)
-
-    attachment = utils.save_file(content, request, randomize=randomize, gzipped=gzipped)
+    folder_pattern = utils.setting_value(request, 'folder', default='')
+    folder = folder_pattern.format(**request.matchdict) or None
+    attachment = utils.save_file(request, content, folder=folder)
 
     # Update related record.
     posted_data = {k: v for k, v in request.POST.items() if k != file_field}
@@ -94,12 +94,17 @@ def attachments_ping(request):
         return True
 
     status = False
-    attachment = request.attachment
     try:
-        location = attachment.save_file(BytesIO(HEARTBEAT_CONTENT.encode('utf-8')),
-                                        HEARTBEAT_FILENAME,
-                                        replace=True)
-        attachment.delete(location)
+        content = cgi.FieldStorage()
+        content.filename = HEARTBEAT_FILENAME
+        content.file = BytesIO(HEARTBEAT_CONTENT.encode('utf-8'))
+        content.type = 'application/octet-stream'
+
+        stored = utils.save_file(request, content, keep_link=False, replace=True)
+
+        relative_location = stored['location'].replace(request.attachment.base_url, '')
+        request.attachment.delete(relative_location)
+
         status = True
     except Exception as e:
         logger.exception(e)

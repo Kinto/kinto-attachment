@@ -8,6 +8,10 @@ Changelog
 
 - Gzip ``Content-Encoding`` is not used anymore when uploading on S3 (fixes #144)
 
+**Internal changes**
+
+- Heartbeat now uses ``utils.save_file()`` for better detection of configuration or deployment errors (fixes #146)
+
 
 4.0.0 (2018-07-24)
 ------------------

@@ -7,6 +7,7 @@ from kinto_attachment.utils import save_file
 
 class _Registry(object):
     settings = {'attachment.folder': ''}
+    attachment_resources = {}
 
     def save(self, *args, **kw):
         return 'yeahok'
@@ -42,7 +43,8 @@ class TestUtils(unittest.TestCase):
         my_font.type = 'application/x-font'
 
         request = _Request()
-        res = save_file(my_font, request, gzipped=True)
+        request.registry.settings['attachment.gzipped'] = True
+        res = save_file(request, my_font)
         self.assertTrue('original' in res)
 
     def test_save_file_not_gzip(self):
@@ -52,5 +54,6 @@ class TestUtils(unittest.TestCase):
         my_font.type = 'application/x-font'
 
         request = _Request()
-        res = save_file(my_font, request)
+        request.registry.settings['attachment.gzipped'] = False
+        res = save_file(request, my_font)
         self.assertFalse('original' in res)
