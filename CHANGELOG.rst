@@ -4,7 +4,9 @@ Changelog
 4.1.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**Breaking changes**
+
+- Gzip ``Content-Encoding`` is not used anymore when uploading on S3 (fixes #144)
 
 
 4.0.0 (2018-07-24)
