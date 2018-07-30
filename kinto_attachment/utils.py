@@ -11,7 +11,6 @@ from kinto.core.storage import Filter
 from kinto.views.records import Record
 from kinto.authorization import RouteFactory
 from pyramid import httpexceptions
-from pyramid_storage.s3 import S3FileStorage
 from pyramid_storage.exceptions import FileNotAllowed
 
 FILE_LINKS = '__attachments__'
@@ -128,6 +127,7 @@ def delete_attachment(request, link_field=None, uri=None):
 def save_file(content, request, randomize=True, gzipped=False):
     folder_pattern = request.registry.settings.get('attachment.folder', '')
     folder = folder_pattern.format(**request.matchdict) or None
+    save_options = {'folder': folder, 'randomize': randomize}
 
     # Read file to compute hash.
     if not isinstance(content, cgi.FieldStorage):
@@ -143,38 +143,19 @@ def save_file(content, request, randomize=True, gzipped=False):
     filename = content.filename
 
     original = None
-    save_options = {'folder': folder, 'randomize': randomize}
-
-    # We have two situations where we will gzip the filecontent:
-    # - the gzipped setting was set to true
-    # - we upload to S3
-    #
-    # In the former, we store a Gzip file and the original file is lost
-    # In the latter, the Gzip is just the HTTP transport and is transparent for clients.
-
-    store_on_s3 = isinstance(request.attachment, S3FileStorage)
-    should_gzip_content = gzipped or store_on_s3
 
     if gzipped:
         original = {
-            'filename': content.filename,
+            'filename': filename,
             'hash': filehash,
-            'mimetype': content.type,
+            'mimetype': mimetype,
             'size': size,
         }
         mimetype = 'application/x-gzip'
-        filename = content.filename + '.gz'
+        filename += '.gz'
         content.filename = filename
         save_options['extensions'] = ['gz']
 
-    elif store_on_s3:
-        # When uploading to S3 we send compressed content using HTTP headers.
-        save_options['headers'] = {
-            'content-type': mimetype,
-            'content-encoding': 'gzip'
-        }
-
-    if should_gzip_content:
         # in-memory gzipping
         out = BytesIO()
         with gzip.GzipFile(fileobj=out, mode="w") as f:
@@ -184,11 +165,10 @@ def save_file(content, request, randomize=True, gzipped=False):
         out.seek(0)
         content.file = out
 
-        if gzipped:
-            # We give the hash and size of the gzip content in the attachment
-            # metadata.
-            filehash = sha256(filecontent)
-            size = len(filecontent)
+        # We give the hash and size of the gzip content in the attachment
+        # metadata.
+        filehash = sha256(filecontent)
+        size = len(filecontent)
 
     try:
         location = request.attachment.save(content, **save_options)
