@@ -124,10 +124,9 @@ def delete_attachment(request, link_field=None, uri=None):
     storage.delete_all("", FILE_LINKS, filters=filters, with_deleted=False)
 
 
-def save_file(content, request, randomize=True, gzipped=False):
-    folder_pattern = request.registry.settings.get('attachment.folder', '')
-    folder = folder_pattern.format(**request.matchdict) or None
-    save_options = {'folder': folder, 'randomize': randomize}
+def save_file(request, content, folder=None, keep_link=True, replace=False):
+    gzipped = setting_value(request, 'gzipped', default=False)
+    randomize = setting_value(request, 'randomize', default=True)
 
     # Read file to compute hash.
     if not isinstance(content, cgi.FieldStorage):
@@ -143,6 +142,7 @@ def save_file(content, request, randomize=True, gzipped=False):
     filename = content.filename
 
     original = None
+    save_options = {'folder': folder, 'randomize': randomize, 'replace': replace}
 
     if gzipped:
         original = {
@@ -188,13 +188,14 @@ def save_file(content, request, randomize=True, gzipped=False):
     if original is not None:
         attachment['original'] = original
 
-    # Store link between record and attachment (for later deletion).
-    request.registry.storage.create("", FILE_LINKS, {
-        'location': location,  # store relative location.
-        'bucket_uri': bucket_uri(request),
-        'collection_uri': collection_uri(request),
-        'record_uri': record_uri(request)
-    })
+    if keep_link:
+        # Store link between record and attachment (for later deletion).
+        request.registry.storage.create("", FILE_LINKS, {
+            'location': location,  # store relative location.
+            'bucket_uri': bucket_uri(request),
+            'collection_uri': collection_uri(request),
+            'record_uri': record_uri(request)
+        })
 
     return attachment
 
