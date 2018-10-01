@@ -4,13 +4,32 @@ from io import BytesIO
 
 from pyramid import httpexceptions
 from pyramid.settings import asbool
-from kinto.core import logger
+from kinto.core import logger, Service
+from kinto.core.authorization import DYNAMIC as DYNAMIC_PERMISSION
 from kinto.core.errors import ERRORS, http_error
 
 from kinto_attachment import utils
 
+
 HEARTBEAT_CONTENT = '{"test": "write"}'
 HEARTBEAT_FILENAME = 'heartbeat.json'
+SINGLE_FILE_FIELD = 'attachment'
+
+
+attachment = Service(name='attachment',
+                     description='Attach a file to a record',
+                     path=utils.RECORD_PATH + '/attachment',
+                     factory=utils.AttachmentRouteFactory)
+
+
+@attachment.post(permission=DYNAMIC_PERMISSION)
+def attachment_post(request):
+    return post_attachment_view(request, SINGLE_FILE_FIELD)
+
+
+@attachment.delete(permission=DYNAMIC_PERMISSION)
+def attachment_delete(request):
+    return delete_attachment_view(request, SINGLE_FILE_FIELD)
 
 
 def post_attachment_view(request, file_field):
