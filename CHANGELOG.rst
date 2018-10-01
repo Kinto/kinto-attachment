@@ -4,7 +4,13 @@ Changelog
 5.0.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**Breaking changes**
+
+- Do not allow any file extension by default. Now allow documents+images+text+data (Fix #130)
+
+**Bug fixes**
+
+- Fix heartbeat when allowed file types is not ``any`` (Fix #148)
 
 
 5.0.0 (2018-07-31)

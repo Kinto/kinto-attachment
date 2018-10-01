@@ -12,7 +12,7 @@ from kinto_attachment import utils
 
 
 HEARTBEAT_CONTENT = '{"test": "write"}'
-HEARTBEAT_FILENAME = 'heartbeat.json'
+HEARTBEAT_FILENAME = 'heartbeat'
 SINGLE_FILE_FIELD = 'attachment'
 
 
@@ -112,10 +112,14 @@ def attachments_ping(request):
     if asbool(request.registry.settings.get('readonly', False)):
         return True
 
+    # We will fake a file upload, so pick a file extension that is allowed.
+    extensions = request.attachment.extensions or {'json'}
+    allowed_extension = "." + list(extensions)[-1]
+
     status = False
     try:
         content = cgi.FieldStorage()
-        content.filename = HEARTBEAT_FILENAME
+        content.filename = HEARTBEAT_FILENAME + allowed_extension
         content.file = BytesIO(HEARTBEAT_CONTENT.encode('utf-8'))
         content.type = 'application/octet-stream'
 
