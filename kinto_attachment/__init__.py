@@ -2,7 +2,6 @@ import pkg_resources
 from collections import defaultdict
 from pyramid.exceptions import ConfigurationError
 from pyramid.settings import asbool
-from kinto_attachment.views import attachments_ping
 
 #: Module version, as defined in PEP-0396.
 __version__ = pkg_resources.get_distribution(__package__).version
@@ -60,6 +59,7 @@ def includeme(config):
                               base_url=extra_base_url)
 
     # Register heartbeat to check attachments storage.
+    from kinto_attachment.views import attachments_ping
     config.registry.heartbeats['attachments'] = attachments_ping
 
     # Enable attachment backend.

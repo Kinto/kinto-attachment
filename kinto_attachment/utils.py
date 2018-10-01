@@ -7,14 +7,13 @@ from io import BytesIO
 from kinto.core import utils as core_utils
 from kinto.core.errors import raise_invalid
 from kinto.core.storage import Filter
-
 from kinto.views.records import Record
 from kinto.authorization import RouteFactory
 from pyramid import httpexceptions
 from pyramid_storage.exceptions import FileNotAllowed
 
-FILE_LINKS = '__attachments__'
 
+FILE_LINKS = '__attachments__'
 
 RECORD_PATH = '/buckets/{bucket_id}/collections/{collection_id}/records/{id}'
 

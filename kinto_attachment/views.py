@@ -2,11 +2,11 @@ import cgi
 import json
 from io import BytesIO
 
-from pyramid import httpexceptions
-from pyramid.settings import asbool
 from kinto.core import logger, Service
 from kinto.core.authorization import DYNAMIC as DYNAMIC_PERMISSION
 from kinto.core.errors import ERRORS, http_error
+from pyramid import httpexceptions
+from pyramid.settings import asbool
 
 from kinto_attachment import utils
 
