@@ -393,6 +393,7 @@ class KeepOldFilesTest(BaseWebTestLocal, unittest.TestCase):
 
         settings = core_support.DEFAULT_SETTINGS.copy()
         settings.update(**DEFAULT_SETTINGS)
+        settings['multiauth.policies'] = 'basicauth'
         settings['storage_backend'] = 'kinto.core.storage.memory'
         settings['permission_backend'] = 'kinto.core.permission.memory'
         settings['userid_hmac_secret'] = "this is not a secret"
