@@ -1,9 +1,17 @@
 language: python
 python: 3.5
+sudo: false
 env:
     - TOX_ENV=py35
     - TOX_ENV=kinto-master
     - TOX_ENV=flake8
+  global:
+    # Because travis runs on Google Cloud and has a /etc/boto.cfg it breaks my
+    # dependency on moto in our integration tests.
+    # https://github.com/spulec/moto/issues/1771
+    # https://github.com/boto/boto/issues/3741
+    # This overrides travis and tells it to look nowhere.
+    - export BOTO_CONFIG=/dev/null
 install:
     - make install
 before_script:
