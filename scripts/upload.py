@@ -62,11 +62,8 @@ def files_to_upload(records, files, force=False):
     return to_upload
 
 
-def upload_files(client, files, compress, randomize):
+def upload_files(client, files):
     permissions = {}  # XXX: Permissions are inherited from collection.
-    params = {'randomize': randomize}
-    if compress:
-        params['gzipped'] = True
 
     for filepath, record in files:
         mimetype, _ = mimetypes.guess_type(filepath)
@@ -77,7 +74,6 @@ def upload_files(client, files, compress, randomize):
         multipart = [("attachment", (filename, filecontent, mimetype))]
         try:
             body, _ = client.session.request(method='post',
-                                             params=params,
                                              endpoint=attachment_uri,
                                              permissions=json.dumps(permissions),
                                              files=multipart)
@@ -92,10 +88,6 @@ def main():
         description='Upload files to Kinto',
         default_server=DEFAULT_SERVER)
 
-    parser.add_argument('--gzip', dest='gzip', action='store_true',
-                        help='Gzip files before upload')
-    parser.add_argument('--keep-filenames', dest='randomize', action='store_false',
-                        help='Do not randomize file IDs on the server')
     parser.add_argument('--force', dest='force', action='store_true',
                         help='Force upload even if the hash matches')
     parser.add_argument('files', metavar='FILE', action='store',
@@ -113,8 +105,7 @@ def main():
 
     existing = client.get_records()
     to_upload = files_to_upload(existing, args.files, force=args.force)
-    upload_files(client, to_upload, compress=args.gzip,
-                 randomize=args.randomize)
+    upload_files(client, to_upload)
 
 
 if __name__ == '__main__':
