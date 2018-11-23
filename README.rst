@@ -158,7 +158,7 @@ Or a specific collection:
 The ``extensions`` option
 -------------------------
 
-If you want to upload files which are not in the default allowed extensions (see `Pyramid extensions groups <https://pythonhosted.org/pyramid_storage/#configuration>`_ (default: `default`):
+If you want to upload files which are not in the default allowed extensions (see `Pyramid extensions groups <https://pythonhosted.org/pyramid_storage/#configuration>`_ (default: ``default``):
 
 .. code-block:: ini
 
