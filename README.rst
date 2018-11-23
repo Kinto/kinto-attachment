@@ -155,6 +155,14 @@ Or a specific collection:
 
     kinto.attachment.resources.blog.articles.randomize = true
 
+The ``extensions`` option
+-------------------------
+
+If you want to upload files wich are not in the default allowed extensions (see `Pyramid extensions groups <https://pythonhosted.org/pyramid_storage/#configuration>`_ (default: default):
+
+.. code-block:: ini
+
+    kinto.attachment.extensions = default+video
 
 Default bucket
 --------------
