@@ -14,7 +14,7 @@ install: $(INSTALL_STAMP)
 $(INSTALL_STAMP): $(PYTHON) setup.py
 	$(VENV)/bin/pip install -U pip
 	$(VENV)/bin/pip install -Ur dev-requirements.txt
-	$(VENV)/bin/pip install -Ue .
+	$(VENV)/bin/pip install --pre -Ue .
 	touch $(INSTALL_STAMP)
 
 virtualenv: $(PYTHON)
@@ -24,7 +24,7 @@ $(PYTHON):
 build-requirements:
 	$(VIRTUALENV) $(TEMPDIR)
 	$(TEMPDIR)/bin/pip install -U pip
-	$(TEMPDIR)/bin/pip install -Ue .
+	$(TEMPDIR)/bin/pip install --pre -Ue .
 	$(TEMPDIR)/bin/pip freeze | grep -v -- '^-e' > requirements.txt
 
 moto:
