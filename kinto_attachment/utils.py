@@ -51,11 +51,10 @@ def sha256(content):
 
 
 def _object_uri(request, resource_name, matchdict, prefix):
-    route_name = '%s-record' % resource_name
-    full = request.route_path(route_name, **matchdict)
-    if not prefix:
-        return core_utils.strip_uri_prefix(full)
-    return full
+    uri = core_utils.instance_uri(request, resource_name=resource_name, **matchdict)
+    if prefix:
+        uri = f"/{request.registry.route_prefix}{uri}"
+    return uri
 
 
 def bucket_uri(request, prefix=False):
