@@ -4,8 +4,9 @@ Changelog
 6.1.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**Bug fixes**
 
+- Fix support of kinto >= 12
 
 6.0.0 (2018-10-02)
 ------------------
