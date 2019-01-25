@@ -4,8 +4,9 @@ Changelog
 6.1.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**Internal changes**
 
+- Use ``unittest.mock`` instead of the ``mock`` library
 
 6.0.1 (2018-12-19)
 ------------------

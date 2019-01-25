@@ -1,8 +1,8 @@
-import mock
 import os
 import requests
 import uuid
 import unittest
+from unittest import mock
 
 from urllib.parse import urlparse
 from kinto.core.errors import ERRORS
