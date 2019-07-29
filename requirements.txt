@@ -25,7 +25,7 @@ pyramid==1.10.4
 pyramid-multiauth==0.9.0
 pyramid-storage==0.3.0
 pyramid-tm==2.2.1
-pyrsistent==0.15.3
+pyrsistent==0.15.4
 python-dateutil==2.8.0
 requests==2.22.0
 simplejson==3.16.0
