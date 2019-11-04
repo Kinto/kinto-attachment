@@ -26,7 +26,7 @@ pyramid-multiauth==0.9.0
 pyramid-storage==0.3.0
 pyramid-tm==2.3
 pyrsistent==0.15.5
-python-dateutil==2.8.0
+python-dateutil==2.8.1
 requests==2.22.0
 simplejson==3.16.0
 six==1.12.0
