@@ -1,5 +1,7 @@
 language: python
 python: 3.6
+addons:
+  postgresql: "9.5"
 env:
     - TOX_ENV=py36
     - TOX_ENV=kinto-master
@@ -7,6 +9,7 @@ env:
 install:
     - make install
 before_script:
+    - psql -c "CREATE DATABASE testdb ENCODING 'UTF8' TEMPLATE template0;" -U postgres
     - sudo rm -f /etc/boto.cfg
     - make run-moto &
 script:
