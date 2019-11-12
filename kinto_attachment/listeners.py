@@ -22,7 +22,8 @@ def on_delete_record(event):
     resource_name = event.payload['resource_name']
     filter_field = '%s_uri' % resource_name
     uri = event.payload['uri']
-    utils.delete_attachment(event.request, link_field=filter_field, uri=uri, keep_old_files=keep_old_files)
+    utils.delete_attachment(event.request, link_field=filter_field, uri=uri,
+                            keep_old_files=keep_old_files)
 
 
 @subscriber(ResourceChanged,
