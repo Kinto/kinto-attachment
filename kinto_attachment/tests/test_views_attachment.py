@@ -93,11 +93,11 @@ class DeleteTest(object):
     def test_attachment_is_removed_on_delete(self):
         fullurl = self.attachment['location']
         self.assertTrue(self.exists(fullurl))
-        self.app.delete(self.endpoint_uri, headers=self.headers, status=204)
+        self.app.delete(self.endpoint_uri, headers=self.headers)
         self.assertFalse(self.exists(fullurl))
 
     def test_metadata_are_removed_on_delete(self):
-        self.app.delete(self.endpoint_uri, headers=self.headers, status=204)
+        self.app.delete(self.endpoint_uri, headers=self.headers)
         resp = self.app.get(self.record_uri, headers=self.headers)
         self.assertIsNone(resp.json['data'].get('attachment'))
 
@@ -105,7 +105,7 @@ class DeleteTest(object):
         storage = self.app.app.registry.storage
         links, _ = storage.get_all("", '__attachments__')
         self.assertEqual(len(links), self.nb_uploaded_files)
-        self.app.delete(self.endpoint_uri, headers=self.headers, status=204)
+        self.app.delete(self.endpoint_uri, headers=self.headers)
         links, _ = storage.get_all("", '__attachments__')
         self.assertEqual(len(links), 0)
 

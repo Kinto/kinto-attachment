@@ -99,7 +99,7 @@ def delete_attachment_view(request, file_field):
     record["data"][file_field] = None
     utils.patch_record(record, request)
 
-    raise httpexceptions.HTTPNoContent()
+    return {}
 
 
 def attachments_ping(request):
