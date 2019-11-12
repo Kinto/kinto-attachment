@@ -8,7 +8,7 @@ install:
     - make install
 before_script:
     - sudo rm -f /etc/boto.cfg
-    - make moto &
+    - make run-moto &
 script:
     - tox -e $TOX_ENV
 after_success:

@@ -447,7 +447,7 @@ Run tests
 
 Run a fake Amazon S3 server in a separate terminal::
 
-    make moto
+    make run-moto
 
 Run the tests suite::
 

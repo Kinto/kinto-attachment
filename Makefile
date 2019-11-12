@@ -27,7 +27,7 @@ build-requirements:
 	$(TEMPDIR)/bin/pip install --pre -Ue .
 	$(TEMPDIR)/bin/pip freeze | grep -v -- '^-e' > requirements.txt
 
-moto:
+run-moto:
 	$(VENV)/bin/moto_server s3bucket_path -H 0.0.0.0 -p 5000
 
 tests-once: install
