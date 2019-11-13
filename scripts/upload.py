@@ -80,7 +80,7 @@ def upload_files(client, files):
         except KintoException as e:
             print(filepath, "error during upload.", e)
         else:
-            pprint.pprint(body)
+            pprint.pprint({"id": record['id'], "attachment": body})
 
 
 def main():

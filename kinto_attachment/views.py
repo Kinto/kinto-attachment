@@ -35,9 +35,8 @@ def attachment_delete(request):
 def post_attachment_view(request, file_field):
     keep_old_files = asbool(utils.setting_value(request, 'keep_old_files', default=False))
 
-    if not keep_old_files:
-        # Remove potential existing attachment.
-        utils.delete_attachment(request)
+    # Remove potential existing attachment.
+    utils.delete_attachment(request, keep_old_files=keep_old_files)
 
     if "multipart/form-data" not in request.headers.get('Content-Type', ''):
         raise http_error(httpexceptions.HTTPBadRequest(),
@@ -93,15 +92,14 @@ def post_attachment_view(request, file_field):
 def delete_attachment_view(request, file_field):
     keep_old_files = asbool(utils.setting_value(request, 'keep_old_files', default=False))
 
-    if not keep_old_files:
-        utils.delete_attachment(request)
+    utils.delete_attachment(request, keep_old_files=keep_old_files)
 
     # Remove metadata.
     record = {"data": {}}
     record["data"][file_field] = None
     utils.patch_record(record, request)
 
-    raise httpexceptions.HTTPNoContent()
+    request.response.status = 204
 
 
 def attachments_ping(request):

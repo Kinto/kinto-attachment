@@ -104,19 +104,21 @@ def patch_record(record, request):
     return saved
 
 
-def delete_attachment(request, link_field=None, uri=None):
+def delete_attachment(request, link_field=None, uri=None, keep_old_files=False):
     """Delete existing file and link."""
     if link_field is None:
         link_field = "record_uri"
     if uri is None:
         uri = record_uri(request)
 
-    # Remove file.
-    filters = [Filter(link_field, uri, core_utils.COMPARISON.EQ)]
     storage = request.registry.storage
-    file_links, _ = storage.get_all("", FILE_LINKS, filters=filters)
-    for link in file_links:
-        request.attachment.delete(link['location'])
+    filters = [Filter(link_field, uri, core_utils.COMPARISON.EQ)]
+
+    # Remove file.
+    if not keep_old_files:
+        file_links, _ = storage.get_all("", FILE_LINKS, filters=filters)
+        for link in file_links:
+            request.attachment.delete(link['location'])
 
     # Remove link.
     storage.delete_all("", FILE_LINKS, filters=filters, with_deleted=False)

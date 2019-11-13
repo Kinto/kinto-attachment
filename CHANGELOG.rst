@@ -4,6 +4,10 @@ Changelog
 6.1.0 (unreleased)
 ------------------
 
+**Bug fixes**
+
+- Fix attachment deletion not being committed (fixes #149)
+
 **Internal changes**
 
 - Use ``unittest.mock`` instead of the ``mock`` library
