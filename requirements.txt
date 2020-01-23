@@ -36,6 +36,6 @@ ujson==1.35
 urllib3==1.25.8
 venusian==3.0.0
 waitress==1.4.2
-WebOb==1.8.5
+WebOb==1.8.6
 zope.deprecation==4.4.0
 zope.interface==4.7.1
