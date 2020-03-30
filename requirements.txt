@@ -15,7 +15,7 @@ iso8601==0.1.12
 jsonpatch==1.25
 jsonpointer==2.0
 jsonschema==3.2.0
-kinto==13.6.3
+kinto==13.6.4
 logging-color-formatter==1.0.2
 PasteDeploy==2.1.0
 plaster==1.0
