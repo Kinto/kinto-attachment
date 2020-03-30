@@ -4,7 +4,9 @@ Changelog
 6.1.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**Bug fixes**
+
+- Fix broken compatibility with Kinto 13.6.4
 
 
 6.0.2 (2019-11-13)
