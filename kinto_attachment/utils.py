@@ -33,6 +33,7 @@ class AttachmentRouteFactory(RouteFactory):
             request.validated.setdefault('header', {})
             request.validated.setdefault('querystring', {})
             resource = Record(request, context=self)
+            resource.object_id = request.matchdict['id']
             existing = resource.get()
         except httpexceptions.HTTPNotFound:
             existing = None
@@ -91,6 +92,7 @@ def patch_record(record, request):
 
     request.body = json.dumps(record).encode('utf-8')
     resource = Record(request, context=context)
+    resource.object_id = request.matchdict['id']
     setattr(request, '_attachment_auto_save', True)  # Flag in update listener.
 
     try:
