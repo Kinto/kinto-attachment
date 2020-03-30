@@ -4,7 +4,6 @@ flask==1.1.1
 pytest
 pytest-cache
 pytest-cov
-pytest-sugar
 tox
 webtest
 psycopg2
