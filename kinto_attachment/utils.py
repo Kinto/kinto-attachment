@@ -144,7 +144,12 @@ def save_file(request, content, folder=None, keep_link=True, replace=False):
     filename = content.filename
 
     original = None
-    save_options = {'folder': folder, 'randomize': randomize, 'replace': replace}
+    save_options = {
+        'folder': folder,
+        'randomize': randomize,
+        'replace': replace,
+        'headers': {'Content-Type': mimetype},
+    }
 
     if gzipped:
         original = {
@@ -157,6 +162,7 @@ def save_file(request, content, folder=None, keep_link=True, replace=False):
         filename += '.gz'
         content.filename = filename
         save_options['extensions'] = ['gz']
+        save_options['headers']['Content-Type'] = mimetype
 
         # in-memory gzipping
         out = BytesIO()
