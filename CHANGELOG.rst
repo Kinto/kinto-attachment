@@ -4,7 +4,9 @@ Changelog
 6.1.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**Bug fixes**
+
+- Add missing content type when uploading to S3
 
 
 6.0.3 (2020-03-30)
