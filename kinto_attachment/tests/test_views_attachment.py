@@ -353,7 +353,7 @@ class PerResourceConfigAttachementViewTest(BaseWebTestS3, unittest.TestCase):
 
         relative_url = r.json['location'].replace(self.base_url, '')
         resp = requests.get("http://localhost:5000/myfiles/{}".format(relative_url))
-        self.assertEqual(resp.headers['Content-Type'], 'application/octet-stream')
+        self.assertEqual(resp.headers['Content-Type'], 'application/x-gzip')
         self.assertNotIn('Content-Encoding', resp.headers)
 
     def test_file_do_not_get_zipped_in_fennec_experiments_collection(self):
