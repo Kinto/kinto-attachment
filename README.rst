@@ -164,6 +164,19 @@ If you want to upload files which are not in the default allowed extensions (see
 
     kinto.attachment.extensions = default+video
 
+
+The ``mimetypes`` option
+------------------------
+
+By default, the mimetype is guessed from the filename using Python standard mimetypes module.
+
+If you want to add or override mimetypes, use the following setting and the associated syntax:
+
+.. code-block:: ini
+
+    kinto.attachment.mimetypes = .ftl:application/vnd.fluent;.db:application/vnd.sqlite3
+
+
 Default bucket
 --------------
 

@@ -366,6 +366,17 @@ class PerResourceConfigAttachementViewTest(BaseWebTestS3, unittest.TestCase):
         self.assertEqual(r.json['mimetype'], 'image/jpeg')
 
 
+class OverridenMimetypesTest(BaseWebTestS3, unittest.TestCase):
+    config = 'config/s3.ini'
+
+    def test_file_mimetype_comes_from_config(self):
+        resp = self.upload(files=[
+            (self.file_field, b'kinto.txt', b'--binary--')
+        ])
+
+        self.assertEqual(resp.json['mimetype'], 'text/vnd.graphviz')
+
+
 class SingleAttachmentViewTest(AttachmentViewTest, BaseWebTestLocal,
                                unittest.TestCase):
     pass
