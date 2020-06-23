@@ -24,7 +24,7 @@ test_requirements = [
 
 setup(
     name='kinto-attachment',
-    version='6.1.0',
+    version='6.2.0.dev0',
     description="Attach files to Kinto records",
     long_description=readme + '\n\n' + history,
     author="Mozilla",
