@@ -135,7 +135,7 @@ def delete_attachment(request, link_field=None, uri=None, keep_old_files=False):
 def save_file(request, content, folder=None, keep_link=True, replace=False):
     gzipped = setting_value(request, 'gzipped', default=False)
     randomize = setting_value(request, 'randomize', default=True)
-    
+
     overriden_mimetypes = {**DEFAULT_MIMETYPES}
     conf_mimetypes = setting_value(request, 'mimetypes', default="")
     if conf_mimetypes:
