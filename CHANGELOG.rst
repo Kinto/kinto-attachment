@@ -4,7 +4,9 @@ Changelog
 6.1.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**New features**
+
+- Allow to override mimetypes from config (#315)
 
 
 6.0.4 (2020-06-04)
