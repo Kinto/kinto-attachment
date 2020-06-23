@@ -2,6 +2,7 @@ import cgi
 import json
 import hashlib
 import gzip
+import os
 from io import BytesIO
 
 from kinto.core import utils as core_utils
@@ -16,6 +17,11 @@ from pyramid_storage.exceptions import FileNotAllowed
 FILE_LINKS = '__attachments__'
 
 RECORD_PATH = '/buckets/{bucket_id}/collections/{collection_id}/records/{id}'
+
+DEFAULT_MIMETYPES = {
+    ".pem": "application/x-pem-file",
+    ".geojson": "application/geojson",
+}
 
 
 class AttachmentRouteFactory(RouteFactory):
@@ -130,6 +136,13 @@ def save_file(request, content, folder=None, keep_link=True, replace=False):
     gzipped = setting_value(request, 'gzipped', default=False)
     randomize = setting_value(request, 'randomize', default=True)
 
+    overriden_mimetypes = {**DEFAULT_MIMETYPES}
+    conf_mimetypes = setting_value(request, 'mimetypes', default="")
+    if conf_mimetypes:
+        overriden_mimetypes.update(dict([
+            v.split(":") for v in conf_mimetypes.split(";")
+        ]))
+
     # Read file to compute hash.
     if not isinstance(content, cgi.FieldStorage):
         error_msg = 'Filename is required.'
@@ -140,8 +153,10 @@ def save_file(request, content, folder=None, keep_link=True, replace=False):
     filecontent = content.file.read()
     filehash = sha256(filecontent)
     size = len(filecontent)
-    mimetype = content.type
     filename = content.filename
+
+    _, extension = os.path.splitext(filename)
+    mimetype = overriden_mimetypes.get(extension, content.type)
 
     original = None
     save_options = {
