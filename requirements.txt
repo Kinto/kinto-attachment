@@ -4,7 +4,7 @@ boto==2.49.0
 certifi==2020.6.20
 cffi==1.14.1
 chardet==3.0.4
-colander==1.7.0
+colander==1.8.0
 colorama==0.4.3
 cornice==5.0.1
 cornice-swagger==1.0.0
