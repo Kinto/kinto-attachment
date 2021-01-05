@@ -64,11 +64,11 @@ jobs:
 
       - name: Run moto
         run: |
-          make run-moto
+          make run-moto &
 
       - name: Run Kinto
         run: |
-          make run-kinto
+          make run-kinto &
 
       - name: Tox
         run: |
