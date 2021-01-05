@@ -25,12 +25,10 @@ jobs:
 
     strategy:
       matrix:
-        toxenv: [py38, flake8, kinto-master, upload-download-scripts]
+        toxenv: [py38, kinto-master, upload-download-scripts]
         include:
           - toxenv: py38
             python-version: "3.8"
-          - toxenv: flake8
-            python-version: "3.X"
           - toxenv: upload-download-scripts
             python-version: "3.X"
           - toxenv: kinto-master
