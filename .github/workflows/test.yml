@@ -79,7 +79,7 @@ jobs:
 
       - name: Coveralls
         uses: AndreMiras/coveralls-python-action@develop
-        if: matrix.toxenv != 'flake8'
+        if: matrix.toxenv == 'py38'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: .coverage
