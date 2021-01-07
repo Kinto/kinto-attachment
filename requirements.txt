@@ -21,7 +21,7 @@ PasteDeploy==2.1.0
 plaster==1.0
 plaster-pastedeploy==0.7
 pycparser==2.20
-pyramid==1.10.4
+pyramid==1.10.5
 pyramid-multiauth==0.9.0
 pyramid-storage==0.3.1
 pyramid-tm==2.4
