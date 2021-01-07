@@ -1,4 +1,4 @@
-VIRTUALENV = virtualenv --python python3.6
+VIRTUALENV = virtualenv --python python3.8
 VENV := $(shell echo $${VIRTUAL_ENV-.venv})
 PYTHON = $(VENV)/bin/python
 INSTALL_STAMP = $(VENV)/.install.stamp
@@ -14,7 +14,7 @@ install: $(INSTALL_STAMP)
 $(INSTALL_STAMP): $(PYTHON) setup.py
 	$(VENV)/bin/pip install -U pip
 	$(VENV)/bin/pip install -Ur dev-requirements.txt
-	$(VENV)/bin/pip install --pre -Ue .
+	$(VENV)/bin/pip install --pre -Ue . -c requirements.txt
 	touch $(INSTALL_STAMP)
 
 virtualenv: $(PYTHON)

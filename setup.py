@@ -14,7 +14,7 @@ with codecs.open(os.path.join(here, 'CHANGELOG.rst'), encoding='utf-8') as f:
 
 requirements = [
     'boto',
-    'kinto>=5.1.0',
+    'kinto<14',  # content-type header in delete responses
     'pyramid_storage>=0.1.0',
 ]
 
