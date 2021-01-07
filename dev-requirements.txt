@@ -1,5 +1,5 @@
 flake8
-moto==1.3.14
+moto==1.3.16
 flask==1.1.2
 pytest
 pytest-cache
