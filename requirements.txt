@@ -11,7 +11,7 @@ cornice-swagger==1.0.0
 dockerflow==2020.10.0
 hupper==1.10.2
 idna==2.10
-iso8601==0.1.13
+iso8601==0.1.14
 jsonpatch==1.28
 jsonpointer==2.0
 jsonschema==3.2.0
