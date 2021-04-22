@@ -103,10 +103,10 @@ class DeleteTest(object):
 
     def test_link_is_removed_on_delete(self):
         storage = self.app.app.registry.storage
-        links, _ = storage.get_all("", '__attachments__')
+        links = storage.list_all("", '__attachments__')
         self.assertEqual(len(links), self.nb_uploaded_files)
         self.app.delete(self.endpoint_uri, headers=self.headers, status=204)
-        links, _ = storage.get_all("", '__attachments__')
+        links = storage.list_all("", '__attachments__')
         self.assertEqual(len(links), 0)
 
     def test_attachment_is_removed_when_record_is_deleted(self):
@@ -130,10 +130,10 @@ class DeleteTest(object):
 
     def test_attachments_links_are_removed_forever(self):
         storage = self.app.app.registry.storage
-        links, _ = storage.get_all("", '__attachments__')
+        links = storage.list_all("", '__attachments__')
         self.assertEqual(len(links), self.nb_uploaded_files)
         self.app.delete(self.record_uri, headers=self.headers)
-        links, _ = storage.get_all("", '__attachments__')
+        links = storage.list_all("", '__attachments__')
         self.assertEqual(len(links), 0)
 
     def test_no_error_when_other_resource_is_deleted(self):
@@ -391,7 +391,7 @@ class DefaultBucketTest(BaseWebTestLocal, unittest.TestCase):
     def test_implicit_collection_creation_on_upload(self):
         resp = self.upload()
         record_uri = resp.headers['Location']
-        self.assertIn('/buckets/c0343679-10aa-a101-bf0f-e96f917f3e27',
+        self.assertIn('/buckets/b4a52ebc-fe4a-1167-89f3-c792640c70b3',
                       record_uri)
 
 

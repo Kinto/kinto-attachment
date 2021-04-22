@@ -124,7 +124,7 @@ def delete_attachment(request, link_field=None, uri=None, keep_old_files=False):
 
     # Remove file.
     if not keep_old_files:
-        file_links, _ = storage.get_all("", FILE_LINKS, filters=filters)
+        file_links = storage.list_all("", FILE_LINKS, filters=filters)
         for link in file_links:
             request.attachment.delete(link['location'])
 

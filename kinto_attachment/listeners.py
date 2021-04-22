@@ -36,7 +36,7 @@ def on_update_record(event):
 
     # A user is changing the record, make sure attachment metadata is not
     # altered manually.
-    for change in event.impacted_records:
+    for change in event.impacted_objects:
         attachment_before = change['old'].get('attachment')
         attachment_after = change['new'].get('attachment')
         if attachment_before and attachment_after:

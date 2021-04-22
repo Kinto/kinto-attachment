@@ -100,6 +100,7 @@ def delete_attachment_view(request, file_field):
     utils.patch_record(record, request)
 
     request.response.status = 204
+    request.response.headers.pop("Content-Type", None)
 
 
 def attachments_ping(request):
