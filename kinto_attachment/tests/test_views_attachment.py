@@ -391,7 +391,7 @@ class DefaultBucketTest(BaseWebTestLocal, unittest.TestCase):
     def test_implicit_collection_creation_on_upload(self):
         resp = self.upload()
         record_uri = resp.headers['Location']
-        self.assertIn('/buckets/c0343679-10aa-a101-bf0f-e96f917f3e27',
+        self.assertIn('/buckets/b4a52ebc-fe4a-1167-89f3-c792640c70b3',
                       record_uri)
 
 
