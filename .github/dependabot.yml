@@ -1,0 +1,26 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: weekly
+  open-pull-requests-limit: 99
+  ignore:
+  - dependency-name: idna
+    versions:
+    - ">= 3.1.a, < 3.2"
+  - dependency-name: pyramid
+    versions:
+    - ">= 2.0.a, < 2.1"
+  - dependency-name: moto
+    versions:
+    - 2.0.0
+    - 2.0.1
+    - 2.0.2
+    - 2.0.4
+  - dependency-name: zope-interface
+    versions:
+    - 5.3.0
+  - dependency-name: kinto
+    versions:
+    - 14.1.3
