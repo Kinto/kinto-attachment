@@ -29,7 +29,7 @@ pyrsistent==0.17.3
 python-dateutil==2.8.1
 requests==2.25.1
 simplejson==3.17.2
-six==1.15.0
+six==1.16.0
 transaction==3.0.1
 translationstring==1.4
 ujson==4.0.2
