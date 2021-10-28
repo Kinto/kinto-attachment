@@ -1,6 +1,6 @@
 function main() {
   // Local Kinto
-  var server = "https://kinto.dev.mozaws.net/v1";
+  var server = "https://demo.kinto-storage.org/v1";
   // var server = "http://localhost:8888/v1";
 
   // Basic Authentication
