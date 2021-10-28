@@ -9,9 +9,6 @@ updates:
   - dependency-name: idna
     versions:
     - ">= 3.1.a, < 3.2"
-  - dependency-name: pyramid
-    versions:
-    - ">= 2.0.a, < 2.1"
   - dependency-name: moto
     versions:
     - 2.0.0
