@@ -20,7 +20,7 @@ logging-color-formatter==1.0.2
 PasteDeploy==2.1.1
 plaster==1.0
 plaster-pastedeploy==0.7
-pycparser==2.20
+pycparser==2.21
 pyramid==2.0
 pyramid-multiauth==1.0.1
 pyramid-storage==1.0.0
