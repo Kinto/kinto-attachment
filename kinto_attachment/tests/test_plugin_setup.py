@@ -51,3 +51,10 @@ class IncludeMeTest(unittest.TestCase):
             self.includeme(settings={"attachment.resources.fennec.base_path": "foobar"})
         assert str(excinfo.value) == ('`base_path` is not a supported setting name. '
                                       'Read `attachment.resources.fennec.base_path`')
+
+    def test_base_url_is_added_a_trailing_slash(self):
+        config = self.includeme(settings={
+            "attachment.base_path": "/tmp",
+            "attachment.base_url": "http://cdn.com",
+        })
+        assert config.registry.api_capabilities["attachments"]["base_url"] == "http://cdn.com/"

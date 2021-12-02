@@ -4,7 +4,10 @@ Changelog
 6.2.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**New features**
+
+- ``base_url`` field in server's capabilities will be added a trailing slash (``/``)
+  if missing.
 
 
 6.1.0 (2020-06-23)
