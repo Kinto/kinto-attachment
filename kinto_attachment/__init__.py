@@ -51,6 +51,10 @@ def includeme(config):
     extra_base_url = settings.get('attachment.extra.base_url',
                                   settings.get('attachment.base_url'))
 
+    # Force trailing slash since attachment locations have no leading slash.
+    if extra_base_url and not extra_base_url.endswith("/"):
+        extra_base_url += "/"
+
     # Expose capability.
     config.add_api_capability("attachments",
                               version=__version__,
