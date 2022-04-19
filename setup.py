@@ -14,6 +14,7 @@ with codecs.open(os.path.join(here, 'CHANGELOG.rst'), encoding='utf-8') as f:
 
 requirements = [
     'boto',
+    'google-cloud-storage',
     'kinto<15',  # content-type header in delete responses
     'pyramid_storage>=0.1.0',
 ]

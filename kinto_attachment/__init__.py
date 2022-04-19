@@ -69,6 +69,8 @@ def includeme(config):
     # Enable attachment backend.
     if 'storage.base_path' in storage_settings:
         config.include('pyramid_storage.local')
+    elif 'storage.gcloud.credentials' in storage_settings:
+        config.include('pyramid_storage.gcloud')
     else:
         config.include('pyramid_storage.s3')
 
