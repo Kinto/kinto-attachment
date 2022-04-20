@@ -4,7 +4,9 @@ Changelog
 6.3.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+**New features**
+
+- Include the Google Cloud backend automatically when ``kinto.attachment.gcloud.*`` settings are used.
 
 
 6.2.0 (2021-12-02)

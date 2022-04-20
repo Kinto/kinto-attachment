@@ -64,6 +64,18 @@ Store on Amazon S3:
 See `Pyramid Storage <https://pythonhosted.org/pyramid_storage/>`_.
 
 
+Google Cloud Storage
+--------------------
+
+.. code-block:: ini
+
+    kinto.attachment.gcloud.credentials = <Path to the Service Accounts credentials JSON file>
+    kinto.attachment.gcloud.bucket_name = <bucket name>
+    kinto.attachment.gcloud.acl = publicRead
+
+See `Google Cloud ACL permissions <https://cloud.google.com/storage/docs/access-control/making-data-public>`_
+
+
 The ``folder`` option
 ---------------------
 

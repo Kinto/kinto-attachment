@@ -3,6 +3,9 @@ import unittest
 
 from pyramid import testing
 from pyramid.exceptions import ConfigurationError
+from pyramid_storage.interfaces import IFileStorage
+from pyramid_storage.s3 import S3FileStorage
+from pyramid_storage.gcloud import GoogleCloudStorage
 from kinto import main as kinto_main
 from kinto_attachment import __version__, includeme
 
@@ -58,3 +61,17 @@ class IncludeMeTest(unittest.TestCase):
             "attachment.base_url": "http://cdn.com",
         })
         assert config.registry.api_capabilities["attachments"]["base_url"] == "http://cdn.com/"
+
+    def test_gcloud_is_used_if_credentials_setting_is_used(self):
+        config = self.includeme(settings={
+            "attachment.gcloud.credentials": "/path/to/credentials.json",
+            "attachment.gcloud.bucket_name": "foo",
+        })
+        assert isinstance(config.registry.queryUtility(IFileStorage), GoogleCloudStorage)
+
+    def test_s3_is_used_if_base_path_setting_is_not_used(self):
+        config = self.includeme(settings={
+            "attachment.aws.access_key": "abc",
+            "attachment.aws.bucket_name": "foo",
+        })
+        assert isinstance(config.registry.queryUtility(IFileStorage), S3FileStorage)
