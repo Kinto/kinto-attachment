@@ -27,7 +27,7 @@ pyramid-storage==1.0.0
 pyramid-tm==2.5
 pyrsistent==0.18.1
 python-dateutil==2.8.2
-requests==2.28.0
+requests==2.28.1
 simplejson==3.17.6
 six==1.16.0
 transaction==3.0.1
