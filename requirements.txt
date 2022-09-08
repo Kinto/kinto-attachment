@@ -8,7 +8,7 @@ colander==1.8.3
 colorama==0.4.5
 cornice==6.0.1
 cornice-swagger==1.0.1
-dockerflow==2022.7.0
+dockerflow==2022.8.0
 hupper==1.10.3
 idna==3.3
 iso8601==1.0.2
