@@ -1,10 +1,10 @@
 Changelog
 =========
 
-6.4.0 (unreleased)
+6.3.1 (2022-10-17)
 ------------------
 
-- Nothing changed yet.
+- Remove upper bound for kinto version (#567)
 
 
 6.3.0 (2022-04-20)
