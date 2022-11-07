@@ -18,7 +18,7 @@ jsonschema==4.16.0
 kinto==15.0.0
 logging-color-formatter==1.0.3
 PasteDeploy==3.0.1
-plaster==1.0
+plaster==1.1
 plaster-pastedeploy==0.7
 pycparser==2.21
 pyramid==2.0
