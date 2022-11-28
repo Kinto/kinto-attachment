@@ -14,7 +14,7 @@ idna==3.4
 iso8601==1.1.0
 jsonpatch==1.32
 jsonpointer==2.3
-jsonschema==4.16.0
+jsonschema==4.17.1
 kinto==15.0.0
 logging-color-formatter==1.0.3
 PasteDeploy==3.0.1
