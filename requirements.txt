@@ -19,7 +19,7 @@ kinto==15.0.0
 logging-color-formatter==1.0.3
 PasteDeploy==3.0.1
 plaster==1.1.2
-plaster-pastedeploy==0.7
+plaster-pastedeploy==1.0.1
 pycparser==2.21
 pyramid==2.0
 pyramid-multiauth==1.0.1
