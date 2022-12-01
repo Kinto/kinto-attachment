@@ -33,7 +33,7 @@ six==1.16.0
 transaction==3.0.1
 translationstring==1.4
 ujson==5.5.0
-urllib3==1.26.12
+urllib3==1.26.13
 venusian==3.0.0
 waitress==2.1.2
 WebOb==1.8.7
