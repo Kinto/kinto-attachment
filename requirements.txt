@@ -3,7 +3,7 @@ bcrypt==4.0.1
 boto==2.49.0
 certifi==2022.9.24
 cffi==1.15.1
-chardet==5.0.0
+chardet==5.1.0
 colander==1.8.3
 colorama==0.4.6
 cornice==6.0.1
