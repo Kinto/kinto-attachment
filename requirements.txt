@@ -9,7 +9,7 @@ colorama==0.4.6
 cornice==6.0.1
 cornice-swagger==1.0.1
 dockerflow==2022.8.0
-hupper==1.10.3
+hupper==1.11
 idna==3.4
 iso8601==1.1.0
 jsonpatch==1.32
