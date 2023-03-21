@@ -1,7 +1,7 @@
 Changelog
 =========
 
-6.4.0 (unreleased)
+6.4.0 (2023-03-21)
 ------------------
 
 - Upgrade pyramid-storage, which allows for Google Cloud Storage (GCS) integration
