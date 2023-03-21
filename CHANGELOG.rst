@@ -4,7 +4,8 @@ Changelog
 6.4.0 (2023-03-21)
 ------------------
 
-- Upgrade pyramid-storage, which allows for Google Cloud Storage (GCS) integration
+- Upgrade pyramid-storage, which allows for Google Cloud Storage (GCS) integration (`#615 <https://github.com/Kinto/kinto-attachment/pull/615>`_)
+
 
 
 6.3.1 (2022-10-17)
