@@ -1,7 +1,7 @@
 attrs==23.1.0
 bcrypt==4.0.1
 boto==2.49.0
-certifi==2023.5.7
+certifi==2023.7.22
 cffi==1.15.1
 chardet==5.2.0
 colander==2.0
@@ -12,7 +12,7 @@ dockerflow==2022.8.0
 hupper==1.12
 idna==3.4
 iso8601==2.0.0
-jsonpatch==1.32
+jsonpatch==1.33
 jsonpointer==2.3
 jsonschema==4.19.0
 kinto==15.1.1
@@ -32,7 +32,7 @@ simplejson==3.19.1
 six==1.16.0
 transaction==3.1.0
 translationstring==1.4
-ujson==5.7.0
+ujson==5.8.0
 urllib3==2.0.4
 venusian==3.0.0
 waitress==2.1.2
