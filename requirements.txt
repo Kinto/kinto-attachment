@@ -12,7 +12,7 @@ dockerflow==2022.8.0
 hupper==1.12
 idna==3.4
 iso8601==1.1.0
-jsonpatch==1.32
+jsonpatch==1.33
 jsonpointer==2.3
 jsonschema==4.19.0
 kinto==15.1.1
