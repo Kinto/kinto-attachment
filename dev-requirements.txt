@@ -6,6 +6,6 @@ pytest-cache
 pytest-cov
 tox
 webtest
-psycopg2
-SQLAlchemy
-zope.sqlalchemy
+psycopg2==2.9.6
+SQLAlchemy==1.4.46
+zope.sqlalchemy==2.0
