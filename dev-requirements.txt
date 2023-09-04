@@ -8,4 +8,4 @@ tox
 webtest
 psycopg2==2.9.7
 SQLAlchemy==1.4.46
-zope.sqlalchemy==2.0
+zope.sqlalchemy==3.0
