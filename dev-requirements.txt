@@ -1,6 +1,6 @@
 flake8
 moto[server,s3]==4.2.0
-flask==2.3.2
+flask==2.3.3
 pytest
 pytest-cache
 pytest-cov
