@@ -13,7 +13,7 @@ hupper==1.12
 idna==3.4
 iso8601==2.0.0
 jsonpatch==1.33
-jsonpointer==2.3
+jsonpointer==2.4
 jsonschema==4.19.0
 kinto==16.0.0
 logging-color-formatter==1.0.3
