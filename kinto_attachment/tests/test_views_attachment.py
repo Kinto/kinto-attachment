@@ -352,7 +352,7 @@ class PerResourceConfigAttachementViewTest(BaseWebTestS3, unittest.TestCase):
         self.assertEqual(r.json['filename'], 'image.jpg.gz')
 
         relative_url = r.json['location'].replace(self.base_url, '')
-        resp = requests.get("http://localhost:5000/myfiles/{}".format(relative_url))
+        resp = requests.get("http://localhost:6000/myfiles/{}".format(relative_url))
         self.assertEqual(resp.headers['Content-Type'], 'application/x-gzip')
         self.assertNotIn('Content-Encoding', resp.headers)
 
