@@ -30,9 +30,9 @@ jobs:
           - toxenv: py38
             python-version: "3.8"
           - toxenv: upload-download-scripts
-            python-version: "3.X"
+            python-version: "3.8"
           - toxenv: kinto-master
-            python-version: "3.X"
+            python-version: "3.8"
 
     steps:
       - uses: actions/checkout@v2
