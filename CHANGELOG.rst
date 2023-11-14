@@ -1,10 +1,16 @@
 Changelog
 =========
 
-6.4.0 (unreleased)
+6.4.0 (2023-11-14)
 ------------------
 
-- Nothing changed yet.
+**Bug fixes**
+
+- Catch TypeError when data/permissions are passed as files (#685)
+
+**Documentation**
+
+- Fix #617: document release process (#691)
 
 
 6.3.1 (2022-10-17)
