@@ -479,6 +479,16 @@ Run the tests suite::
     make tests
 
 
+Releasing
+=========
+
+We use the same process that we use for Kinto.
+
+1. Create a pull request with updated `CHANGELOG.rst` and `setup.py` (for convenience, we use the ``prerelease`` command of `zest.releaser <https://zestreleaser.readthedocs.io>`_ that does exactly that)
+2. Once merged, add the git tag and build the wheel (with the ``release`` command)
+3. Upload it to PyPI, and switch back version number to development with `.dev` suffix (with the ``postrelease`` command)
+
+
 Notes
 =====
 
