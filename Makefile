@@ -28,7 +28,7 @@ build-requirements:
 	$(TEMPDIR)/bin/pip freeze | grep -v -- '^-e' > requirements.txt
 
 run-moto:
-	$(VENV)/bin/moto_server s3bucket_path -H 0.0.0.0 -p 5000
+	$(VENV)/bin/moto_server s3bucket_path -H 0.0.0.0 -p 6000
 
 tests-once: install
 	$(VENV)/bin/py.test kinto_attachment/tests --cov-report term-missing --cov-fail-under 100 --cov kinto_attachment
