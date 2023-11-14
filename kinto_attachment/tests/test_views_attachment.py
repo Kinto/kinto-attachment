@@ -239,6 +239,20 @@ class AttachmentViewTest(object):
         self.assertIn('body: permissions is not valid JSON',
                       resp.json['message'])
 
+    def test_permissions_must_be_str(self):
+        files = [
+            ('attachment', 'image.jpg', b'--fake--'),
+            ('data', 'data', b'{"family": "sans"}'),
+            ('permissions', 'permissions', b'{"read": ["system.Everyone"]}'),
+        ]
+        content_type, body = self.app.encode_multipart([], files)
+        headers = {**self.headers, "Content-Type": content_type}
+
+        resp = self.app.post(self.endpoint_uri, body, headers=headers, status=400)
+
+        self.assertIn("body: 'data' field should be passed as form data, not files",
+                      resp.json["message"])
+
     def test_unknown_fields_are_not_accepted(self):
         resp = self.upload(params=[('my_field', 'a_value')], status=400)
         self.assertIn("body: 'my_field' not in ('data', 'permissions')",

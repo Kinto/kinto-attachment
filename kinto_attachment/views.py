@@ -67,6 +67,11 @@ def post_attachment_view(request, file_field):
         if field in posted_data:
             try:
                 record[field] = json.loads(posted_data.pop(field))
+            except TypeError:
+                error_msg = "body: %r field should be passed as form data, not files" % field
+                raise http_error(httpexceptions.HTTPBadRequest(),
+                                 errno=ERRORS.INVALID_POSTED_DATA,
+                                 message=error_msg)
             except ValueError as e:
                 error_msg = "body: %s is not valid JSON (%s)" % (field, str(e))
                 raise http_error(httpexceptions.HTTPBadRequest(),
