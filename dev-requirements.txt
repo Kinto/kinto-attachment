@@ -1,5 +1,5 @@
 flake8
-moto[server,s3]==4.2.10
+moto[server,s3]==4.2.12
 flask==3.0.0
 pytest
 pytest-cache
@@ -7,5 +7,5 @@ pytest-cov
 tox
 webtest
 psycopg2==2.9.9
-SQLAlchemy==1.4.46
+SQLAlchemy==2.0.24
 zope.sqlalchemy==3.1
