@@ -1,5 +1,5 @@
-attrs==23.1.0
-bcrypt==4.0.1
+attrs==23.2.0
+bcrypt==4.1.2
 boto==2.49.0
 certifi==2023.11.17
 cffi==1.16.0
@@ -8,14 +8,14 @@ colander==2.0
 colorama==0.4.6
 cornice==6.0.1
 cornice-swagger==1.0.1
-dockerflow==2022.8.0
+dockerflow==2024.1.0
 hupper==1.12
 idna==3.6
 iso8601==2.1.0
 jsonpatch==1.33
 jsonpointer==2.4
 jsonschema==4.20.0
-kinto==16.2.2
+kinto==16.3.0
 logging-color-formatter==1.0.3
 PasteDeploy==3.1.0
 plaster==1.1.2
@@ -32,7 +32,7 @@ simplejson==3.19.2
 six==1.16.0
 transaction==4.0
 translationstring==1.4
-ujson==5.8.0
+ujson==5.9.0
 urllib3==2.1.0
 venusian==3.1.0
 waitress==2.1.2
