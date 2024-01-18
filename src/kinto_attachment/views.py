@@ -2,7 +2,7 @@ import cgi
 import json
 from io import BytesIO
 
-from kinto.core import logger, Service
+from kinto.core import Service, logger
 from kinto.core.authorization import DYNAMIC as DYNAMIC_PERMISSION
 from kinto.core.errors import ERRORS, http_error
 from pyramid import httpexceptions
@@ -12,14 +12,16 @@ from kinto_attachment import utils
 
 
 HEARTBEAT_CONTENT = '{"test": "write"}'
-HEARTBEAT_FILENAME = 'heartbeat'
-SINGLE_FILE_FIELD = 'attachment'
+HEARTBEAT_FILENAME = "heartbeat"
+SINGLE_FILE_FIELD = "attachment"
 
 
-attachment = Service(name='attachment',
-                     description='Attach a file to a record',
-                     path=utils.RECORD_PATH + '/attachment',
-                     factory=utils.AttachmentRouteFactory)
+attachment = Service(
+    name="attachment",
+    description="Attach a file to a record",
+    path=utils.RECORD_PATH + "/attachment",
+    factory=utils.AttachmentRouteFactory,
+)
 
 
 @attachment.post(permission=DYNAMIC_PERMISSION)
@@ -33,69 +35,76 @@ def attachment_delete(request):
 
 
 def post_attachment_view(request, file_field):
-    keep_old_files = asbool(utils.setting_value(request, 'keep_old_files', default=False))
+    keep_old_files = asbool(utils.setting_value(request, "keep_old_files", default=False))
 
     # Remove potential existing attachment.
     utils.delete_attachment(request, keep_old_files=keep_old_files)
 
-    if "multipart/form-data" not in request.headers.get('Content-Type', ''):
-        raise http_error(httpexceptions.HTTPBadRequest(),
-                         errno=ERRORS.INVALID_PARAMETERS,
-                         message="Content-Type should be multipart/form-data")
+    if "multipart/form-data" not in request.headers.get("Content-Type", ""):
+        raise http_error(
+            httpexceptions.HTTPBadRequest(),
+            errno=ERRORS.INVALID_PARAMETERS,
+            message="Content-Type should be multipart/form-data",
+        )
 
     # Store file locally.
     try:
         content = request.POST.get(file_field)
     except ValueError as e:
-        raise http_error(httpexceptions.HTTPBadRequest(),
-                         errno=ERRORS.INVALID_PARAMETERS.value,
-                         message=str(e))
+        raise http_error(
+            httpexceptions.HTTPBadRequest(), errno=ERRORS.INVALID_PARAMETERS.value, message=str(e)
+        )
 
     if content is None:
-        raise http_error(httpexceptions.HTTPBadRequest(),
-                         errno=ERRORS.INVALID_POSTED_DATA,
-                         message="Attachment missing.")
+        raise http_error(
+            httpexceptions.HTTPBadRequest(),
+            errno=ERRORS.INVALID_POSTED_DATA,
+            message="Attachment missing.",
+        )
 
-    folder_pattern = utils.setting_value(request, 'folder', default='')
+    folder_pattern = utils.setting_value(request, "folder", default="")
     folder = folder_pattern.format(**request.matchdict) or None
     attachment = utils.save_file(request, content, folder=folder)
 
     # Update related record.
     posted_data = {k: v for k, v in request.POST.items() if k != file_field}
-    record = {'data': {}}
-    for field in ('data', 'permissions'):
+    record = {"data": {}}
+    for field in ("data", "permissions"):
         if field in posted_data:
             try:
                 record[field] = json.loads(posted_data.pop(field))
             except TypeError:
                 error_msg = "body: %r field should be passed as form data, not files" % field
-                raise http_error(httpexceptions.HTTPBadRequest(),
-                                 errno=ERRORS.INVALID_POSTED_DATA,
-                                 message=error_msg)
+                raise http_error(
+                    httpexceptions.HTTPBadRequest(),
+                    errno=ERRORS.INVALID_POSTED_DATA,
+                    message=error_msg,
+                )
             except ValueError as e:
                 error_msg = "body: %s is not valid JSON (%s)" % (field, str(e))
-                raise http_error(httpexceptions.HTTPBadRequest(),
-                                 errno=ERRORS.INVALID_POSTED_DATA,
-                                 message=error_msg)
+                raise http_error(
+                    httpexceptions.HTTPBadRequest(),
+                    errno=ERRORS.INVALID_POSTED_DATA,
+                    message=error_msg,
+                )
     # Some fields remaining in posted_data after popping: invalid!
     for field in posted_data.keys():
         error_msg = "body: %r not in ('data', 'permissions')" % field
-        raise http_error(httpexceptions.HTTPBadRequest(),
-                         errno=ERRORS.INVALID_POSTED_DATA,
-                         message=error_msg)
+        raise http_error(
+            httpexceptions.HTTPBadRequest(), errno=ERRORS.INVALID_POSTED_DATA, message=error_msg
+        )
 
-    record['data'][file_field] = attachment
+    record["data"][file_field] = attachment
 
     utils.patch_record(record, request)
 
     # Return attachment data (with location header)
-    request.response.headers['Location'] = utils.record_uri(request,
-                                                            prefix=True)
+    request.response.headers["Location"] = utils.record_uri(request, prefix=True)
     return attachment
 
 
 def delete_attachment_view(request, file_field):
-    keep_old_files = asbool(utils.setting_value(request, 'keep_old_files', default=False))
+    keep_old_files = asbool(utils.setting_value(request, "keep_old_files", default=False))
 
     utils.delete_attachment(request, keep_old_files=keep_old_files)
 
@@ -113,23 +122,23 @@ def attachments_ping(request):
     :returns: ``True`` if succeeds to write and delete, ``False`` otherwise.
     """
     # Do nothing if server is readonly.
-    if asbool(request.registry.settings.get('readonly', False)):
+    if asbool(request.registry.settings.get("readonly", False)):
         return True
 
     # We will fake a file upload, so pick a file extension that is allowed.
-    extensions = request.attachment.extensions or {'json'}
+    extensions = request.attachment.extensions or {"json"}
     allowed_extension = "." + list(extensions)[-1]
 
     status = False
     try:
         content = cgi.FieldStorage()
         content.filename = HEARTBEAT_FILENAME + allowed_extension
-        content.file = BytesIO(HEARTBEAT_CONTENT.encode('utf-8'))
-        content.type = 'application/octet-stream'
+        content.file = BytesIO(HEARTBEAT_CONTENT.encode("utf-8"))
+        content.type = "application/octet-stream"
 
         stored = utils.save_file(request, content, keep_link=False, replace=True)
 
-        relative_location = stored['location'].replace(request.attachment.base_url, '')
+        relative_location = stored["location"].replace(request.attachment.base_url, "")
         request.attachment.delete(relative_location)
 
         status = True
