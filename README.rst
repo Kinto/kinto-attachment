@@ -8,7 +8,7 @@ Kinto Attachment
 .. image:: https://img.shields.io/pypi/v/kinto-attachment.svg
         :target: https://pypi.python.org/pypi/kinto-attachment
 
-.. image:: https://coveralls.io/repos/Kinto/kinto-attachment/badge.svg?branch=master
+.. image:: https://coveralls.io/repos/Kinto/kinto-attachment/badge.svg?branch=main
         :target: https://coveralls.io/r/Kinto/kinto-attachment
 
 Attach files to `Kinto records <http://kinto.readthedocs.io>`_.
