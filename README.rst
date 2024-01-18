@@ -479,11 +479,10 @@ Run the tests suite::
 Releasing
 =========
 
-We use the same process that we use for Kinto.
-
-1. Create a pull request with updated `CHANGELOG.rst` and `setup.py` (for convenience, we use the ``prerelease`` command of `zest.releaser <https://zestreleaser.readthedocs.io>`_ that does exactly that)
-2. Once merged, add the git tag, build the wheel, and upload to PyPi (with the ``release`` command)
-3. Push tag to origin, and switch back version number to development with `.dev` suffix (with the ``postrelease`` command)
+1. Create a release on Github on https://github.com/Kinto/kinto-attachment/releases/new
+2. Create a new tag `X.Y.Z` (*This tag will be created from the target when you publish this release.*)
+3. Generate release notes
+4. Publish release
 
 
 Notes
