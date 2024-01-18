@@ -63,5 +63,5 @@ functional: install need-kinto-running need-moto-running
 	$(VENV)/bin/python scripts/delete.py --server=http://localhost:8888/v1 --bucket=services --collection=logs --auth=my-user:my-secret
 	$(VENV)/bin/python scripts/upload.py --server=http://localhost:8888/v1 --bucket=services --collection=app --auth=my-user:my-secret $(TEMPDIR)/image1.png $(TEMPDIR)/image2.png $(TEMPDIR)/image3.png
 	$(VENV)/bin/python scripts/download.py --server=http://localhost:8888/v1 --bucket=services --collection=app --auth=my-user:my-secret -f $(TEMPDIR)/kintoapp
-	/bin/rm image1.png image2.png image3.png
+	/bin/rm $(TEMPDIR)/image1.png $(TEMPDIR)/image2.png $(TEMPDIR)/image3.png
 	/bin/rm -rf $(TEMPDIR)/kinto*
