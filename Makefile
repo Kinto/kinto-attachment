@@ -1,56 +1,67 @@
-VIRTUALENV = virtualenv --python python3.8
-VENV := $(shell echo $${VIRTUAL_ENV-.venv})
-PYTHON = $(VENV)/bin/python
+VENV := $(shell echo $${VIRTUAL_ENV-$$PWD/.venv})
 INSTALL_STAMP = $(VENV)/.install.stamp
 TEMPDIR := $(shell mktemp -d)
 
-.IGNORE: clean distclean maintainer-clean
-.PHONY: all install virtualenv tests
+.IGNORE: clean
+.PHONY: all install virtualenv tests tests-once
 
 OBJECTS = .venv .coverage
 
 all: install
-install: $(INSTALL_STAMP)
-$(INSTALL_STAMP): $(PYTHON) setup.py
-	$(VENV)/bin/pip install -U pip
-	$(VENV)/bin/pip install -Ur dev-requirements.txt
-	$(VENV)/bin/pip install -Ue . -c requirements.txt
+
+$(VENV)/bin/python:
+	python -m venv $(VENV)
+
+install: $(INSTALL_STAMP) pyproject.toml requirements.txt
+$(INSTALL_STAMP): $(VENV)/bin/python pyproject.toml requirements.txt
+	$(VENV)/bin/pip install -r requirements.txt
+	$(VENV)/bin/pip install ".[dev]"
 	touch $(INSTALL_STAMP)
 
-virtualenv: $(PYTHON)
-$(PYTHON):
-	$(VIRTUALENV) $(VENV)
+lint: install
+	$(VENV)/bin/ruff check src tests
+	$(VENV)/bin/ruff format --check src tests
 
-build-requirements:
-	$(VIRTUALENV) $(TEMPDIR)
-	$(TEMPDIR)/bin/pip install -U pip
-	$(TEMPDIR)/bin/pip install -Ue .
-	$(TEMPDIR)/bin/pip freeze | grep -v -- '^-e' > requirements.txt
+format: install
+	$(VENV)/bin/ruff check --fix src tests
+	$(VENV)/bin/ruff format src tests
 
-run-moto:
-	$(VENV)/bin/moto_server s3bucket_path -H 0.0.0.0 -p 6000
+requirements.txt: requirements.in
+	pip-compile requirements.in
 
-tests-once: install
-	$(VENV)/bin/py.test kinto_attachment/tests --cov-report term-missing --cov-fail-under 100 --cov kinto_attachment
-
-flake8:
-	$(VENV)/bin/pip install -U flake8
-	$(VENV)/bin/flake8 kinto_attachment
-
-tests:
-	$(VENV)/bin/tox
+tests: test
+tests-once: test
+test: install
+	$(VENV)/bin/py.test --cov-report term-missing --cov-fail-under 100 --cov kinto_attachment
 
 clean:
-	find . -name '*.pyc' -delete
-	find . -name '__pycache__' -type d | xargs rm -fr
+	find src/ -name '*.pyc' -delete
+	find src/ -name '__pycache__' -type d -exec rm -fr {} \;
+	rm -rf $(OBJECTS) *.egg-info .pytest_cache .ruff_cache build dist
 
-distclean: clean
-	rm -fr *.egg *.egg-info/
+run-kinto: install
+	python -m http.server -d $(TEMPDIR) 8000
+	$(VENV)/bin/kinto migrate --ini tests/config/functional.ini
+	$(VENV)/bin/kinto start --ini tests/config/functional.ini
 
-maintainer-clean: distclean
-	rm -fr $(OBJECTS) .tox/ dist/ build/
+need-kinto-running:
+	@curl http://localhost:8888/v0/ 2>/dev/null 1>&2 || (echo "Run 'make run-kinto' before starting tests." && exit 1)
 
-run-kinto:
-	cd /tmp; python -m http.server 8000 &
-	$(VENV)/bin/kinto migrate --ini kinto_attachment/tests/config/functional.ini
-	$(VENV)/bin/kinto start --ini kinto_attachment/tests/config/functional.ini
+run-moto: install
+	$(VENV)/bin/moto_server s3bucket_path -H 0.0.0.0 -p 6000
+
+need-moto-running:
+	@curl http://localhost:6000 2>/dev/null 1>&2 || (echo "Run 'make run-moto' before starting tests." && exit 1)
+
+functional: install need-kinto-running need-moto-running
+	/usr/bin/openssl rand -base64 -out $(TEMPDIR)/image1.png 3000
+	/usr/bin/openssl rand -base64 -out $(TEMPDIR)/image2.png 3000
+	/usr/bin/openssl rand -base64 -out $(TEMPDIR)/image3.png 3000
+	$(VENV)/bin/python scripts/create_account.py --server=http://localhost:8888/v1 --auth=my-user:my-secret
+	$(VENV)/bin/python scripts/upload.py --server=http://localhost:8888/v1 --bucket=services --collection=logs --auth=my-user:my-secret $(TEMPDIR)/image1.png $(TEMPDIR)/image2.png $(TEMPDIR)/image3.png
+	$(VENV)/bin/python scripts/download.py --server=http://localhost:8888/v1 --bucket=services --collection=logs --auth=my-user:my-secret -f $(TEMPDIR)
+	$(VENV)/bin/python scripts/delete.py --server=http://localhost:8888/v1 --bucket=services --collection=logs --auth=my-user:my-secret
+	$(VENV)/bin/python scripts/upload.py --server=http://localhost:8888/v1 --bucket=services --collection=app --auth=my-user:my-secret $(TEMPDIR)/image1.png $(TEMPDIR)/image2.png $(TEMPDIR)/image3.png
+	$(VENV)/bin/python scripts/download.py --server=http://localhost:8888/v1 --bucket=services --collection=app --auth=my-user:my-secret -f $(TEMPDIR)/kintoapp
+	/bin/rm image1.png image2.png image3.png
+	/bin/rm -rf $(TEMPDIR)/kinto*

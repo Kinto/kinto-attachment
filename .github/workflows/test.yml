@@ -1,15 +1,26 @@
-on:
-  push:
-    branches:
-      - main
-  pull_request:
+name: Run CI checks
 
-name: Unit Testing
+on: pull_request
+
+permissions:
+  contents: read
+
 jobs:
-  chore:
-    name: Unit Tests
+  lint:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
 
+      - uses: actions/setup-python@v4
+
+      - name: Run linting and formatting checks
+        run: make lint
+
+  unit-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
     services:
       postgres:
         image: postgres
@@ -22,35 +33,45 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
-
-    strategy:
-      matrix:
-        toxenv: [py38, kinto-main, upload-download-scripts]
-        include:
-          - toxenv: py38
-            python-version: "3.8"
-          - toxenv: upload-download-scripts
-            python-version: "3.8"
-          - toxenv: kinto-main
-            python-version: "3.8"
-
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-      - uses: actions/setup-python@v2
+      - name: Create database
+        env:
+          PGPASSWORD: postgres
+        run: |
+          psql -c "CREATE DATABASE testdb ENCODING 'UTF8' TEMPLATE template0;" -U postgres -h localhost
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
 
-      - name: Install virtualenv
-        run: |
-          pip install virtualenv
-          virtualenv --python=python3 .venv
+      - name: Run unit tests
+        run: make test
 
-      - name: Print environment
-        run: |
-          source .venv/bin/activate
-          python --version
-          pip --version
+  functional-tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
 
       - name: Create database
         env:
@@ -59,24 +80,14 @@ jobs:
           psql -c "CREATE DATABASE testdb ENCODING 'UTF8' TEMPLATE template0;" -U postgres -h localhost
 
       - name: Install dependencies
-        run: |
-          make install
+        run: make install
 
       - name: Run moto
         run: |
           make run-moto &
 
-      - name: Run Kinto
-        run: |
-          make run-kinto &
+      - name: Run kinto
+        run: make run-kinto & sleep 5
 
-      - name: Tox
-        run: |
-          source .venv/bin/activate
-          tox -e ${{ matrix.toxenv }}
-
-      - name: Coveralls
-        uses: AndreMiras/coveralls-python-action@develop
-        if: matrix.toxenv == 'py38'
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run functional tests
+        run: make functional

@@ -1,0 +1,4 @@
+boto
+google-cloud-storage
+kinto
+pyramid_storage
