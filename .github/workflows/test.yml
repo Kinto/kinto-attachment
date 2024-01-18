@@ -49,6 +49,10 @@ jobs:
           cache: pip
           cache-dependency-path: pyproject.toml
 
+      - name: Run moto
+        run: |
+          make run-moto &
+
       - name: Run unit tests
         run: make test
 
