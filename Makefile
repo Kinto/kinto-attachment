@@ -40,7 +40,7 @@ clean:
 	rm -rf $(OBJECTS) *.egg-info .pytest_cache .ruff_cache build dist
 
 run-kinto: install
-	python -m http.server -d $(TEMPDIR) 8000
+	python -m http.server -d $(TEMPDIR) 8000 &
 	$(VENV)/bin/kinto migrate --ini tests/config/functional.ini
 	$(VENV)/bin/kinto start --ini tests/config/functional.ini
 
