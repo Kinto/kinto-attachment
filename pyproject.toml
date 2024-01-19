@@ -22,6 +22,9 @@ Repository = "https://github.com/Kinto/kinto-attachment"
 [project.scripts]
 kinto-send-email = "kinto_emailer.command_send:main"
 
+[tool.setuptools_scm]
+# can be empty if no extra settings are needed, presence enables setuptools_scm
+
 [tool.setuptools.dynamic]
 dependencies = { file = ["requirements.in"] }
 
