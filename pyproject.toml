@@ -1,0 +1,78 @@
+[project]
+dynamic = ["version", "dependencies"]
+name = "kinto-attachment"
+description = "Attach files to Kinto records"
+readme = "README.rst"
+license = {file = "LICENSE"}
+classifiers = [
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+    "License :: OSI Approved :: Apache Software License"
+]
+keywords = ["web services"]
+authors = [
+  {name = "Mozilla Services", email = "developers@kinto-storage.org"},
+]
+
+[project.urls]
+Repository = "https://github.com/Kinto/kinto-attachment"
+
+[project.scripts]
+kinto-send-email = "kinto_emailer.command_send:main"
+
+[tool.setuptools_scm]
+# can be empty if no extra settings are needed, presence enables setuptools_scm
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.in"] }
+
+[build-system]
+requires = ["setuptools>=64", "setuptools_scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "moto[server,s3]<5",
+    "kinto_http",
+    "pytest",
+    "pytest-cache",
+    "pytest-cov",
+    "webtest",
+    "kinto[postgresql]",
+]
+
+[tool.pip-tools]
+generate-hashes = true
+
+[tool.coverage.run]
+omit = [
+    "tests/*",
+]
+relative_files = true
+
+[tool.ruff]
+line-length = 99
+extend-exclude = [
+    "__pycache__",
+    ".venv/",
+]
+
+[tool.ruff.lint]
+select = [
+    # pycodestyle
+    "E", "W",
+    # flake8
+    "F",
+    # isort
+    "I",
+]
+ignore = [
+    # `format` will wrap lines.
+    "E501",
+]
+
+[tool.ruff.lint.isort]
+lines-after-imports = 2

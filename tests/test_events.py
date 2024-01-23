@@ -1,4 +1,5 @@
 import unittest
+
 from . import BaseWebTest
 
 
@@ -18,7 +19,7 @@ def load_from_config(config, prefix):
 
 
 class ResourceChangedTest(BaseWebTest, unittest.TestCase):
-    config = 'config/events.ini'
+    config = "config/events.ini"
 
     def test_resource_changed_is_triggered_when_attachment_is_set(self):
         before = len(listener.received)
@@ -27,15 +28,15 @@ class ResourceChangedTest(BaseWebTest, unittest.TestCase):
 
     def test_action_is_create_or_update(self):
         self.upload()
-        self.assertEqual(listener.received[-1].payload['action'], 'create')
+        self.assertEqual(listener.received[-1].payload["action"], "create")
         self.upload()
-        self.assertEqual(listener.received[-1].payload['action'], 'update')
+        self.assertEqual(listener.received[-1].payload["action"], "update")
 
     def test_payload_attribute_are_sound(self):
         self.upload()
         payload = listener.received[-1].payload
-        self.assertEqual(payload['uri'], self.endpoint_uri)
-        self.assertEqual(payload['resource_name'], 'record')
-        self.assertEqual(payload['record_id'], self.record_id)
-        self.assertEqual(payload['collection_id'], 'fonts')
-        self.assertEqual(payload['bucket_id'], 'fennec')
+        self.assertEqual(payload["uri"], self.endpoint_uri)
+        self.assertEqual(payload["resource_name"], "record")
+        self.assertEqual(payload["record_id"], self.record_id)
+        self.assertEqual(payload["collection_id"], "fonts")
+        self.assertEqual(payload["bucket_id"], "fennec")
