@@ -41,7 +41,6 @@ dev = [
     "pytest",
     "pytest-cache",
     "pytest-cov",
-    "tox",
     "webtest",
     "psycopg2-binary",
     "SQLAlchemy",
