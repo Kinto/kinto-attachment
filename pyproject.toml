@@ -36,7 +36,6 @@ build-backend = "setuptools.build_meta"
 dev = [
     "ruff",
     "moto[server,s3]<5",
-    "flask",
     "kinto_http",
     "pytest",
     "pytest-cache",
