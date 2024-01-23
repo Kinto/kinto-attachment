@@ -42,9 +42,7 @@ dev = [
     "pytest-cache",
     "pytest-cov",
     "webtest",
-    "psycopg2-binary",
-    "SQLAlchemy",
-    "zope.sqlalchemy",
+    "kinto[postgresql]",
 ]
 
 [tool.pip-tools]
