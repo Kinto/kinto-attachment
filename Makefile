@@ -16,6 +16,7 @@ install: $(INSTALL_STAMP) pyproject.toml requirements.txt
 $(INSTALL_STAMP): $(VENV)/bin/python pyproject.toml requirements.txt
 	$(VENV)/bin/pip install -r requirements.txt
 	$(VENV)/bin/pip install .
+	$(VENV)/bin/pip install ".[dev]"
 	touch $(INSTALL_STAMP)
 
 lint: install
