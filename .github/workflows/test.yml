@@ -46,6 +46,9 @@ jobs:
           cache: pip
           cache-dependency-path: pyproject.toml
 
+      - name: Install dependencies
+        run: make install
+
       - name: Run moto
         run: |
           make run-moto &
