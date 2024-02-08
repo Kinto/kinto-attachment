@@ -26,7 +26,11 @@ DEFAULT_MIMETYPES = {
 
 class AttachmentRouteFactory(RouteFactory):
     def __init__(self, request):
-        """Attachment is not a Kinto resource.
+        """
+        This class is the `context` object being passed to the
+        :class:`kinto.core.authorization.AuthorizationPolicy`.
+
+        Attachment is not a Kinto resource.
 
         The required permission is:
         * ``write`` if the related record exists;
@@ -43,12 +47,19 @@ class AttachmentRouteFactory(RouteFactory):
             existing = resource.get()
         except httpexceptions.HTTPNotFound:
             existing = None
+
         if existing:
+            # Request write permission on the existing record.
             self.permission_object_id = record_uri(request)
             self.required_permission = "write"
         else:
+            # Request create record permission on the parent collection.
             self.permission_object_id = collection_uri(request)
             self.required_permission = "create"
+        # Set the current object in context, since it is used in the
+        # authorization policy to distinguish operations on plural endpoints
+        # from individual objects. See Kinto/kinto#918
+        self.current_object = existing
 
 
 def sha256(content):

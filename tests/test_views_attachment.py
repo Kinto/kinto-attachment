@@ -283,12 +283,18 @@ class AttachmentViewTest(object):
         self.headers.pop("Authorization")
         self.upload(status=401)
 
+    def test_upload_replace_refused_if_not_authenticated(self):
+        self.upload(status=201)
+
+        self.headers.pop("Authorization")
+        self.upload(status=401)
+
     def test_upload_refused_if_not_allowed(self):
         self.headers.update(get_user_headers("jean-louis"))
         self.upload(status=403)
 
     def test_upload_replace_refused_if_only_create_allowed(self):
-        # Allow any authenticated to write in this bucket.
+        # Allow any authenticated to write in this collection.
         perm = {"permissions": {"record:create": ["system.Authenticated"]}}
         self.app.patch_json("/buckets/fennec/collections/fonts", perm, headers=self.headers)
         self.upload(status=201)
@@ -296,8 +302,38 @@ class AttachmentViewTest(object):
         self.headers.update(get_user_headers("jean-louis"))
         self.upload(status=403)
 
+    def test_upload_replace_refused_if_only_bucket_read_is_allowed(self):
+        # Create a record with attachment.
+        self.upload(status=201)
+
+        # Now allow anyone to read this bucket.
+        perm = {"permissions": {"read": ["system.Everyone"]}}
+        self.app.patch_json("/buckets/fennec", perm, headers=self.headers)
+
+        # And try to replace anonymously.
+        self.headers.pop("Authorization")
+        self.upload(status=401)
+
+    def test_upload_replace_refused_if_only_read_is_allowed(self):
+        # Create a record with attachment.
+        self.upload(status=201)
+
+        # Now allow anyone to read this collection.
+        perm_change = [
+            {"op": "add", "path": "/permissions", "value": {"read": ["system.Everyone"]}}
+        ]
+        self.app.patch_json(
+            "/buckets/fennec/collections/fonts",
+            perm_change,
+            headers={**self.headers, "Content-Type": "application/json-patch+json"},
+        )
+
+        # And try to replace anonymously.
+        self.headers.pop("Authorization")
+        self.upload(status=401)
+
     def test_upload_create_accepted_if_create_allowed(self):
-        # Allow any authenticated to write in this bucket.
+        # Allow any authenticated to write in this collection.
         perm = {"permissions": {"record:create": ["system.Authenticated"]}}
         self.app.patch_json("/buckets/fennec/collections/fonts", perm, headers=self.headers)
 
