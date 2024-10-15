@@ -164,7 +164,6 @@ def save_file(request, content, folder=None, keep_link=True, replace=False):
     _, extension = os.path.splitext(filename)
     mimetype = overriden_mimetypes.get(extension, content.type)
 
-    original = None
     save_options = {
         "folder": folder,
         "randomize": randomize,
@@ -187,8 +186,6 @@ def save_file(request, content, folder=None, keep_link=True, replace=False):
         "mimetype": mimetype,
         "size": size,
     }
-    if original is not None:
-        attachment["original"] = original
 
     if keep_link:
         # Store link between record and attachment (for later deletion).
