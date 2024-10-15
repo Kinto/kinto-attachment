@@ -4,7 +4,6 @@ import uuid
 from unittest import mock
 from urllib.parse import urlparse
 
-import requests
 from kinto.core.errors import ERRORS
 from kinto_attachment.utils import sha256
 
@@ -358,38 +357,23 @@ class AttachmentViewTest(object):
         self.upload(status=200)
 
 
-class ZippedAttachementViewTest(BaseWebTestLocal, unittest.TestCase):
-    config = "config/local_gzipped.ini"
-
-    def test_file_get_zipped_if_configured(self):
-        r = self.upload()
-        self.assertEqual(r.json["mimetype"], "application/x-gzip")
-        self.assertEqual(r.json["filename"], "image.jpg.gz")
-
-
 class PerResourceConfigAttachementViewTest(BaseWebTestS3, unittest.TestCase):
     config = "config/s3_per_resource.ini"
 
-    def test_file_get_zipped_in_fennec_bucket(self):
+    def test_file_get_randomize_in_fennec_bucket(self):
         r = self.upload()
 
-        self.assertEqual(r.json["original"]["mimetype"], "image/jpeg")
-        self.assertEqual(r.json["mimetype"], "application/x-gzip")
-        self.assertEqual(r.json["filename"], "image.jpg.gz")
+        self.assertEqual(r.json["filename"], "image.jpg")
+        self.assertNotIn(r.json["filename"], r.json["location"])
 
-        relative_url = r.json["location"].replace(self.base_url, "")
-        resp = requests.get("http://localhost:6000/myfiles/{}".format(relative_url))
-        self.assertEqual(resp.headers["Content-Type"], "application/x-gzip")
-        self.assertNotIn("Content-Encoding", resp.headers)
-
-    def test_file_do_not_get_zipped_in_fennec_experiments_collection(self):
+    def test_file_do_not_get_randomize_in_fennec_experiments_collection(self):
         self.create_collection("fennec", "experiments")
         record_uri = self.get_record_uri("fennec", "experiments", str(uuid.uuid4()))
         self.endpoint_uri = record_uri + "/attachment"
         r = self.upload()
 
-        self.assertNotIn("original", r.json["mimetype"])
-        self.assertEqual(r.json["mimetype"], "image/jpeg")
+        self.assertEqual(r.json["filename"], "image.jpg")
+        self.assertIn(r.json["filename"], r.json["location"])
 
 
 class OverridenMimetypesTest(BaseWebTestS3, unittest.TestCase):

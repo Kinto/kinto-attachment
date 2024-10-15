@@ -37,12 +37,7 @@ def files_to_upload(records, files, force=False):
             records_by_id.pop(record['id'], None)
             local_hash = sha256(open(filepath, 'rb').read())
 
-            # If file was uploaded gzipped, compare with hash of
-            # uncompressed file.
-            remote_hash = record.get('original', {}).get('hash')
-            if not remote_hash:
-                remote_hash = record['attachment']['hash']
-
+            remote_hash = record['attachment']['hash']
             # If hash has changed, upload !
             if local_hash != remote_hash or force:
                 print("File '%s' has changed." % filename)

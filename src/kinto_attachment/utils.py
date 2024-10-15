@@ -1,9 +1,7 @@
 import cgi
-import gzip
 import hashlib
 import json
 import os
-from io import BytesIO
 
 from kinto.authorization import RouteFactory
 from kinto.core import utils as core_utils
@@ -144,7 +142,6 @@ def delete_attachment(request, link_field=None, uri=None, keep_old_files=False):
 
 
 def save_file(request, content, folder=None, keep_link=True, replace=False):
-    gzipped = setting_value(request, "gzipped", default=False)
     randomize = setting_value(request, "randomize", default=True)
 
     overriden_mimetypes = {**DEFAULT_MIMETYPES}
@@ -174,33 +171,6 @@ def save_file(request, content, folder=None, keep_link=True, replace=False):
         "replace": replace,
         "headers": {"Content-Type": mimetype},
     }
-
-    if gzipped:
-        original = {
-            "filename": filename,
-            "hash": filehash,
-            "mimetype": mimetype,
-            "size": size,
-        }
-        mimetype = "application/x-gzip"
-        filename += ".gz"
-        content.filename = filename
-        save_options["extensions"] = ["gz"]
-        save_options["headers"]["Content-Type"] = mimetype
-
-        # in-memory gzipping
-        out = BytesIO()
-        with gzip.GzipFile(fileobj=out, mode="w") as f:
-            f.write(filecontent)
-
-        filecontent = out.getvalue()
-        out.seek(0)
-        content.file = out
-
-        # We give the hash and size of the gzip content in the attachment
-        # metadata.
-        filehash = sha256(filecontent)
-        size = len(filecontent)
 
     try:
         location = request.attachment.save(content, **save_options)
