@@ -5,6 +5,7 @@ from unittest import mock
 from urllib.parse import urlparse
 
 from kinto.core.errors import ERRORS
+
 from kinto_attachment.utils import sha256
 
 from . import BaseWebTestLocal, BaseWebTestS3, get_user_headers

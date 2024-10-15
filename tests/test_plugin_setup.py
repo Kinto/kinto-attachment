@@ -2,12 +2,13 @@ import unittest
 
 import pytest
 from kinto import main as kinto_main
-from kinto_attachment import __version__, includeme
 from pyramid import testing
 from pyramid.exceptions import ConfigurationError
 from pyramid_storage.gcloud import GoogleCloudStorage
 from pyramid_storage.interfaces import IFileStorage
 from pyramid_storage.s3 import S3FileStorage
+
+from kinto_attachment import __version__, includeme
 
 from . import BaseWebTestLocal
 
