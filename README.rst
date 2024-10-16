@@ -120,29 +120,6 @@ Or a specific collection:
 
     kinto.attachment.resources.blog.articles.keep_old_files = true
 
-
-The ``gzipped`` option
-----------------------
-
-If you want uploaded files to get gzipped when stored (default: False):
-
-.. code-block:: ini
-
-    kinto.attachment.gzipped = true
-
-Or only for a particular bucket:
-
-.. code-block:: ini
-
-    kinto.attachment.resources.blog.gzipped = true
-
-Or a specific collection:
-
-.. code-block:: ini
-
-    kinto.attachment.resources.blog.articles.gzipped = true
-
-
 The ``randomize`` option
 ------------------------
 
@@ -280,39 +257,6 @@ with the following fields:
     }
 
 
-If the file is gzipped by the server, an ``original`` key is added in the ``attachment``
-key, containing the file info **before** it's gzipped. The ``attachment`` keys are
-in that case referring to the gzipped file:
-
-
-.. code-block:: json
-
-    {
-        "data": {
-            "attachment": {
-                "filename": "IMG_20150219_174559.jpg.gz",
-                "hash": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
-                "location": "http://cdn.service.org/files/ffa9c7b9-7561-406b-b7f9-e00ac94644ff.jpg.gz",
-                "mimetype": "application/x-gzip",
-                "size": 14818,
-                "original": {
-                    "filename": "IMG_20150219_174559.jpg",
-                    "hash": "hPME6i9avCf/LFaznYr+sHtwQEX7mXYHSu+vgtygpM8=",
-                    "mimetype": "image/jpeg",
-                    "size": 1481798
-                }
-            },
-            "id": "c2ce1975-0e52-4b2f-a5db-80166aeca688",
-            "last_modified": 1447834938251,
-            "theme": "orange",
-            "type": "wallpaper"
-        },
-        "permissions": {
-            "write": ["basicauth:6de355038fd943a2dc91405063b91018bb5dd97a08d1beb95713d23c2909748f"]
-        }
-    }
-
-
 Usage
 =====
 
@@ -417,10 +361,6 @@ Upload files
 bucket and collection::
 
     $ python3 scripts/upload.py --server=$SERVER --bucket=$BUCKET --collection=$COLLECTION --auth "token:mysecret" README.rst pictures/*
-
-If the ``--gzip`` option is passed, the files are gzipped before upload.
-Since the ``attachment`` attribute contains metadata of the compressed file
-the original file metadata are stored in a ``original`` attribute.
 
 See ``python3 scripts/upload.py --help`` for more details about options.
 

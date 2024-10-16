@@ -21,8 +21,8 @@ def includeme(config):
             if setting_name.startswith("attachment.resources."):
                 # Resource specific config
                 parts = setting_name.replace("attachment.resources.", "").split(".")
-                # attachment.resources.{bid}.gzipped
-                # attachment.resources.{bid}.{cid}.gzipped
+                # attachment.resources.{bid}.randomize
+                # attachment.resources.{bid}.{cid}.randomize
                 if len(parts) == 3:
                     bucket_id, collection_id, name = parts
                     resource_id = "/buckets/{}/collections/{}".format(bucket_id, collection_id)
@@ -33,7 +33,7 @@ def includeme(config):
                     message = "Configuration rule malformed: `{}`".format(setting_name)
                     raise ConfigurationError(message)
 
-                if name in ("gzipped", "randomize", "keep_old_files"):
+                if name in ("randomize", "keep_old_files"):
                     config.registry.attachment_resources[resource_id][name] = asbool(setting_value)
                 else:
                     message = "`{}` is not a supported setting name. Read `{}`".format(

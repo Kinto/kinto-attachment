@@ -2,12 +2,13 @@ import unittest
 
 import pytest
 from kinto import main as kinto_main
-from kinto_attachment import __version__, includeme
 from pyramid import testing
 from pyramid.exceptions import ConfigurationError
 from pyramid_storage.gcloud import GoogleCloudStorage
 from pyramid_storage.interfaces import IFileStorage
 from pyramid_storage.s3 import S3FileStorage
+
+from kinto_attachment import __version__, includeme
 
 from . import BaseWebTestLocal
 
@@ -37,7 +38,7 @@ class IncludeMeTest(unittest.TestCase):
         config = self.includeme(
             settings={
                 "attachment.base_path": "/tmp",
-                "attachment.resources.fennec.gzipped": "true",
+                "attachment.resources.fennec.keep_old_files": "true",
                 "attachment.resources.fingerprinting.fonts.randomize": "true",
             }
         )
@@ -47,9 +48,9 @@ class IncludeMeTest(unittest.TestCase):
 
     def test_includeme_raises_error_for_malformed_resource_settings(self):
         with pytest.raises(ConfigurationError) as excinfo:
-            self.includeme(settings={"attachment.resources.fen.nec.fonts.gzipped": "true"})
+            self.includeme(settings={"attachment.resources.fen.nec.fonts.keep_old_files": "true"})
         assert str(excinfo.value) == (
-            "Configuration rule malformed: `attachment.resources.fen.nec.fonts.gzipped`"
+            "Configuration rule malformed: `attachment.resources.fen.nec.fonts.keep_old_files`"
         )
 
     def test_includeme_raises_error_if_wrong_resource_settings_is_defined(self):

@@ -1,4 +1,3 @@
-import gzip
 import hashlib
 import os
 
@@ -19,14 +18,8 @@ def download_files(client, records, folder, chunk_size=1024):
             continue
 
         attachment = record['attachment']
-        # Check if file was Gzipped during upload (see `upload.py`)
-        is_gzip = 'original' in attachment
-        if is_gzip:
-            filename = attachment['original']['filename']
-            remote_hash = attachment['original']['hash']
-        else:
-            filename = attachment['filename']
-            remote_hash = attachment['hash']
+        filename = attachment['filename']
+        remote_hash = attachment['hash']
 
         destination = os.path.join(folder, filename)
 
@@ -45,15 +38,7 @@ def download_files(client, records, folder, chunk_size=1024):
             for chunk in resp.iter_content(chunk_size=chunk_size):
                 if chunk:
                     f.write(chunk)
-
-        # Decompress the file if necessary.
-        if is_gzip:
-            with open(destination, 'wb') as f:
-                data = open(tmp_file, 'rb').read()
-                f.write(gzip.decompress(data))
-        else:
-            os.rename(tmp_file, destination)
-
+        os.rename(tmp_file, destination)
         print('Downloaded "%s"' % filename)
 
 
