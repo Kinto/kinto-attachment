@@ -48,7 +48,7 @@ need-kinto-running:
 	@curl http://localhost:8888/v0/ 2>/dev/null 1>&2 || (echo "Run 'make run-kinto' before starting tests." && exit 1)
 
 run-moto: install
-	$(VENV)/bin/moto_server s3bucket_path -H 0.0.0.0 -p 6000
+	$(VENV)/bin/moto_server -H 0.0.0.0 -p 6000
 
 need-moto-running:
 	@curl http://localhost:6000 2>/dev/null 1>&2 || (echo "Run 'make run-moto' before starting tests." && exit 1)
