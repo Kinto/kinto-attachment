@@ -35,7 +35,7 @@ build-backend = "setuptools.build_meta"
 [project.optional-dependencies]
 dev = [
     "ruff",
-    "moto[server,s3]<5",
+    "moto[server,s3]<6",
     "kinto_http",
     "pytest",
     "pytest-cache",
