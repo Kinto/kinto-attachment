@@ -6,6 +6,7 @@ from urllib.parse import urlparse
 
 import requests
 from kinto.core.errors import ERRORS
+
 from kinto_attachment.utils import sha256
 
 from . import BaseWebTestLocal, BaseWebTestS3, get_user_headers
