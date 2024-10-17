@@ -265,7 +265,10 @@ Using HTTPie
 
 .. code-block:: bash
 
-    http --auth alice:passwd --form POST http://localhost:8888/v1/buckets/website/collections/assets/records/c2ce1975-0e52-4b2f-a5db-80166aeca689/attachment data='{"type": "wallpaper", "theme": "orange"}' "attachment@~/Pictures/background.jpg"
+    http --form POST http://localhost:8888/v1/buckets/website/collections/assets/records/c2ce1975-0e52-4b2f-a5db-80166aeca689/attachment \
+        data='{"type": "wallpaper", "theme": "orange"}' \
+        attachment"@~/Pictures/background.jpg" \
+        --auth alice:passwd
 
 .. code-block:: http
 
@@ -286,6 +289,24 @@ Using HTTPie
         "mimetype": "image/jpeg",
         "size": 1481798
     }
+
+In order to force a specific file attachment mimetype:
+
+.. code-block:: bash
+
+    http -f POST $URL attachment"~/files/data.bin;type=application/pdf"
+
+
+Using cURL
+----------
+
+.. code-block:: bash
+
+    curl -X POST ${SERVER}/buckets/${BUCKET}/collections/${COLLECTION}/records/${RECORD_ID}/attachment \
+         -H 'Content-Type:multipart/form-data' \
+         -F attachment="@$FILEPATH;type=application/x-protobuf" \
+         -F 'data={"name": "Mac Fly", "age": 42}' \
+         -H "Authorization: $STAGE_AUTH"
 
 
 Using Python requests
@@ -315,7 +336,9 @@ Using JavaScript
     var perms = {"read": ["system.Everyone"]};
 
     // File object from input field
-    var file = form.elements.attachment.files[0];
+    var filefield = form.elements.attachment.files[0];
+    // If necessary, force the file content-type:
+    var file = new Blob([filefield], { type: "application/pdf" });
 
     // Build form data
     var payload = new FormData();
