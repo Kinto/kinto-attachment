@@ -296,9 +296,9 @@ jsonschema-specifications==2023.12.1 \
     --hash=sha256:48a76787b3e70f5ed53f1160d2b81f586e4ca6d1548c5de7085d1682674764cc \
     --hash=sha256:87e4fdf3a94858b8a2ba2778d9ba57d8a9cafca7c7489c46ba0d30a8bc6a9c3c
     # via jsonschema
-kinto==18.1.1 \
-    --hash=sha256:bdc6ce11a1a4e6d34b1d7e90b8cec8fab092d449fd3dbc5b37a75c1e462b87b2 \
-    --hash=sha256:deb16051d79d459b31a9c40c1779c6983aa6098a04d707a12a74079b31187b8f
+kinto==19.2.0 \
+    --hash=sha256:5bdf354a1e51df209dd3c76aa337174c5e83304c4842bff322da6ec7be2f064c \
+    --hash=sha256:6cad4896195837b8d90902cf33cd6a12cc555b1c665b21a46de8e4ec29061e2d
     # via -r requirements.in
 logging-color-formatter==1.0.3 \
     --hash=sha256:495920c386d48cad9e9463a10f51b4deb95cab3b0185d02a36af67d66ae93787 \
@@ -361,9 +361,9 @@ pyramid-multiauth==1.0.1 \
     --hash=sha256:6d8785558e1d0bbe0d0da43e296efc0fbe0de5071d1f9b1091e891f0e4ec9682 \
     --hash=sha256:c265258af8021094e5b98602e8bfe094eec1350eebb56473f36cd0e076910822
     # via kinto
-pyramid-storage==1.3.0 \
-    --hash=sha256:0a356de73787931c5460ff27e62cfb58f5cb3386a8ad3e8582b1802d1745673c \
-    --hash=sha256:dd3de2f1947d2c89e456d9fd6a9ee2af8a4e24d9d67254d831b71ccaa5aa3b4e
+pyramid-storage==1.3.2 \
+    --hash=sha256:31030f38448dc1f7eee8c82f13c1c2a0168233e4a92058234c8bef87cd20bdaf \
+    --hash=sha256:dd4fff0d19290c102948d746bf1f32d15ae5b2173d0c1ebc48a136a00643c6bc
     # via -r requirements.in
 pyramid-tm==2.5 \
     --hash=sha256:5c81dcecd33770f5e3596687d2be35ffc4f8ce5eda00a31acb00ae35a51430d0 \
