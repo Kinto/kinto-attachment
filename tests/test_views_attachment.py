@@ -207,7 +207,7 @@ class AttachmentViewTest(object):
     def test_record_is_created_with_appropriate_permissions(self):
         self.upload()
         current_principal = (
-            "basicauth:c6c27f0c7297ba7d4abd2a70c8a2cb88a06a3" "bb793817ef2c85fe8a709b08022"
+            "basicauth:c6c27f0c7297ba7d4abd2a70c8a2cb88a06a3bb793817ef2c85fe8a709b08022"
         )
         resp = self.app.get(self.record_uri, headers=self.headers)
         self.assertEqual(resp.json["permissions"], {"write": [current_principal]})
