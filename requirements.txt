@@ -151,9 +151,9 @@ colorama==0.4.6 \
     --hash=sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44 \
     --hash=sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6
     # via logging-color-formatter
-dockerflow==2024.1.0 \
-    --hash=sha256:38d6a60a01e87d33dcf802f1ef2f09ae2f375c829d3805923d88409387562d66 \
-    --hash=sha256:df1597fb3d58d759993e5b5e7f254162804882c04c09d5b7df97aa47b0a9d15b
+dockerflow==2024.4.2 \
+    --hash=sha256:b9f92455449ba46555f57db34cccefc4c49d3533c67793624ab7e80a1625caa7 \
+    --hash=sha256:f4216a3a809093860d7b2db84ba0a25c894cb8eb98b74f4f6a04badbc4f6b0a4
     # via kinto
 google-api-core==2.15.0 \
     --hash=sha256:2aa56d2be495551e66bbff7f729b790546f87d5c90e74781aa77233bcb395a8a \
