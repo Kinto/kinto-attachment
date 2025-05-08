@@ -2,3 +2,4 @@ boto
 google-cloud-storage
 kinto[monitoring]
 pyramid_storage
+greenlet>=1
