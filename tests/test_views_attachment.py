@@ -5,6 +5,7 @@ from unittest import mock
 from urllib.parse import urlparse
 
 from kinto.core.errors import ERRORS
+from pyramid_storage.interfaces import IFileStorage
 
 from kinto_attachment.utils import sha256
 
@@ -459,7 +460,8 @@ class HeartbeartTest(BaseWebTestS3, unittest.TestCase):
         self.assertIn("attachments", resp.json)
 
     def test_heartbeat_is_false_if_error_happens(self):
-        with mock.patch("pyramid_storage.s3.S3FileStorage.delete") as mocked:
+        storage_impl = self.app.app.registry.queryUtility(IFileStorage)
+        with mock.patch.object(storage_impl, "delete") as mocked:
             mocked.side_effect = ValueError
             resp = self.app.get("/__heartbeat__", status=503)
         self.assertFalse(resp.json["attachments"])
