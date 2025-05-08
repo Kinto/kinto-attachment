@@ -2,6 +2,7 @@ from collections import defaultdict
 
 import pkg_resources
 from kinto.core import metrics as core_metrics
+from pyramid.events import ApplicationCreated
 from pyramid.exceptions import ConfigurationError
 from pyramid.settings import asbool
 from pyramid_storage.interfaces import IFileStorage
@@ -81,10 +82,14 @@ def includeme(config):
     else:
         config.include("pyramid_storage.s3")
 
-    storage_impl = config.registry.getUtility(IFileStorage)
-    metrics_service = config.registry.metrics
-    if metrics_service:
-        core_metrics.watch_execution_time(metrics_service, storage_impl, prefix="attachment")
+    def on_app_created(event):
+        """Enable backend metrics when the app starts"""
+        config = event.app
+        metrics_service = config.registry.metrics
+        storage_impl = config.registry.getUtility(IFileStorage)
+        core_metrics.watch_execution_time(metrics_service, storage_impl, prefix="backend")
+
+    config.add_subscriber(on_app_created, ApplicationCreated)
 
     config.scan("kinto_attachment.views")
     config.scan("kinto_attachment.listeners")

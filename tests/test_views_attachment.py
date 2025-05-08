@@ -475,3 +475,12 @@ class HeartbeartTest(BaseWebTestS3, unittest.TestCase):
         with mock.patch.dict(self.app.app.registry.settings, [("readonly", "true")]):
             resp = self.app.get("/__heartbeat__")
         self.assertTrue(resp.json["attachments"])
+
+
+class MetricsTest(BaseWebTestS3, unittest.TestCase):
+    def test_attachments_methods_are_monitored(self):
+        self.upload(status=201)
+
+        resp = self.app.get("/__metrics__")
+
+        self.assertIn("backend_s3filestorage_seconds", resp.text)
