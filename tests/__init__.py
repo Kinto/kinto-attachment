@@ -36,15 +36,13 @@ def get_user_headers(user):
 class BaseWebTest(object):
     config = ""
 
-    def __init__(self, *args, **kwargs):
-        super(BaseWebTest, self).__init__(*args, **kwargs)
+    def setUp(self):
+        super(BaseWebTest, self).setUp()
         self.app = self.make_app()
         self.backend = self.app.app.registry.getUtility(IFileStorage)
         self.base_url = self.backend.url("")
         self._created = []
 
-    def setUp(self):
-        super(BaseWebTest, self).setUp()
         self.headers = {"Content-Type": "application/json", "Origin": "http://localhost:9999"}
         self.headers.update(get_user_headers("mat"))
 
