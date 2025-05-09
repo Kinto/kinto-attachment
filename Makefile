@@ -1,6 +1,7 @@
 VENV := $(shell echo $${VIRTUAL_ENV-$$PWD/.venv})
 INSTALL_STAMP = $(VENV)/.install.stamp
 TEMPDIR := $(shell mktemp -d)
+PYTHON ?= python3
 
 .IGNORE: clean
 .PHONY: all install virtualenv tests tests-once
@@ -10,12 +11,13 @@ OBJECTS = .venv .coverage
 all: install
 
 $(VENV)/bin/python:
-	python -m venv $(VENV)
+	$(PYTHON) -m venv $(VENV)
 
 install: $(INSTALL_STAMP) pyproject.toml requirements.txt
 $(INSTALL_STAMP): $(VENV)/bin/python pyproject.toml requirements.txt
+	$(VENV)/bin/pip install -U pip
 	$(VENV)/bin/pip install -r requirements.txt
-	$(VENV)/bin/pip install -e ".[dev]"
+	$(VENV)/bin/pip install -e ".[dev,monitoring]"
 	touch $(INSTALL_STAMP)
 
 lint: install
@@ -40,7 +42,7 @@ clean:
 	rm -rf $(OBJECTS) *.egg-info .pytest_cache .ruff_cache build dist
 
 run-kinto: install
-	python -m http.server -d $(TEMPDIR) 8000 &
+	$(VENV)/bin/python -m http.server -d $(TEMPDIR) 8000 &
 	$(VENV)/bin/kinto migrate --ini tests/config/functional.ini
 	$(VENV)/bin/kinto start --ini tests/config/functional.ini
 
