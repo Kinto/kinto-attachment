@@ -345,9 +345,9 @@ jsonschema-specifications==2023.12.1 \
     --hash=sha256:48a76787b3e70f5ed53f1160d2b81f586e4ca6d1548c5de7085d1682674764cc \
     --hash=sha256:87e4fdf3a94858b8a2ba2778d9ba57d8a9cafca7c7489c46ba0d30a8bc6a9c3c
     # via jsonschema
-kinto[monitoring]==23.0.1 \
-    --hash=sha256:1dcc4d43d1965536c109321c4acf16a7cc3bb495ef7e1639faa0eaa2249a6a47 \
-    --hash=sha256:6fc0e15b04be2cc762a204825d1cfb4573dfc973db9966efc383fd45bc800cd8
+kinto[monitoring]==23.0.2 \
+    --hash=sha256:38bcabc2424cfa4011cdbd9a7cb00326fef879fe7b60abd4ada8388e95b0ba7d \
+    --hash=sha256:4f0517a2409d2ac0987c34fae81b2625b58d6363a340fd5cc44e074cade8e51d
     # via -r requirements.in
 logging-color-formatter==1.0.3 \
     --hash=sha256:495920c386d48cad9e9463a10f51b4deb95cab3b0185d02a36af67d66ae93787 \
@@ -852,9 +852,9 @@ zope-interface==6.1 \
     #   transaction
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==80.7.1 \
-    --hash=sha256:ca5cc1069b85dc23070a6628e6bcecb3292acac802399c7f8edc0100619f9009 \
-    --hash=sha256:f6ffc5f0142b1bd8d0ca94ee91b30c0ca862ffd50826da1ea85258a06fd94552
+setuptools==80.8.0 \
+    --hash=sha256:49f7af965996f26d43c8ae34539c8d99c5042fbff34302ea151eaa9c207cd257 \
+    --hash=sha256:95a60484590d24103af13b686121328cc2736bee85de8936383111e421b9edc0
     # via
     #   pyramid
     #   zope-deprecation
