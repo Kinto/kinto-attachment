@@ -174,9 +174,9 @@ google-cloud-core==2.4.2 \
     --hash=sha256:7459c3e83de7cb8b9ecfec9babc910efb4314030c56dd798eaad12c426f7d180 \
     --hash=sha256:a4fcb0e2fcfd4bfe963837fad6d10943754fd79c1a50097d68540b6eb3d67f35
     # via google-cloud-storage
-google-cloud-storage==3.1.1 \
-    --hash=sha256:ba7e6ae2be5a7a08742f001e23ec6a0c17d78c620f63bf8e0e7c2cbdddb407de \
-    --hash=sha256:f9c8f965cafd1d38509f8e2b070339e0e9e5bf050774653bf36213d4ea6104c0
+google-cloud-storage==3.2.0 \
+    --hash=sha256:decca843076036f45633198c125d1861ffbf47ebf5c0e3b98dcb9b2db155896c \
+    --hash=sha256:ff7a9a49666954a7c3d1598291220c72d3b9e49d9dfcf9dfaecb301fc4fb0b24
     # via -r requirements.in
 google-crc32c==1.5.0 \
     --hash=sha256:024894d9d3cfbc5943f8f230e23950cd4906b2fe004c72e29b209420a1e6b05a \
@@ -345,9 +345,9 @@ jsonschema-specifications==2023.12.1 \
     --hash=sha256:48a76787b3e70f5ed53f1160d2b81f586e4ca6d1548c5de7085d1682674764cc \
     --hash=sha256:87e4fdf3a94858b8a2ba2778d9ba57d8a9cafca7c7489c46ba0d30a8bc6a9c3c
     # via jsonschema
-kinto[monitoring]==23.0.2 \
-    --hash=sha256:38bcabc2424cfa4011cdbd9a7cb00326fef879fe7b60abd4ada8388e95b0ba7d \
-    --hash=sha256:4f0517a2409d2ac0987c34fae81b2625b58d6363a340fd5cc44e074cade8e51d
+kinto[monitoring]==23.0.3 \
+    --hash=sha256:7f4f4e85e9c4442024a42ffcee3eed397a2681b72b5ace25e06eca09fd4bb18b \
+    --hash=sha256:f6c8cba2d0b0df620872771a1a16ff28940caf225543ef861b80f582e16a0b55
     # via -r requirements.in
 logging-color-formatter==1.0.3 \
     --hash=sha256:495920c386d48cad9e9463a10f51b4deb95cab3b0185d02a36af67d66ae93787 \
