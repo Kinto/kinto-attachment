@@ -13,6 +13,7 @@ from kinto_attachment import utils
 
 HEARTBEAT_CONTENT = '{"test": "write"}'
 HEARTBEAT_FILENAME = "heartbeat"
+HEARTBEAT_FOLDER = "heartbeat-test"
 SINGLE_FILE_FIELD = "attachment"
 
 
@@ -136,10 +137,9 @@ def attachments_ping(request):
         content.file = BytesIO(HEARTBEAT_CONTENT.encode("utf-8"))
         content.type = "application/octet-stream"
 
-        stored = utils.save_file(request, content, keep_link=False, replace=True)
-
-        relative_location = stored["location"].replace(request.attachment.base_url, "")
-        request.attachment.delete(relative_location)
+        stored = utils.save_file(
+            request, content, folder=HEARTBEAT_FOLDER, keep_link=False, replace=True
+        )
 
         status = True
     except Exception as e:
