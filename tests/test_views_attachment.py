@@ -461,7 +461,7 @@ class HeartbeartTest(BaseWebTestS3, unittest.TestCase):
 
     def test_heartbeat_is_false_if_error_happens(self):
         storage_impl = self.app.app.registry.queryUtility(IFileStorage)
-        with mock.patch.object(storage_impl, "delete") as mocked:
+        with mock.patch.object(storage_impl, "save") as mocked:
             mocked.side_effect = ValueError
             resp = self.app.get("/__heartbeat__", status=503)
         self.assertFalse(resp.json["attachments"])
