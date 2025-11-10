@@ -138,7 +138,9 @@ def attachments_ping(request):
         content.file = BytesIO(HEARTBEAT_CONTENT.encode("utf-8"))
         content.type = "application/octet-stream"
 
-        utils.save_file(request, content, folder=HEARTBEAT_FOLDER, keep_link=False, replace=True)
+        stored = utils.save_file(
+            request, content, folder=HEARTBEAT_FOLDER, keep_link=False, replace=True
+        )
 
         status = True
     except Exception as e:
