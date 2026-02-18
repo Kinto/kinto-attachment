@@ -12,7 +12,8 @@ from pyramid import httpexceptions
 from pyramid_storage.exceptions import FileNotAllowed
 
 
-FILE_LINKS = "__attachments__"
+_FILE_LINKS_RESOURCE_NAME = "attachments"
+_FILE_LINKS_PARENT_ID = "__attachments__"
 
 RECORD_PATH = "/buckets/{bucket_id}/collections/{collection_id}/records/{id}"
 
@@ -133,12 +134,16 @@ def delete_attachment(request, link_field=None, uri=None, keep_old_files=False):
 
     # Remove file.
     if not keep_old_files:
-        file_links = storage.list_all("", FILE_LINKS, filters=filters)
+        file_links = storage.list_all(
+            _FILE_LINKS_RESOURCE_NAME, _FILE_LINKS_PARENT_ID, filters=filters
+        )
         for link in file_links:
             request.attachment.delete(link["location"])
 
     # Remove link.
-    storage.delete_all("", FILE_LINKS, filters=filters, with_deleted=False)
+    storage.delete_all(
+        _FILE_LINKS_RESOURCE_NAME, _FILE_LINKS_PARENT_ID, filters=filters, with_deleted=False
+    )
 
 
 def save_file(request, content, folder=None, keep_link=True, replace=False):
@@ -190,8 +195,8 @@ def save_file(request, content, folder=None, keep_link=True, replace=False):
     if keep_link:
         # Store link between record and attachment (for later deletion).
         request.registry.storage.create(
-            "",
-            FILE_LINKS,
+            _FILE_LINKS_RESOURCE_NAME,
+            _FILE_LINKS_PARENT_ID,
             {
                 "location": location,  # store relative location.
                 "bucket_uri": bucket_uri(request),
