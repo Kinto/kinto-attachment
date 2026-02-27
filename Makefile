@@ -8,7 +8,7 @@ all: install
 install:
 	uv sync --all-extras
 
-lint:
+lint: install
 	uv run ruff check src tests
 	uv run ruff format --check src tests
 
