@@ -161,6 +161,15 @@ def save_file(request, content, folder=None, keep_link=True, replace=False):
     size = len(filecontent)
     filename = content.filename
 
+    max_size_raw = setting_value(request, "max_size_bytes", default=None)
+    if max_size_raw is not None:
+        max_size_bytes = int(max_size_raw)
+        if max_size_bytes > 0 and size > max_size_bytes:
+            error_msg = "File size ({} bytes) exceeds the limit ({} bytes).".format(
+                size, max_size_bytes
+            )
+            raise_invalid(request, location="body", description=error_msg)
+
     _, extension = os.path.splitext(filename)
     mimetype = overriden_mimetypes.get(extension, content.type)
 

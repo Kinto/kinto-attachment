@@ -484,3 +484,86 @@ class MetricsTest(BaseWebTestS3, unittest.TestCase):
         resp = self.app.get("/__metrics__")
 
         self.assertIn("backend_s3filestorage_seconds", resp.text)
+
+
+def _make_app_with_settings(**extra_settings):
+    import webtest
+    from kinto import DEFAULT_SETTINGS
+    from kinto import main as testapp
+    from kinto.core import testing as core_support
+
+    settings = core_support.DEFAULT_SETTINGS.copy()
+    settings.update(**DEFAULT_SETTINGS)
+    settings["multiauth.policies"] = "basicauth"
+    settings["storage_backend"] = "kinto.core.storage.memory"
+    settings["permission_backend"] = "kinto.core.permission.memory"
+    settings["userid_hmac_secret"] = "this is not a secret"
+    settings["includes"] = "kinto_attachment"
+    settings["kinto.attachment.base_path"] = "/tmp"
+    settings["kinto.attachment.base_url"] = ""
+    settings.update(extra_settings)
+
+    app = webtest.TestApp(testapp({}, **settings))
+    app.RequestClass = core_support.get_request_class(prefix="v1")
+    return app
+
+
+class FileSizeLimitTest(BaseWebTestLocal, unittest.TestCase):
+    # Global max_size_bytes of 10 bytes.
+    def make_app(self):
+        return _make_app_with_settings(**{"kinto.attachment.max_size_bytes": "10"})
+
+    def test_upload_refused_if_exceeds_max_size(self):
+        resp = self.upload(
+            files=[(self.file_field, b"image.jpg", b"--exceeds-limit--")],
+            status=400,
+        )
+        self.assertIn("File size", resp.json["message"])
+        self.assertIn("exceeds the limit", resp.json["message"])
+
+    def test_upload_accepted_if_under_max_size(self):
+        self.upload(
+            files=[(self.file_field, b"image.jpg", b"small")],
+            status=201,
+        )
+
+    def test_upload_accepted_if_exactly_at_max_size(self):
+        self.upload(
+            files=[(self.file_field, b"image.jpg", b"0123456789")],  # 10 bytes == limit
+            status=201,
+        )
+
+
+class FileSizeLimitPerResourceTest(BaseWebTestLocal, unittest.TestCase):
+    # Global max_size_bytes of 10 bytes, but fennec/fonts collection bypasses it.
+    def make_app(self):
+        return _make_app_with_settings(
+            **{
+                "kinto.attachment.max_size_bytes": "10",
+                "kinto.attachment.resources.fennec.fonts.max_size_bytes": "0",
+            }
+        )
+
+    def test_upload_refused_by_global_limit_on_other_collection(self):
+        self.create_collection("fennec", "other")
+        record_uri = self.get_record_uri("fennec", "other", str(uuid.uuid4()))
+        self.endpoint_uri = record_uri + "/attachment"
+        resp = self.upload(
+            files=[(self.file_field, b"image.jpg", b"--exceeds-limit--")],
+            status=400,
+        )
+        self.assertIn("exceeds the limit", resp.json["message"])
+
+    def test_upload_bypasses_global_limit_for_allowed_collection(self):
+        # fennec/fonts has max_size_bytes=0, which disables the limit.
+        self.upload(
+            files=[(self.file_field, b"image.jpg", b"--exceeds-limit--")],
+            status=201,
+        )
+
+    def test_upload_uses_per_resource_limit_when_set(self):
+        # fennec/fonts has max_size_bytes=0 (unlimited), so even large files are accepted.
+        self.upload(
+            files=[(self.file_field, b"image.jpg", b"x" * 100)],
+            status=201,
+        )
