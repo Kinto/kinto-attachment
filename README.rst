@@ -163,7 +163,7 @@ If you want to add or override mimetypes, use the following setting and the asso
     kinto.attachment.mimetypes = .ftl:application/vnd.fluent;.db:application/vnd.sqlite3
 
 The ``max_size_bytes`` option
-----------------------------
+-----------------------------
 
 By default, there is no limit on the size of uploaded files.
 To prevent users from uploading very large files, it is possible to set a maximum size in bytes.
