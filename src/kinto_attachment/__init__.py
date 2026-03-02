@@ -38,6 +38,8 @@ def includeme(config):
 
                 if name in ("randomize", "keep_old_files"):
                     config.registry.attachment_resources[resource_id][name] = asbool(setting_value)
+                elif name == "max_size_bytes":
+                    config.registry.attachment_resources[resource_id][name] = int(setting_value)
                 else:
                     message = "`{}` is not a supported setting name. Read `{}`".format(
                         name, setting_name
