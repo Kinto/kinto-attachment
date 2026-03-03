@@ -162,6 +162,28 @@ If you want to add or override mimetypes, use the following setting and the asso
 
     kinto.attachment.mimetypes = .ftl:application/vnd.fluent;.db:application/vnd.sqlite3
 
+The ``max_size_bytes`` option
+-----------------------------
+
+By default, there is no limit on the size of uploaded files.
+To prevent users from uploading very large files, it is possible to set a maximum size in bytes.
+
+.. code-block:: ini
+
+    # Global limit
+    kinto.attachment.max_size = 10485760   # 10 MB in bytes (0 = no limit, default)
+
+Per-resource override, can set a different limit or bypass the global one:
+
+.. code-block:: ini
+
+    # Override with a stricter or looser limit for a bucket
+    kinto.attachment.resources.mybucket.max_size = 5242880   # 5 MB
+    # Override for a specific collection
+    kinto.attachment.resources.mybucket.mylargefiles.max_size = 104857600  # 100 MB
+    # Bypass the global limit entirely for a collection (set to 0)
+    kinto.attachment.resources.mybucket.mylargefiles.max_size = 0
+
 
 Default bucket
 --------------
