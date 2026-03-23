@@ -18,8 +18,8 @@ format:
 
 tests: test
 tests-once: test
-test:
-	uv run py.test --cov-report term-missing --cov-fail-under 100 --cov kinto_attachment
+test: install
+	uv run pytest --cov-report term-missing --cov-fail-under 100 --cov kinto_attachment
 
 clean:
 	find src/ -name '*.pyc' -delete
