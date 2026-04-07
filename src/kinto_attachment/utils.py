@@ -9,7 +9,6 @@ from kinto.core.errors import raise_invalid
 from kinto.core.storage import Filter
 from kinto.views.records import Record
 from pyramid import httpexceptions
-from pyramid_storage.exceptions import FileNotAllowed
 
 
 FILE_LINKS = "__attachments__"
@@ -20,6 +19,45 @@ DEFAULT_MIMETYPES = {
     ".pem": "application/x-pem-file",
     ".geojson": "application/geojson",
 }
+
+_EXTENSION_GROUPS = {
+    "documents": tuple("pdf rtf odf ods gnumeric abw doc docx xls xlsx".split()),
+    "text": ("txt",),
+    "images": tuple("jpg jpe jpeg png gif svg bmp tiff".split()),
+    "audio": tuple("wav mp3 aac ogg oga flac".split()),
+    "video": tuple("mpeg 3gp avi divx dvr flv mp4 wmv".split()),
+    "data": tuple("csv ini json plist xml yaml yml".split()),
+    "scripts": tuple("js php pl py rb sh".split()),
+    "archives": tuple("gz bz2 zip tar tgz txz 7z".split()),
+    "executables": tuple("so exe dll".split()),
+}
+_EXTENSION_GROUPS["default"] = (
+    _EXTENSION_GROUPS["documents"]
+    + _EXTENSION_GROUPS["text"]
+    + _EXTENSION_GROUPS["images"]
+    + _EXTENSION_GROUPS["data"]
+)
+_EXTENSION_GROUPS["any"] = ()
+
+
+def resolve_extensions(extensions_str):
+    """Parse an extensions string (e.g. ``"images+pdf"`` or ``"default"``) into a set."""
+    rv = set()
+    for group in extensions_str.split("+"):
+        if group in _EXTENSION_GROUPS:
+            rv.update(_EXTENSION_GROUPS[group])
+        else:
+            for ext in group.split():
+                rv.add(ext.lower())
+    return rv
+
+
+def _extension_allowed(filename, extensions):
+    """Return ``True`` if *filename*'s extension is in *extensions* (empty set means any)."""
+    if not extensions:
+        return True
+    _, ext = os.path.splitext(filename)
+    return ext.lstrip(".").lower() in extensions
 
 
 class AttachmentRouteFactory(RouteFactory):
@@ -170,6 +208,10 @@ def save_file(request, content, folder=None, keep_link=True, replace=False):
             )
             raise_invalid(request, location="body", description=error_msg)
 
+    extensions = resolve_extensions(setting_value(request, "extensions", default="default"))
+    if not _extension_allowed(filename, extensions):
+        raise_invalid(request, location="body", description="File extension is not allowed.")
+
     _, extension = os.path.splitext(filename)
     mimetype = overriden_mimetypes.get(extension, content.type)
 
@@ -180,11 +222,7 @@ def save_file(request, content, folder=None, keep_link=True, replace=False):
         "headers": {"Content-Type": mimetype},
     }
 
-    try:
-        location = request.attachment.save(content, **save_options)
-    except FileNotAllowed:
-        error_msg = "File extension is not allowed."
-        raise_invalid(request, location="body", description=error_msg)
+    location = request.attachment.save(content, **save_options)
 
     # File metadata.
     fullurl = request.attachment.url(location)

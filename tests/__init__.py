@@ -6,7 +6,9 @@ from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 import webtest
 from kinto.core import testing as core_support
 from kinto.core import utils as core_utils
-from pyramid_storage.interfaces import IFileStorage
+
+from kinto_attachment.storage import IFileStorage
+from tests.storage import _FakeGCSBlob, _FakeGCSClient
 
 
 SAMPLE_SCHEMA = {
@@ -111,45 +113,14 @@ class BaseWebTestLocal(BaseWebTest):
                 os.remove(filepath)
 
 
-class _FakeGCSBucket:
-    def __init__(self):
-        self._blobs = {}
-
-    def get_blob(self, name):
-        return self._blobs.get(name)
-
-    def delete_blob(self, name):
-        self._blobs.pop(name, None)
-
-
-class _FakeGCSBlob:
-    def __init__(self, name, bucket):
-        self.name = name
-        self._bucket = bucket
-        self.cache_control = None
-
-    def upload_from_file(self, file, **kwargs):
-        self._bucket._blobs[self.name] = self
-
-
-class _FakeGCSClient:
-    def __init__(self):
-        self._bucket = _FakeGCSBucket()
-
-    @classmethod
-    def from_service_account_json(cls, **kwargs):
-        return cls()
-
-    def get_bucket(self, name):
-        return self._bucket
-
-
 class BaseWebTestGCloud(BaseWebTest):
     config = "config/gcloud.ini"
 
     def setUp(self):
-        self._gcs_client_patch = mock.patch("pyramid_storage.gcloud.Client", _FakeGCSClient)
-        self._gcs_blob_patch = mock.patch("pyramid_storage.gcloud.Blob", _FakeGCSBlob)
+        self._gcs_client_patch = mock.patch(
+            "kinto_attachment.storage.gcloud.Client", _FakeGCSClient
+        )
+        self._gcs_blob_patch = mock.patch("kinto_attachment.storage.gcloud.Blob", _FakeGCSBlob)
         self._gcs_client_patch.start()
         self._gcs_blob_patch.start()
         super().setUp()

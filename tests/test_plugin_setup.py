@@ -4,11 +4,10 @@ import pytest
 from kinto import main as kinto_main
 from pyramid import testing
 from pyramid.exceptions import ConfigurationError
-from pyramid_storage.gcloud import GoogleCloudStorage
-from pyramid_storage.interfaces import IFileStorage
-from pyramid_storage.s3 import S3FileStorage
 
 from kinto_attachment import __version__, includeme
+from kinto_attachment.storage import IFileStorage
+from kinto_attachment.storage.gcloud import GoogleCloudStorage
 
 from . import BaseWebTestLocal
 
@@ -79,11 +78,6 @@ class IncludeMeTest(unittest.TestCase):
         )
         assert isinstance(config.registry.queryUtility(IFileStorage), GoogleCloudStorage)
 
-    def test_s3_is_used_if_base_path_setting_is_not_used(self):
-        config = self.includeme(
-            settings={
-                "attachment.aws.access_key": "abc",
-                "attachment.aws.bucket_name": "foo",
-            }
-        )
-        assert isinstance(config.registry.queryUtility(IFileStorage), S3FileStorage)
+    def test_error_if_no_backend_is_configured(self):
+        with pytest.raises(ConfigurationError):
+            self.includeme(settings={})
