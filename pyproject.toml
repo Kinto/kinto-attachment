@@ -17,10 +17,10 @@ authors = [
   {name = "Mozilla Services", email = "developers@kinto-storage.org"},
 ]
 dependencies = [
-    "boto",
+    "boto3",
     "google-cloud-storage",
     "kinto[monitoring]",
-    "pyramid_storage",
+    "pyramid-storage>=2",
     "greenlet>=1",
 ]
 
