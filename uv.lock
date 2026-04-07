@@ -1440,7 +1440,7 @@ requires-dist = [
     { name = "kinto", extras = ["postgresql"], marker = "extra == 'dev'" },
     { name = "kinto-http", marker = "extra == 'dev'" },
     { name = "moto", extras = ["s3", "server"], marker = "extra == 'dev'", specifier = "<6" },
-    { name = "pyramid-storage" },
+    { name = "pyramid-storage", specifier = ">=2" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "pytest-cache", marker = "extra == 'dev'" },
     { name = "pytest-cov", marker = "extra == 'dev'" },
@@ -2209,14 +2209,14 @@ wheels = [
 
 [[package]]
 name = "pyramid-storage"
-version = "1.3.2"
+version = "2.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pyramid" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/4c/3d/cc99fdc5e76419775dccb8fb3404ce6bc3c2eaafebc41887cfabca64e665/pyramid_storage-1.3.2.tar.gz", hash = "sha256:31030f38448dc1f7eee8c82f13c1c2a0168233e4a92058234c8bef87cd20bdaf", size = 31205, upload-time = "2024-10-16T10:39:28.185Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/62/e8/10deb0053cca58775f5ff5be8bed8e45ebdbbdb5d75b03694dbeb2dbabe5/pyramid_storage-2.0.0.tar.gz", hash = "sha256:bc0a4f6895df97bce452988b9a309e163277f98d1999a3653243822cbfa64c01", size = 31514, upload-time = "2026-04-07T09:06:31.713Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/a4/e9/fb30a2efc95b5358218b6739a2fbe5b357568e1ab4592f92d26aea2b23a9/pyramid_storage-1.3.2-py3-none-any.whl", hash = "sha256:dd4fff0d19290c102948d746bf1f32d15ae5b2173d0c1ebc48a136a00643c6bc", size = 14460, upload-time = "2024-10-16T10:39:27.214Z" },
+    { url = "https://files.pythonhosted.org/packages/82/d2/7cb9f7d4483b439415f0b532dca474ccb3527206201168681a4d84ce5404/pyramid_storage-2.0.0-py3-none-any.whl", hash = "sha256:a55aae4475fa01e32f4a7acdee66c131cffc4a26e34dc26113eb41b9813d946c", size = 14624, upload-time = "2026-04-07T09:06:30.142Z" },
 ]
 
 [[package]]

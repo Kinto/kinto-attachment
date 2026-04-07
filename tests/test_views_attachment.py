@@ -9,7 +9,7 @@ from pyramid_storage.interfaces import IFileStorage
 
 from kinto_attachment.utils import sha256
 
-from . import BaseWebTestLocal, BaseWebTestS3, get_user_headers
+from . import BaseWebTestGCloud, BaseWebTestLocal, get_user_headers
 
 
 class UploadTest(object):
@@ -76,7 +76,7 @@ class LocalUploadTest(UploadTest, BaseWebTestLocal, unittest.TestCase):
             self.assertEqual(f.read(), b"--binary--")
 
 
-class S3UploadTest(UploadTest, BaseWebTestS3, unittest.TestCase):
+class GCloudUploadTest(UploadTest, BaseWebTestGCloud, unittest.TestCase):
     pass
 
 
@@ -144,7 +144,7 @@ class LocalDeleteTest(DeleteTest, BaseWebTestLocal, unittest.TestCase):
     pass
 
 
-class S3DeleteTest(DeleteTest, BaseWebTestS3, unittest.TestCase):
+class S3DeleteTest(DeleteTest, BaseWebTestGCloud, unittest.TestCase):
     pass
 
 
@@ -359,8 +359,8 @@ class AttachmentViewTest(object):
         self.upload(status=200)
 
 
-class PerResourceConfigAttachementViewTest(BaseWebTestS3, unittest.TestCase):
-    config = "config/s3_per_resource.ini"
+class PerResourceConfigAttachementViewTest(BaseWebTestGCloud, unittest.TestCase):
+    config = "config/gcloud_per_resource.ini"
 
     def test_file_get_randomize_in_fennec_bucket(self):
         r = self.upload()
@@ -378,9 +378,7 @@ class PerResourceConfigAttachementViewTest(BaseWebTestS3, unittest.TestCase):
         self.assertIn(r.json["filename"], r.json["location"])
 
 
-class OverridenMimetypesTest(BaseWebTestS3, unittest.TestCase):
-    config = "config/s3.ini"
-
+class OverridenMimetypesTest(BaseWebTestGCloud, unittest.TestCase):
     def test_file_mimetype_comes_from_config(self):
         resp = self.upload(files=[(self.file_field, b"kinto.txt", b"--binary--")])
 
@@ -454,7 +452,7 @@ class KeepOldFilesTest(BaseWebTestLocal, unittest.TestCase):
         self.assertTrue(self.backend.exists(location))
 
 
-class HeartbeartTest(BaseWebTestS3, unittest.TestCase):
+class HeartbeartTest(BaseWebTestGCloud, unittest.TestCase):
     def test_attachments_is_added_to_heartbeat_view(self):
         resp = self.app.get("/__heartbeat__")
         self.assertIn("attachments", resp.json)
@@ -477,13 +475,13 @@ class HeartbeartTest(BaseWebTestS3, unittest.TestCase):
         self.assertTrue(resp.json["attachments"])
 
 
-class MetricsTest(BaseWebTestS3, unittest.TestCase):
+class MetricsTest(BaseWebTestGCloud, unittest.TestCase):
     def test_attachments_methods_are_monitored(self):
         self.upload(status=201)
 
         resp = self.app.get("/__metrics__")
 
-        self.assertIn("backend_s3filestorage_seconds", resp.text)
+        self.assertIn("backend_googlecloudstorage_seconds", resp.text)
 
 
 def _make_app_with_settings(**extra_settings):

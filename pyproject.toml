@@ -20,7 +20,7 @@ dependencies = [
     "boto3",
     "google-cloud-storage",
     "kinto[monitoring]",
-    "pyramid_storage",
+    "pyramid-storage>=2",
     "greenlet>=1",
 ]
 

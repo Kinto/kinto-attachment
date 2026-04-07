@@ -34,13 +34,10 @@ run-kinto:
 need-kinto-running:
 	@curl http://localhost:8888/v0/ 2>/dev/null 1>&2 || (echo "Run 'make run-kinto' before starting tests." && exit 1)
 
-run-moto:
-	uv run moto_server -H 0.0.0.0 -p 6000
-
 need-moto-running:
 	@curl http://localhost:6000 2>/dev/null 1>&2 || (echo "Run 'make run-moto' before starting tests." && exit 1)
 
-functional: need-kinto-running need-moto-running
+functional: need-kinto-running
 	/usr/bin/openssl rand -base64 -out $(TEMPDIR)/image1.png 3000
 	/usr/bin/openssl rand -base64 -out $(TEMPDIR)/image2.png 3000
 	/usr/bin/openssl rand -base64 -out $(TEMPDIR)/image3.png 3000
