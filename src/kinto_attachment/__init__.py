@@ -5,7 +5,8 @@ from kinto.core import metrics as core_metrics
 from pyramid.events import ApplicationCreated
 from pyramid.exceptions import ConfigurationError
 from pyramid.settings import asbool
-from pyramid_storage.interfaces import IFileStorage
+
+from kinto_attachment.storage import IFileStorage
 
 
 #: Module version, as defined in PEP-0396.
@@ -49,9 +50,6 @@ def includeme(config):
                 setting_name = setting_name.replace("attachment.", "storage.")
                 storage_settings[setting_name] = setting_value
 
-    # Force some pyramid_storage settings.
-    storage_settings["storage.name"] = "attachment"
-    storage_settings.setdefault("storage.extensions", "default")
     config.add_settings(storage_settings)
 
     # It may be useful to define an additional base_url setting.
@@ -78,11 +76,14 @@ def includeme(config):
 
     # Enable attachment backend.
     if "storage.base_path" in storage_settings:
-        config.include("pyramid_storage.local")
+        config.include("kinto_attachment.storage.local")
     elif "storage.gcloud.credentials" in storage_settings:
-        config.include("pyramid_storage.gcloud")
+        config.include("kinto_attachment.storage.gcloud")
     else:
-        config.include("pyramid_storage.s3")
+        raise ConfigurationError(
+            "Attachment backend is not configured. "
+            "Set either `attachment.base_path` (local) or `attachment.gcloud.credentials` (GCS)."
+        )
 
     def on_app_created(event):
         """Enable backend metrics when the app starts"""

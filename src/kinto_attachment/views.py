@@ -127,7 +127,8 @@ def attachments_ping(request):
         return True
 
     # We will fake a file upload, so pick a file extension that is allowed.
-    extensions = request.attachment.extensions or {"json"}
+    extensions_str = request.registry.settings.get("attachment.extensions", "default")
+    extensions = utils.resolve_extensions(extensions_str) or {"json"}
     allowed_extension = "." + list(extensions)[-1]
 
     status = False

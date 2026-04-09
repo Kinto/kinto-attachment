@@ -5,8 +5,8 @@ from unittest import mock
 from urllib.parse import urlparse
 
 from kinto.core.errors import ERRORS
-from pyramid_storage.interfaces import IFileStorage
 
+from kinto_attachment.storage import IFileStorage
 from kinto_attachment.utils import sha256
 
 from . import BaseWebTestGCloud, BaseWebTestLocal, get_user_headers
@@ -465,7 +465,7 @@ class HeartbeartTest(BaseWebTestGCloud, unittest.TestCase):
         self.assertFalse(resp.json["attachments"])
 
     def test_heartbeat_is_true_if_server_is_readonly(self):
-        patch = mock.patch("pyramid_storage.s3.S3FileStorage.delete")
+        patch = mock.patch("kinto_attachment.storage.gcloud.GoogleCloudStorage.delete")
         self.addCleanup(patch.stop)
         mocked = patch.start()
         mocked.side_effect = ValueError
