@@ -6,6 +6,7 @@ from pyramid.events import ApplicationCreated
 from pyramid.exceptions import ConfigurationError
 from pyramid.settings import asbool
 
+from kinto_attachment.migrations import KintoAttachmentMigration
 from kinto_attachment.storage import IFileStorage
 
 
@@ -93,6 +94,8 @@ def includeme(config):
         core_metrics.watch_execution_time(metrics_service, storage_impl, prefix="backend")
 
     config.add_subscriber(on_app_created, ApplicationCreated)
+
+    config.add_migration(KintoAttachmentMigration())
 
     config.scan("kinto_attachment.views")
     config.scan("kinto_attachment.listeners")
