@@ -102,10 +102,10 @@ class DeleteTest(object):
 
     def test_link_is_removed_on_delete(self):
         storage = self.app.app.registry.storage
-        links = storage.list_all("", "__attachments__")
+        links = storage.list_all("attachments", "__attachments__")
         self.assertEqual(len(links), self.nb_uploaded_files)
         self.app.delete(self.endpoint_uri, headers=self.headers, status=204)
-        links = storage.list_all("", "__attachments__")
+        links = storage.list_all("attachments", "__attachments__")
         self.assertEqual(len(links), 0)
 
     def test_attachment_is_removed_when_record_is_deleted(self):
@@ -128,10 +128,10 @@ class DeleteTest(object):
 
     def test_attachments_links_are_removed_forever(self):
         storage = self.app.app.registry.storage
-        links = storage.list_all("", "__attachments__")
+        links = storage.list_all("attachments", "__attachments__")
         self.assertEqual(len(links), self.nb_uploaded_files)
         self.app.delete(self.record_uri, headers=self.headers)
-        links = storage.list_all("", "__attachments__")
+        links = storage.list_all("attachments", "__attachments__")
         self.assertEqual(len(links), 0)
 
     def test_no_error_when_other_resource_is_deleted(self):
@@ -144,7 +144,7 @@ class LocalDeleteTest(DeleteTest, BaseWebTestLocal, unittest.TestCase):
     pass
 
 
-class S3DeleteTest(DeleteTest, BaseWebTestGCloud, unittest.TestCase):
+class GCloudDeleteTest(DeleteTest, BaseWebTestGCloud, unittest.TestCase):
     pass
 
 
