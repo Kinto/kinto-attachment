@@ -452,10 +452,6 @@ If specified, it is going to be exposed in the capabilities of the root URL endp
 Run tests
 =========
 
-Run a fake Amazon S3 server in a separate terminal::
-
-    make run-moto
-
 Run the tests suite::
 
     make tests

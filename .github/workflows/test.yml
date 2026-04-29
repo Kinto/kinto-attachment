@@ -47,9 +47,6 @@ jobs:
       - name: Install dependencies
         run: make install
 
-      - name: Run moto
-        run: make run-moto &
-
       - name: Run unit tests
         run: make test
 
@@ -83,9 +80,6 @@ jobs:
 
       - name: Install dependencies
         run: make install
-
-      - name: Run moto
-        run: make run-moto &
 
       - name: Run kinto
         run: make run-kinto & sleep 5
