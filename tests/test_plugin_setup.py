@@ -1,11 +1,14 @@
 import unittest
+from unittest import mock
 
 import pytest
 from kinto import main as kinto_main
+from kinto.core.migrations import IMigratable
 from pyramid import testing
 from pyramid.exceptions import ConfigurationError
 
 from kinto_attachment import __version__, includeme
+from kinto_attachment.migrations import KintoAttachmentMigration
 from kinto_attachment.storage import IFileStorage
 from kinto_attachment.storage.gcloud import GoogleCloudStorage
 
@@ -81,3 +84,18 @@ class IncludeMeTest(unittest.TestCase):
     def test_error_if_no_backend_is_configured(self):
         with pytest.raises(ConfigurationError):
             self.includeme(settings={})
+
+
+class MigrationTest(BaseWebTestLocal, unittest.TestCase):
+    def test_migration_is_registered(self):
+        registry = self.app.app.registry
+        migratables = registry.getUtilitiesFor(IMigratable)
+
+        assert any(isinstance(migration, KintoAttachmentMigration) for _, migration in migratables)
+
+    def test_migration_call(self):
+        # Useless since using memory backend, just for code coverage.
+        migration = KintoAttachmentMigration()
+        assert migration.schema_version == 2
+        migration.client = mock.MagicMock()
+        migration.migrate_schema(start_version=1, dry_run=True)
