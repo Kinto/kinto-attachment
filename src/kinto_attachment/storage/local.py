@@ -53,7 +53,7 @@ class LocalFileStorage:
         return self.save_file(fs.file, fs.filename, *args, **kwargs)
 
     def save_file(
-        self, file, filename, folder=None, randomize=False, datetime_prefix=False, **kwargs
+        self, file, filename, folder=None, randomize=False, filename_pattern=None, record_id="", **kwargs
     ):
         filename = secure_filename(os.path.basename(filename))
 
@@ -64,8 +64,12 @@ class LocalFileStorage:
         if randomize:
             filename = random_filename(filename)
 
-        if datetime_prefix:
-            filename = datetime.now().strftime("%Y%m%d%H%M%S-") + filename
+        if filename_pattern:
+            filename = filename_pattern.format(
+                datetime=datetime.now().strftime("%Y%m%d%H%M%S"),
+                rid=record_id,
+                filename=filename,
+            )
 
         filename, path = self._resolve_name(filename, dest_folder)
 

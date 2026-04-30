@@ -149,7 +149,8 @@ class GoogleCloudStorage:
         folder=None,
         bucket_name=None,
         randomize=False,
-        datetime_prefix=False,
+        filename_pattern=None,
+        record_id="",
         acl=None,
         replace=False,
         headers=None,
@@ -159,8 +160,12 @@ class GoogleCloudStorage:
         if randomize:
             filename = random_filename(filename)
 
-        if datetime_prefix:
-            filename = datetime.now().strftime("%Y%m%d%H%M%S-") + filename
+        if filename_pattern:
+            filename = filename_pattern.format(
+                datetime=datetime.now().strftime("%Y%m%d%H%M%S"),
+                rid=record_id,
+                filename=filename,
+            )
 
         if folder:
             filename = folder + "/" + filename

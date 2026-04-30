@@ -142,16 +142,22 @@ Or a specific collection:
     kinto.attachment.resources.blog.articles.randomize = true
 
 
-The ``datetime_prefix`` option
-------------------------------
+The ``filename_pattern`` option
+-------------------------------
 
-If you want uploaded files to be stored with a date time prefix (default: False):
+If you want uploaded files to be stored with a custom filename pattern (default: original filename):
 
 .. code-block:: ini
 
-    kinto.attachment.datetime_prefix = true
+    kinto.attachment.filename_pattern = {datetime}-{rid}-{filename}
 
-This option is useful to trace uploaded files chronologically, when inspecting trafic or browsing the storage.
+Available placeholders:
+
+- ``{filename}``: the original uploaded filename (or UUID if ``randomize`` is enabled)
+- ``{datetime}``: current date and time formatted as ``YYYYmmddHHMMSS``
+- ``{rid}``: the record ID
+
+This option is useful to trace uploaded files chronologically, when inspecting traffic or browsing the storage.
 It is also useful to avoid name collisions when randomization is disabled.
 
 
