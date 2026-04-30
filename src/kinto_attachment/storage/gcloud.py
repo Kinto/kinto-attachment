@@ -1,18 +1,14 @@
 import mimetypes
-import os
-import urllib
-from datetime import datetime
 
 from pyramid.exceptions import ConfigurationError
 from pyramid.settings import asbool
 from zope.interface import implementer
 
 from . import (
+    FileStorage,
     IFileStorage,
-    random_filename,
     read_settings,
     register_file_storage_impl,
-    secure_filename,
 )
 
 
@@ -37,7 +33,7 @@ DEFAULT_FILE_ACL = "publicRead"
 
 
 @implementer(IFileStorage)
-class GoogleCloudStorage:
+class GoogleCloudStorage(FileStorage):
     @classmethod
     def from_settings(cls, settings, prefix):
         options = (
@@ -124,9 +120,6 @@ class GoogleCloudStorage:
                 "Bucket %s does not exist. Set auto_create_bucket=True to create it." % name
             )
 
-    def url(self, filename):
-        return urllib.parse.urljoin(self.base_url, filename)
-
     def exists(self, name, bucket_name=None):
         if not name:
             try:
@@ -138,9 +131,6 @@ class GoogleCloudStorage:
 
     def delete(self, filename, bucket_name=None):
         self.get_bucket(bucket_name).delete_blob(filename)
-
-    def save(self, fs, *args, **kwargs):
-        return self.save_file(fs.file, fs.filename, *args, **kwargs)
 
     def save_file(
         self,
@@ -155,17 +145,7 @@ class GoogleCloudStorage:
         replace=False,
         headers=None,
     ):
-        filename = secure_filename(os.path.basename(filename))
-
-        if randomize:
-            filename = random_filename(filename)
-
-        if filename_pattern:
-            filename = filename_pattern.format(
-                datetime=datetime.now().strftime("%Y%m%d%H%M%S"),
-                rid=record_id,
-                filename=filename,
-            )
+        filename = self._prepare_filename(filename, randomize, filename_pattern, record_id)
 
         if folder:
             filename = folder + "/" + filename

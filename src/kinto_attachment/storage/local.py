@@ -1,16 +1,13 @@
 import os
 import shutil
-import urllib
-from datetime import datetime
 
 from zope.interface import implementer
 
 from . import (
+    FileStorage,
     IFileStorage,
-    random_filename,
     read_settings,
     register_file_storage_impl,
-    secure_filename,
 )
 
 
@@ -20,7 +17,7 @@ def includeme(config):
 
 
 @implementer(IFileStorage)
-class LocalFileStorage:
+class LocalFileStorage(FileStorage):
     @classmethod
     def from_settings(cls, settings, prefix):
         options = (
@@ -34,9 +31,6 @@ class LocalFileStorage:
         self.base_path = base_path
         self.base_url = base_url
 
-    def url(self, filename):
-        return urllib.parse.urljoin(self.base_url, filename)
-
     def path(self, filename):
         return os.path.join(self.base_path, filename)
 
@@ -49,27 +43,21 @@ class LocalFileStorage:
             return True
         return False
 
-    def save(self, fs, *args, **kwargs):
-        return self.save_file(fs.file, fs.filename, *args, **kwargs)
-
     def save_file(
-        self, file, filename, folder=None, randomize=False, filename_pattern=None, record_id="", **kwargs
+        self,
+        file,
+        filename,
+        folder=None,
+        randomize=False,
+        filename_pattern=None,
+        record_id="",
+        **kwargs,
     ):
-        filename = secure_filename(os.path.basename(filename))
+        filename = self._prepare_filename(filename, randomize, filename_pattern, record_id)
 
         dest_folder = os.path.join(self.base_path, folder) if folder else self.base_path
         if not os.path.exists(dest_folder):
             os.makedirs(dest_folder)
-
-        if randomize:
-            filename = random_filename(filename)
-
-        if filename_pattern:
-            filename = filename_pattern.format(
-                datetime=datetime.now().strftime("%Y%m%d%H%M%S"),
-                rid=record_id,
-                filename=filename,
-            )
 
         filename, path = self._resolve_name(filename, dest_folder)
 
