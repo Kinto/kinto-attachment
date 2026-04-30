@@ -1,6 +1,7 @@
 import os
 import shutil
 import urllib
+from datetime import datetime
 
 from zope.interface import implementer
 
@@ -51,7 +52,9 @@ class LocalFileStorage:
     def save(self, fs, *args, **kwargs):
         return self.save_file(fs.file, fs.filename, *args, **kwargs)
 
-    def save_file(self, file, filename, folder=None, randomize=False, **kwargs):
+    def save_file(
+        self, file, filename, folder=None, randomize=False, datetime_prefix=False, **kwargs
+    ):
         filename = secure_filename(os.path.basename(filename))
 
         dest_folder = os.path.join(self.base_path, folder) if folder else self.base_path
@@ -60,6 +63,9 @@ class LocalFileStorage:
 
         if randomize:
             filename = random_filename(filename)
+
+        if datetime_prefix:
+            filename = datetime.now().strftime("%Y%m%d%H%M%S-") + filename
 
         filename, path = self._resolve_name(filename, dest_folder)
 

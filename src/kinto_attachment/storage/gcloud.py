@@ -1,6 +1,7 @@
 import mimetypes
 import os
 import urllib
+from datetime import datetime
 
 from pyramid.exceptions import ConfigurationError
 from pyramid.settings import asbool
@@ -148,6 +149,7 @@ class GoogleCloudStorage:
         folder=None,
         bucket_name=None,
         randomize=False,
+        datetime_prefix=False,
         acl=None,
         replace=False,
         headers=None,
@@ -156,6 +158,9 @@ class GoogleCloudStorage:
 
         if randomize:
             filename = random_filename(filename)
+
+        if datetime_prefix:
+            filename = datetime.now().strftime("%Y%m%d%H%M%S-") + filename
 
         if folder:
             filename = folder + "/" + filename

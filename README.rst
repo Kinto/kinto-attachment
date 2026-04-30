@@ -141,6 +141,20 @@ Or a specific collection:
 
     kinto.attachment.resources.blog.articles.randomize = true
 
+
+The ``datetime_prefix`` option
+------------------------------
+
+If you want uploaded files to be stored with a date time prefix (default: False):
+
+.. code-block:: ini
+
+    kinto.attachment.datetime_prefix = true
+
+This option is useful to trace uploaded files chronologically, when inspecting trafic or browsing the storage.
+It is also useful to avoid name collisions when randomization is disabled.
+
+
 The ``extensions`` option
 -------------------------
 

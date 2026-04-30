@@ -19,12 +19,13 @@ class IFileStorage(Interface):
     def exists(filename):
         """Return ``True`` if *filename* exists in the store."""
 
-    def save(fs, folder=None, randomize=False, replace=False, headers=None):
+    def save(fs, folder=None, randomize=False, datetime_prefix=False, replace=False, headers=None):
         """Persist *fs* (a ``cgi.FieldStorage``-like object) and return the
         stored relative filename.
 
         :param folder: optional sub-path prepended to the filename.
         :param randomize: replace the original name with a UUID.
+        :param datetime_prefix: prepend the current date and time to the filename.
         :param replace: overwrite if a file with that name already exists.
         :param headers: dict of HTTP headers (used for ``Content-Type``).
         """

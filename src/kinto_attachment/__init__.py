@@ -38,7 +38,7 @@ def includeme(config):
                     message = "Configuration rule malformed: `{}`".format(setting_name)
                     raise ConfigurationError(message)
 
-                if name in ("randomize", "keep_old_files"):
+                if name in ("randomize", "keep_old_files", "datetime_prefix"):
                     config.registry.attachment_resources[resource_id][name] = asbool(setting_value)
                 elif name == "max_size_bytes":
                     config.registry.attachment_resources[resource_id][name] = int(setting_value)
