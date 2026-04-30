@@ -158,7 +158,7 @@ Available placeholders:
 - ``{rid}``: the record ID
 
 This option is useful to trace uploaded files chronologically, when inspecting traffic or browsing the storage.
-It is also useful to avoid name collisions when randomization is disabled.
+It is also useful to group files by record, or trace the original record where the file was attached before being replaced by another one.
 
 
 The ``extensions`` option
