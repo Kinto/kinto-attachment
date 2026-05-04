@@ -1,8 +1,10 @@
+import datetime
 import io
 import os
 import shutil
 import tempfile
 import unittest
+from unittest import mock
 
 from pyramid.exceptions import ConfigurationError
 
@@ -86,6 +88,27 @@ class TestLocalFileStorage(unittest.TestCase):
         name = self.storage.save_file(io.BytesIO(b"data"), "original.jpg", randomize=True)
         self.assertNotEqual(name, "original.jpg")
         self.assertTrue(name.endswith(".jpg"))
+        self.assertTrue(self.storage.exists(name))
+
+    def test_save_file_filename_pattern_datetime(self):
+        with mock.patch("kinto_attachment.storage.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime.datetime(2024, 6, 1, 1, 1, 1)
+            name = self.storage.save_file(
+                io.BytesIO(b"data"), "file.txt", filename_pattern="{datetime}-{filename}"
+            )
+        self.assertEqual(name, "20240601010101-file.txt")
+        self.assertTrue(self.storage.exists(name))
+
+    def test_save_file_filename_pattern_with_rid(self):
+        with mock.patch("kinto_attachment.storage.datetime") as mock_datetime:
+            mock_datetime.now.return_value = datetime.datetime(2024, 6, 1, 1, 1, 1)
+            name = self.storage.save_file(
+                io.BytesIO(b"data"),
+                "file.txt",
+                filename_pattern="{datetime}-{rid}-{filename}",
+                record_id="abc123",
+            )
+        self.assertEqual(name, "20240601010101-abc123-file.txt")
         self.assertTrue(self.storage.exists(name))
 
     def test_save_file_resolves_name_collision(self):

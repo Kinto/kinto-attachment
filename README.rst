@@ -141,6 +141,26 @@ Or a specific collection:
 
     kinto.attachment.resources.blog.articles.randomize = true
 
+
+The ``filename_pattern`` option
+-------------------------------
+
+If you want uploaded files to be stored with a custom filename pattern (default: original filename):
+
+.. code-block:: ini
+
+    kinto.attachment.filename_pattern = {datetime}-{rid}-{filename}
+
+Available placeholders:
+
+- ``{filename}``: the original uploaded filename (or UUID if ``randomize`` is enabled)
+- ``{datetime}``: current date and time formatted as ``YYYYmmddHHMMSS``
+- ``{rid}``: the record ID
+
+This option is useful to trace uploaded files chronologically, when inspecting traffic or browsing the storage.
+It is also useful to group files by record, or trace the original record where the file was attached before being replaced by another one.
+
+
 The ``extensions`` option
 -------------------------
 

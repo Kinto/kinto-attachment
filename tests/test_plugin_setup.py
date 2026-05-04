@@ -42,11 +42,16 @@ class IncludeMeTest(unittest.TestCase):
                 "attachment.base_path": "/tmp",
                 "attachment.resources.fennec.keep_old_files": "true",
                 "attachment.resources.fingerprinting.fonts.randomize": "true",
+                "attachment.resources.fennec.filename_pattern": "{datetime}-{rid}-{filename}",
             }
         )
         assert isinstance(config.registry.attachment_resources, dict)
         assert "/buckets/fennec" in config.registry.attachment_resources
         assert "/buckets/fingerprinting/collections/fonts" in config.registry.attachment_resources
+        assert (
+            config.registry.attachment_resources["/buckets/fennec"]["filename_pattern"]
+            == "{datetime}-{rid}-{filename}"
+        )
 
     def test_includeme_raises_error_for_malformed_resource_settings(self):
         with pytest.raises(ConfigurationError) as excinfo:

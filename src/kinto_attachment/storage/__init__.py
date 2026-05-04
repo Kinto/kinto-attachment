@@ -1,7 +1,9 @@
 import os
 import re
 import unicodedata
+import urllib
 import uuid
+from datetime import datetime
 
 from pyramid import exceptions as pyramid_exceptions
 from zope.interface import Attribute, Interface
@@ -19,18 +21,52 @@ class IFileStorage(Interface):
     def exists(filename):
         """Return ``True`` if *filename* exists in the store."""
 
-    def save(fs, folder=None, randomize=False, replace=False, headers=None):
+    def save(
+        fs,
+        folder=None,
+        randomize=False,
+        filename_pattern=None,
+        record_id="",
+        replace=False,
+        headers=None,
+    ):
         """Persist *fs* (a ``cgi.FieldStorage``-like object) and return the
         stored relative filename.
 
         :param folder: optional sub-path prepended to the filename.
         :param randomize: replace the original name with a UUID.
+        :param filename_pattern: pattern string with ``{datetime}``, ``{rid}``, and ``{filename}``
+            placeholders (e.g. ``{datetime}-{rid}-{filename}``).
+        :param record_id: record ID substituted for ``{rid}`` in *filename_pattern*.
         :param replace: overwrite if a file with that name already exists.
         :param headers: dict of HTTP headers (used for ``Content-Type``).
         """
 
     def delete(filename):
         """Remove *filename* from the store."""
+
+
+class FileStorage:
+    base_url = ""
+
+    def url(self, filename):
+        return urllib.parse.urljoin(self.base_url, filename)
+
+    def save(self, fs, *args, **kwargs):
+        return self.save_file(fs.file, fs.filename, *args, **kwargs)
+
+    @staticmethod
+    def _prepare_filename(filename, randomize=False, filename_pattern=None, record_id=""):
+        filename = secure_filename(os.path.basename(filename))
+        if randomize:
+            filename = random_filename(filename)
+        if filename_pattern:
+            filename = filename_pattern.format(
+                datetime=datetime.now().strftime("%Y%m%d%H%M%S"),
+                rid=record_id,
+                filename=filename,
+            )
+        return filename
 
 
 def register_file_storage_impl(config, impl):
