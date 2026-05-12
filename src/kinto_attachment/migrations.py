@@ -36,8 +36,8 @@ class KintoAttachmentMigration(PostgreSQLPluginMigration):
         logger.info(f"Found {existing[0]} attachment records to migrate.")
 
         sql = """
-        INSERT INTO objects (id, resource_name, parent_id, data)
-            SELECT id, 'attachments', parent_id, data
+        INSERT INTO objects (id, resource_name, deleted, parent_id, data)
+            SELECT id, 'attachments', deleted, parent_id, data
             FROM objects
             WHERE parent_id = '__attachments__' AND resource_name = ''
             ON CONFLICT do nothing;
