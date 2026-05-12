@@ -65,6 +65,10 @@ jobs:
           --health-retries 5
         ports:
           - 5432:5432
+    env:
+      # We don't want to run `uv sync` to run implicitly on each `uv run` command
+      # in the middle of the downgrade/migration part of the workflow.
+      UV_NO_SYNC: 1
     steps:
       - uses: actions/checkout@v6
 
@@ -81,8 +85,23 @@ jobs:
       - name: Install dependencies
         run: make install
 
+      - name: Downgrade first to test migrations
+        run: uv pip install "kinto-attachment<9"
+
       - name: Run kinto
         run: make run-kinto & sleep 5
 
       - name: Run functional tests
+        run: make functional
+
+      - name: Upgrade to local `kinto-attachment` version
+        run: make install
+
+      - name: Migrate and restart kinto
+        run: |
+          pkill -f "kinto start" || true
+          pkill -f "http.server" || true
+          make run-kinto & sleep 2
+
+      - name: Run functional tests post migration
         run: make functional
