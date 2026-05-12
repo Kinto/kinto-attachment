@@ -18,11 +18,11 @@ def sha256(content):
 
 
 def files_to_upload(records, files, force=False):
-    records_by_id = {r['id']: r for r in records if 'attachment' in r}
-    existing_files = {r['attachment']['filename']: r for r in records if 'attachment' in r}
+    records_by_id = {r['id']: r for r in records if r.get('attachment')}
+    existing_files = {r['attachment']['filename']: r for r in records if r.get('attachment')}
     existing_original_files = {r['attachment']['original']['filename']: r
                                for r in records
-                               if 'attachment' in r and 'original' in r['attachment']}
+                               if r.get('attachment') and 'original' in r['attachment']}
     to_upload = []
     for filepath in files:
         filename = os.path.basename(filepath)

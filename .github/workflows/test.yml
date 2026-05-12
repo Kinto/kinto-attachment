@@ -106,9 +106,10 @@ jobs:
       - name: Post migration functional test
         run: |
           /usr/bin/openssl rand -base64 -out image4.png 3000
+          /usr/bin/openssl rand -base64 -out image5.png 3000
           uv run python scripts/upload.py \
             --server=http://localhost:8888/v1 \
             --bucket=services \
             --collection=logs \
             --auth=my-user:my-secret \
-            image4.png
+            image4.png image5.png
