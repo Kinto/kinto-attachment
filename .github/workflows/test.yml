@@ -103,5 +103,12 @@ jobs:
           pkill -f "http.server" || true
           make run-kinto & sleep 2
 
-      - name: Run functional tests post migration
-        run: make functional
+      - name: Post migration functional test
+        run: |
+          /usr/bin/openssl rand -base64 -out image4.png 3000
+          uv run python scripts/upload.py \
+            --server=http://localhost:8888/v1 \
+            --bucket=services \
+            --collection=logs \
+            --auth=my-user:my-secret \
+            image4.png
