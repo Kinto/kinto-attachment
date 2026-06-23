@@ -6,7 +6,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: astral-sh/setup-uv@v7
 
@@ -32,7 +32,7 @@ jobs:
         ports:
           - 5432:5432
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Create database
         env:
@@ -70,7 +70,7 @@ jobs:
       # in the middle of the downgrade/migration part of the workflow.
       UV_NO_SYNC: 1
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Create database
         env:
